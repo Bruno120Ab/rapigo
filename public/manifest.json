@@ -3,12 +3,12 @@
   "name": "Moto-Táxi de Itambé",
   "icons": [
     {
-      "src": "image.png",
-      "type": "image.png",
+      "src": "/icon-192.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "image.png",
+      "src": "/icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
@@ -16,5 +16,5 @@
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",
-    "theme_color": "#25a1ff"
+  "theme_color": "#25c475"
 }
