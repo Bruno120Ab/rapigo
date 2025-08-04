@@ -22,15 +22,6 @@ export const ConfirmacaoSolicitacao = ({
     });
   };
 
-  // Enviar automaticamente para WhatsApp quando componente montar
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onEnviarWhatsApp();
-    }, 1500); // Espera 1.5 segundos para mostrar a confirmação
-
-    return () => clearTimeout(timer);
-  }, [onEnviarWhatsApp]);
-
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
@@ -57,8 +48,8 @@ export const ConfirmacaoSolicitacao = ({
               </p>
             )}
           </div>
-          <p className="text-sm text-success font-medium">
-            ✅ Enviando automaticamente para o WhatsApp...
+          <p className="text-sm text-muted-foreground">
+            Clique no botão abaixo para enviar pelo WhatsApp
           </p>
         </div>
         
