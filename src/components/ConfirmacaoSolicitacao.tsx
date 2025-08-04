@@ -1,8 +1,9 @@
-import { CheckCircle, MessageCircle, Home } from "lucide-react";
+import { CheckCircle, MessageCircle, Home, Clock } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Solicitacao } from "@/types/mototaxi";
+import { useMototaxistas } from "@/hooks/useMototaxistas";
 
 interface ConfirmacaoSolicitacaoProps {
   solicitacao: Solicitacao;
@@ -15,6 +16,8 @@ export const ConfirmacaoSolicitacao = ({
   onVoltarInicio, 
   onEnviarWhatsApp 
 }: ConfirmacaoSolicitacaoProps) => {
+  const { mototaxistasAtivos } = useMototaxistas();
+  
   const formatarHora = (data: Date) => {
     return data.toLocaleTimeString('pt-BR', { 
       hour: '2-digit', 
@@ -48,6 +51,29 @@ export const ConfirmacaoSolicitacao = ({
               </p>
             )}
           </div>
+          
+          <div className="bg-muted/50 p-3 rounded-lg space-y-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4" />
+              <span>Funcionamos das 10h às 17h</span>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Motoristas disponíveis:</p>
+              <div className="space-y-1">
+                {mototaxistasAtivos.map((motorista) => (
+                  <div key={motorista.id} className="text-sm text-muted-foreground">
+                    • {motorista.nome} - {motorista.telefone}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <p className="text-sm text-muted-foreground font-medium">
+              💰 Valor a negociar diretamente com o motorista
+            </p>
+          </div>
+          
           <p className="text-sm text-muted-foreground">
             Clique no botão abaixo para enviar pelo WhatsApp
           </p>
