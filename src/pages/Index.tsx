@@ -10,6 +10,7 @@ import { useMototaxistas } from "@/hooks/useMototaxistas";
 import { useSolicitacoes } from "@/hooks/useSolicitacoes";
 import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useToast } from "@/hooks/use-toast";
+import { InstallPWA } from "@/hooks/use-install";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar';
 
@@ -137,7 +138,7 @@ const Index = () => {
               <p className="text-muted-foreground">
                 Transporte rápido e seguro para sua cidade
               </p>
-          
+              < InstallPWA />
             </div>
 
             {/* Status Card */}
