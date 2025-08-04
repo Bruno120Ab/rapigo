@@ -9,6 +9,9 @@ export interface Mototaxista {
 export interface Solicitacao {
   id: string;
   endereco: string;
+  destino?: string;
+  coordenadasOrigem?: { lat: number; lng: number };
+  coordenadasDestino?: { lat: number; lng: number };
   dataHora: Date;
   status: 'pendente' | 'aceita' | 'concluida';
 }

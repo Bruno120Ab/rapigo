@@ -34,11 +34,18 @@ export const ConfirmacaoSolicitacao = ({
           <p className="text-muted-foreground">
             Sua solicitação foi registrada às {formatarHora(solicitacao.dataHora)}
           </p>
-          <p className="font-medium">
-            Endereço: {solicitacao.endereco}
-          </p>
+          <div className="space-y-1">
+            <p className="font-medium">
+              📍 Origem: {solicitacao.endereco}
+            </p>
+            {solicitacao.destino && (
+              <p className="font-medium">
+                🎯 Destino: {solicitacao.destino}
+              </p>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">
-            Aguarde o contato do mototaxista
+            Sua solicitação será enviada diretamente para o WhatsApp do mototaxista
           </p>
         </div>
         

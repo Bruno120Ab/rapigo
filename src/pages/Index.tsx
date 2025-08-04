@@ -35,19 +35,29 @@ const Index = () => {
   const enviarWhatsApp = () => {
     if (!ultimaSolicitacao) return;
     
-    // Pega o primeiro mototaxista ativo para enviar a mensagem
-    const mototaxista = mototaxistasAtivos[0];
-    if (!mototaxista) {
-      toast({
-        title: "Nenhum mototaxista ativo",
-        description: "Não há mototaxistas disponíveis no momento.",
-        variant: "destructive"
-      });
-      return;
+    // Envia direto para o número específico (71) 999099688
+    const telefone = '71999099688';
+    
+    let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
+    mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
+    
+    if (ultimaSolicitacao.destino) {
+      mensagem += `🎯 *Destino:* ${ultimaSolicitacao.destino}\n`;
     }
-
-    const telefone = mototaxista.telefone.replace(/\D/g, '');
-    const mensagem = `Olá, preciso de um moto-táxi no endereço: ${ultimaSolicitacao.endereco}`;
+    
+    if (ultimaSolicitacao.coordenadasOrigem) {
+      const { lat, lng } = ultimaSolicitacao.coordenadasOrigem;
+      mensagem += `📱 *Link Origem:* https://maps.google.com/?q=${lat},${lng}\n`;
+    }
+    
+    if (ultimaSolicitacao.coordenadasDestino) {
+      const { lat, lng } = ultimaSolicitacao.coordenadasDestino;
+      mensagem += `📱 *Link Destino:* https://maps.google.com/?q=${lat},${lng}\n`;
+    }
+    
+    mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
+    mensagem += `\n*Favor confirmar se pode atender! 🙏*`;
+    
     const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
     
     window.open(url, '_blank');
