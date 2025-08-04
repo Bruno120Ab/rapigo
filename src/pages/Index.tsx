@@ -210,7 +210,6 @@ const Index = () => {
     <div className="max-w-md mx-auto">
       {renderTela()}
     </div>
-    <AddToHomeScreenButton />
   </div>
   );
 };
