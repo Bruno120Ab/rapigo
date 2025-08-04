@@ -8,7 +8,7 @@ import { SolicitarForm } from "@/components/SolicitarForm";
 import { ConfirmacaoSolicitacao } from "@/components/ConfirmacaoSolicitacao";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
 import { useSolicitacoes } from "@/hooks/useSolicitacoes";
-import { Solicitacao } from "@/types/mototaxi";
+import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useToast } from "@/hooks/use-toast";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar';
@@ -16,7 +16,6 @@ type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar';
 const Index = () => {
   const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
   const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
-  
   const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus } = useMototaxistas();
   const { adicionarSolicitacao } = useSolicitacoes();
   const { toast } = useToast();
@@ -27,42 +26,59 @@ const Index = () => {
     setTelaAtual('confirmacao');
     
     toast({
-      title: "Solicitação enviada!",
-      description: "Aguarde o contato do mototaxista.",
+      title: "Solicitação Completa!",
+      description: "Agora envie seu pedido.",
     });
   };
 
   const enviarWhatsApp = () => {
-    if (!ultimaSolicitacao) return;
-    
-    // Envia direto para o número específico (71) 999099688
-    const telefone = '71999099688';
-    
-    let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
-    mensagem += `👤 *Cliente:* ${ultimaSolicitacao.nome}\n`;
-    mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
-    
-    if (ultimaSolicitacao.destino) {
-      mensagem += `🎯 *Destino:* ${ultimaSolicitacao.destino}\n`;
+  if (!ultimaSolicitacao) return;
+
+  // Pega o mototaxista salvo no localStorage
+  const dadosMototaxista = localStorage.getItem("mototaxista");
+  let telefone = "71999099688"; // fallback padrão
+
+  if (dadosMototaxista) {
+    try {
+      const mototaxista = JSON.parse(dadosMototaxista);
+      if (mototaxista.telefone) {
+        // Remove qualquer caractere não numérico e adiciona DDI +55
+        telefone = mototaxista.telefone.replace(/\D/g, "");
+        if (!telefone.startsWith("55")) {
+          telefone = "55" + telefone;
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao ler telefone do mototaxista no localStorage", error);
     }
-    
-    if (ultimaSolicitacao.coordenadasOrigem) {
-      const { lat, lng } = ultimaSolicitacao.coordenadasOrigem;
-      mensagem += `📱 *Link Origem:* https://maps.google.com/?q=${lat},${lng}\n`;
-    }
-    
-    if (ultimaSolicitacao.coordenadasDestino) {
-      const { lat, lng } = ultimaSolicitacao.coordenadasDestino;
-      mensagem += `📱 *Link Destino:* https://maps.google.com/?q=${lat},${lng}\n`;
-    }
-    
-    mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
-    mensagem += `\n*Favor confirmar se pode atender! 🙏*`;
-    
-    const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}`;
-    
-    window.open(url, '_blank');
-  };
+  }
+
+  let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
+  mensagem += `👤 *Cliente:* ${ultimaSolicitacao.nome}\n`;
+  mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
+
+  if (ultimaSolicitacao.destino) {
+    mensagem += `🎯 *Destino:* ${ultimaSolicitacao.destino}\n`;
+  }
+
+  if (ultimaSolicitacao.coordenadasOrigem) {
+    const { lat, lng } = ultimaSolicitacao.coordenadasOrigem;
+    mensagem += `📱 *Link Origem:* https://maps.google.com/?q=${lat},${lng}\n`;
+  }
+
+  if (ultimaSolicitacao.coordenadasDestino) {
+    const { lat, lng } = ultimaSolicitacao.coordenadasDestino;
+    mensagem += `📱 *Link Destino:* https://maps.google.com/?q=${lat},${lng}\n`;
+  }
+
+  mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
+  mensagem += `\n*Favor confirmar se pode atender! 🙏*`;
+
+  const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+
+  window.open(url, "_blank");
+};
+
 
   const renderTela = () => {
     switch (telaAtual) {
@@ -116,37 +132,38 @@ const Index = () => {
             <div className="text-center space-y-2">
               <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
                 <Car className="h-8 w-8 text-primary" />
-                Moto-Táxi Express
+                Moto-Táxi de Itambé
               </h1>
               <p className="text-muted-foreground">
                 Transporte rápido e seguro para sua cidade
               </p>
+          
             </div>
 
             {/* Status Card */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Mototaxistas Disponíveis
+                  {/* <Users className="h-5 w-5" /> */}
+                  Disponíveis no APP
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between mb-4">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary">
+                    {/* <div className="text-3xl font-bold text-primary">
                       {quantidadeAtivos}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
+                    </div> */}
+                    {/* <div className="text-sm text-muted-foreground">
                       {quantidadeAtivos === 1 ? 'Mototaxista ativo' : 'Mototaxistas ativos'}
-                    </div>
+                    </div> */}
                   </div>
-                  <Badge 
+                  {/* <Badge 
                     variant={quantidadeAtivos > 0 ? "default" : "secondary"}
                     className={quantidadeAtivos > 0 ? "bg-success text-success-foreground" : ""}
                   >
                     {quantidadeAtivos > 0 ? 'Disponível' : 'Indisponível'}
-                  </Badge>
+                  </Badge> */}
                 </div>
 
                 {/* Lista de mototaxistas ativos */}
@@ -174,14 +191,14 @@ const Index = () => {
                 Solicitar Moto-Táxi
               </Button>
               
-              <Button
+              {/* <Button
                 variant="outline"
                 onClick={() => setTelaAtual('gerenciar')}
                 className="w-full"
               >
                 <Settings className="h-4 w-4 mr-2" />
                 Gerenciar Mototaxistas
-              </Button>
+              </Button> */}
             </div>
           </div>
         );

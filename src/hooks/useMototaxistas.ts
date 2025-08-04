@@ -5,9 +5,9 @@ import { Mototaxista } from "@/types/mototaxi";
 const mototaxistasIniciais: Mototaxista[] = [
   {
     id: "1",
-    nome: "João Silva",
-    telefone: "(11) 99999-1111",
-    foto: "/placeholder.svg",
+    nome: "Allysson",
+    telefone: "7798861-9707",
+    foto: "../assets/file.enc",
     ativo: true
   },
   {

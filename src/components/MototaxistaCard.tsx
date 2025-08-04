@@ -14,7 +14,7 @@ interface MototaxistaCardProps {
 export const MototaxistaCard = ({ 
   mototaxista, 
   onToggleStatus, 
-  showToggle = false 
+  showToggle = false ,
 }: MototaxistaCardProps) => {
   return (
     <Card className="w-full">
@@ -41,8 +41,13 @@ export const MototaxistaCard = ({
             <Badge 
               variant={mototaxista.ativo ? "default" : "secondary"}
               className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
+              onClick={() => {
+                localStorage.setItem("mototaxista", JSON.stringify(mototaxista));
+                console.log(mototaxista)
+              }}
+
             >
-              {mototaxista.ativo ? "Ativo" : "Inativo"}
+              {mototaxista.ativo ? "Selecionar" : "Inativo"}
             </Badge>
             
             {showToggle && (

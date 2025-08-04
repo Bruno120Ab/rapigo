@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Send, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +14,7 @@ interface SolicitarFormProps {
   onCancel: () => void;
 }
 
-export const SolicitarForm = ({ onSolicitar, onCancel }: SolicitarFormProps) => {
+export const SolicitarForm = ({ onSolicitar, onCancel,  }: SolicitarFormProps) => {
   const [nome, setNome] = useState("");
   const [endereco, setEndereco] = useState("");
   const [destino, setDestino] = useState("");
@@ -58,12 +58,13 @@ export const SolicitarForm = ({ onSolicitar, onCancel }: SolicitarFormProps) => 
       );
     }
   };
+  
 
   const handleSubmit = async () => {
     if (!nome.trim() || !endereco.trim()) return;
     
     setLoading(true);
-    
+
     const solicitacao: Omit<Solicitacao, 'id'> = {
       nome: nome.trim(),
       endereco: endereco.trim(),
@@ -77,14 +78,27 @@ export const SolicitarForm = ({ onSolicitar, onCancel }: SolicitarFormProps) => 
     onSolicitar(solicitacao);
     setLoading(false);
   };
+  const [motoboy, setMotoboy] = useState<{ nome: string } | null>(null);
+
+  useEffect(() => {
+    const dados = localStorage.getItem("mototaxista");
+    if (dados) {
+      try {
+        const obj = JSON.parse(dados);
+        setMotoboy(obj);
+      } catch (e) {
+        console.error("Erro ao fazer parse do mototaxista:", e);
+      }
+    }
+  }, []);
 
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5" />
-          Solicitar Moto-Táxi
-        </CardTitle>
+          Solicitar Moto-Táxi 
+      </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Tabs defaultValue="endereco" className="w-full">

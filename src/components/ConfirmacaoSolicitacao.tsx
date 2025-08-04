@@ -1,8 +1,8 @@
 import { CheckCircle, MessageCircle, Home, Clock } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Solicitacao } from "@/types/mototaxi";
+import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
 
 interface ConfirmacaoSolicitacaoProps {
@@ -25,13 +25,28 @@ export const ConfirmacaoSolicitacao = ({
     });
   };
 
+  const [motoboySelecionado, setMotoboySelecionado] = useState<Mototaxista | null>(null);
+  
+    useEffect(() => {
+      const dados = localStorage.getItem("mototaxista");
+      if (dados) {
+        try {
+          const obj = JSON.parse(dados);
+          setMotoboySelecionado(obj);
+        } catch (e) {
+          console.error("Erro ao fazer parse do mototaxista:", e);
+        }
+      }
+    }, []);
+ 
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
         <div className="mx-auto mb-4">
           <CheckCircle className="h-16 w-16 text-success mx-auto" />
         </div>
-        <CardTitle className="text-success">Solicitação Enviada!</CardTitle>
+        <CardTitle className="text-success">Solicitação Completa!</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center space-y-2">
@@ -50,23 +65,31 @@ export const ConfirmacaoSolicitacao = ({
                 🎯 Destino: {solicitacao.destino}
               </p>
             )}
+            
           </div>
           
           <div className="bg-muted/50 p-3 rounded-lg space-y-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>Funcionamos das 10h às 17h</span>
-            </div>
-            
+
             <div className="space-y-1">
-              <p className="text-sm font-medium">Motoristas disponíveis:</p>
-              <div className="space-y-1">
-                {mototaxistasAtivos.map((motorista) => (
-                  <div key={motorista.id} className="text-sm text-muted-foreground">
-                    • {motorista.nome} - {motorista.telefone}
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm font-medium">Seu Motoboy :</p>
+             <div className="space-y-1">
+            <div className="space-y-1 flex flex-col items-center">
+              {motoboySelecionado ? (
+                <div className="text-sm text-muted-foreground space-y-1 text-center">
+                  <p><strong>Nome:</strong> {motoboySelecionado.nome}</p>
+                  <p><strong>Telefone:</strong> {motoboySelecionado.telefone}</p>
+                  <p><strong>Foto:</strong></p>
+                  {motoboySelecionado.foto ? (
+                    <img src={motoboySelecionado.foto} alt={motoboySelecionado.nome} className="h-20 w-20 rounded-full" />
+                  ) : (
+                    <span>Sem foto disponível</span>
+                  )}
+                </div>
+              ) : (
+                <p>Nenhum motoboy selecionado.</p>
+              )}
+            </div>
+</div>
             </div>
             
             <p className="text-sm text-muted-foreground font-medium">
@@ -75,7 +98,7 @@ export const ConfirmacaoSolicitacao = ({
           </div>
           
           <p className="text-sm text-muted-foreground">
-            Clique no botão abaixo para enviar pelo WhatsApp
+            Conclua a solicitação enviando a mensagem para o whatsapp
           </p>
         </div>
         
@@ -88,9 +111,12 @@ export const ConfirmacaoSolicitacao = ({
             Enviar pelo WhatsApp
           </Button>
           
-          <Button
+         <Button
             variant="outline"
-            onClick={onVoltarInicio}
+            onClick={() => {
+              localStorage.clear(); // Limpa todos os dados do localStorage
+              onVoltarInicio();     // Executa a função que você já tinha
+            }}
             className="w-full"
           >
             <Home className="h-4 w-4 mr-2" />
