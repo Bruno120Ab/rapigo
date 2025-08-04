@@ -10,6 +10,7 @@ import { useMototaxistas } from "@/hooks/useMototaxistas";
 import { useSolicitacoes } from "@/hooks/useSolicitacoes";
 import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useToast } from "@/hooks/use-toast";
+import AddToHomeScreenButton from "@/components/AddToHomeScreenButton";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar';
 
@@ -205,11 +206,12 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-md mx-auto">
-        {renderTela()}
-      </div>
+   <div className="min-h-screen bg-background p-4">
+    <div className="max-w-md mx-auto">
+      {renderTela()}
     </div>
+    <AddToHomeScreenButton />
+  </div>
   );
 };
 
