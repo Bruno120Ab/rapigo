@@ -1,4 +1,5 @@
 import { CheckCircle, MessageCircle, Home } from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Solicitacao } from "@/types/mototaxi";
@@ -21,6 +22,15 @@ export const ConfirmacaoSolicitacao = ({
     });
   };
 
+  // Enviar automaticamente para WhatsApp quando componente montar
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onEnviarWhatsApp();
+    }, 1500); // Espera 1.5 segundos para mostrar a confirmação
+
+    return () => clearTimeout(timer);
+  }, [onEnviarWhatsApp]);
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
@@ -32,9 +42,12 @@ export const ConfirmacaoSolicitacao = ({
       <CardContent className="space-y-4">
         <div className="text-center space-y-2">
           <p className="text-muted-foreground">
-            Sua solicitação foi registrada às {formatarHora(solicitacao.dataHora)}
+            Solicitação registrada às {formatarHora(solicitacao.dataHora)}
           </p>
           <div className="space-y-1">
+            <p className="font-medium">
+              👤 Nome: {solicitacao.nome}
+            </p>
             <p className="font-medium">
               📍 Origem: {solicitacao.endereco}
             </p>
@@ -44,8 +57,8 @@ export const ConfirmacaoSolicitacao = ({
               </p>
             )}
           </div>
-          <p className="text-sm text-muted-foreground">
-            Sua solicitação será enviada diretamente para o WhatsApp do mototaxista
+          <p className="text-sm text-success font-medium">
+            ✅ Enviando automaticamente para o WhatsApp...
           </p>
         </div>
         

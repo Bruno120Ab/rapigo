@@ -15,6 +15,7 @@ interface SolicitarFormProps {
 }
 
 export const SolicitarForm = ({ onSolicitar, onCancel }: SolicitarFormProps) => {
+  const [nome, setNome] = useState("");
   const [endereco, setEndereco] = useState("");
   const [destino, setDestino] = useState("");
   const [coordenadasOrigem, setCoordendasOrigem] = useState<{ lat: number; lng: number } | null>(null);
@@ -59,11 +60,12 @@ export const SolicitarForm = ({ onSolicitar, onCancel }: SolicitarFormProps) => 
   };
 
   const handleSubmit = async () => {
-    if (!endereco.trim()) return;
+    if (!nome.trim() || !endereco.trim()) return;
     
     setLoading(true);
     
     const solicitacao: Omit<Solicitacao, 'id'> = {
+      nome: nome.trim(),
       endereco: endereco.trim(),
       destino: destino.trim() || undefined,
       coordenadasOrigem,
@@ -92,6 +94,18 @@ export const SolicitarForm = ({ onSolicitar, onCancel }: SolicitarFormProps) => 
           </TabsList>
           
           <TabsContent value="endereco" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="nome">Seu nome</Label>
+              <Input
+                id="nome"
+                type="text"
+                placeholder="Digite seu nome completo..."
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                className="w-full"
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="endereco">Endereço de coleta</Label>
               <div className="flex gap-2">
@@ -152,7 +166,7 @@ export const SolicitarForm = ({ onSolicitar, onCancel }: SolicitarFormProps) => 
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!endereco.trim() || loading}
+            disabled={!nome.trim() || !endereco.trim() || loading}
             className="flex-1"
           >
             <Send className="h-4 w-4 mr-2" />

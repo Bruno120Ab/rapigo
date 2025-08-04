@@ -8,6 +8,7 @@ export interface Mototaxista {
 
 export interface Solicitacao {
   id: string;
+  nome: string;
   endereco: string;
   destino?: string;
   coordenadasOrigem?: { lat: number; lng: number };

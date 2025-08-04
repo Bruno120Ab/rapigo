@@ -39,6 +39,7 @@ const Index = () => {
     const telefone = '71999099688';
     
     let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
+    mensagem += `👤 *Cliente:* ${ultimaSolicitacao.nome}\n`;
     mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
     
     if (ultimaSolicitacao.destino) {
