@@ -6,19 +6,23 @@ export const InstallPWA = () => {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
-    const handler = (e: any) => {
+    const handler = (e: Event) => {
       e.preventDefault();
+      // @ts-ignore
       setDeferredPrompt(e);
       setShowButton(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handler);
+    window.addEventListener("beforeinstallprompt", handler as EventListener);
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler as EventListener);
   }, []);
 
   const handleClick = () => {
-    if (!deferredPrompt) return;
+    if (!deferredPrompt) {
+      console.warn("Prompt não disponível");
+      return;
+    }
 
     deferredPrompt.prompt();
 
