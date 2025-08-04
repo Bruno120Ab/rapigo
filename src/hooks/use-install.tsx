@@ -1,42 +1,37 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 
-export const InstallPWA = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showButton, setShowButton] = useState(false);
+export function InstallPWA() {
+  const [promptEvent, setPromptEvent] = useState<Event | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    const handler = (e: Event) => {
+    function handler(e: Event) {
       e.preventDefault();
-      // @ts-ignore
-      setDeferredPrompt(e);
-      setShowButton(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handler as EventListener);
-
-    return () => window.removeEventListener("beforeinstallprompt", handler as EventListener);
-  }, []);
-
-  const handleClick = () => {
-    if (!deferredPrompt) {
-      console.warn("Prompt não disponível");
-      return;
+      setPromptEvent(e);
+      setIsVisible(true);
     }
 
-    deferredPrompt.prompt();
+    window.addEventListener("beforeinstallprompt", handler);
 
-    deferredPrompt.userChoice.then(() => {
-      setDeferredPrompt(null);
-      setShowButton(false);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const onClick = () => {
+    if (!promptEvent) return;
+    // @ts-ignore
+    promptEvent.prompt();
+    // @ts-ignore
+    promptEvent.userChoice.then(() => {
+      setIsVisible(false);
+      setPromptEvent(null);
     });
   };
 
-  if (!showButton) return null;
+  if (!isVisible) return null;
 
   return (
-    <Button onClick={handleClick} variant="outline" className="w-full">
-      📱 Instalar App
-    </Button>
+    <button onClick={onClick} style={{ padding: "10px 20px", fontSize: 16 }}>
+      📲 Instalar App
+    </button>
   );
-};
+}

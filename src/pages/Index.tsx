@@ -138,6 +138,7 @@ const Index = () => {
               <p className="text-muted-foreground">
                 Transporte rápido e seguro para sua cidade
               </p>
+              <InstallPWA />
             </div>
 
             {/* Status Card */}
