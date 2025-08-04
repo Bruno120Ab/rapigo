@@ -1,5 +1,10 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import * as serviceWorkerRegistration from './serviceWorkerRegistration.ts'
 
-createRoot(document.getElementById("root")!).render(<App />);
+const root = createRoot(document.getElementById("root")!)
+root.render(<App />)
+
+// Registra o service worker para ativar o PWA
+serviceWorkerRegistration.register()
