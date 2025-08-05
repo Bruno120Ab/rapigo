@@ -58,7 +58,7 @@ export const ConfirmacaoSolicitacao = ({
             </div>
           </div>
         )}
-        <CardTitle className="text-success">Solicitação Completa!</CardTitle>
+        <CardTitle className="text-success">Revise sua solicitação!</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center space-y-2">

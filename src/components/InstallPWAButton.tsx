@@ -1,16 +1,18 @@
 import React from 'react'
 import usePWAInstall from '@/hooks/usePWAInstall'
+import { ArrowDownToLine } from 'lucide-react';
 
 export default function InstallPWAButton() {
   const { isInstallable, promptInstall } = usePWAInstall();
 
-  if (!isInstallable) return null;
+//   if (!isInstallable) return null;
 
   return (
     <button
       onClick={promptInstall}
-      className="fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded shadow-lg hover:bg-blue-700 transition"
+      className=" right-4 h-10 text-lg text-white gap-x-1 bg-primary px-4 py-1 mx-auto rounded shadow-lg transition flex "
     >
+    <ArrowDownToLine className="" />
       Instalar App
     </button>
   );
