@@ -1,4 +1,4 @@
-import { Phone, User } from "lucide-react";
+import { Phone, User, Heart, HeartOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,12 +9,20 @@ interface MototaxistaCardProps {
   mototaxista: Mototaxista;
   onToggleStatus: (id: string) => void;
   showToggle?: boolean;
+  onSelecionar?: (mototaxista: Mototaxista) => void;
+  isFavorito?: boolean;
+  onToggleFavorito?: (mototaxista: Mototaxista) => void;
+  showFavoriteButton?: boolean;
 }
 
 export const MototaxistaCard = ({ 
   mototaxista, 
   onToggleStatus, 
-  showToggle = false ,
+  showToggle = false,
+  onSelecionar,
+  isFavorito = false,
+  onToggleFavorito,
+  showFavoriteButton = false
 }: MototaxistaCardProps) => {
   return (
     <Card className="w-full">
@@ -38,17 +46,37 @@ export const MototaxistaCard = ({
           </div>
           
           <div className="flex flex-col items-end gap-2">
-            <Badge 
-              variant={mototaxista.ativo ? "default" : "secondary"}
-              className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
-              onClick={() => {
-                localStorage.setItem("mototaxista", JSON.stringify(mototaxista));
-                console.log(mototaxista)
-              }}
-
-            >
-              {mototaxista.ativo ? "Selecionar" : "Inativo"}
-            </Badge>
+            <div className="flex items-center gap-2">
+              {showFavoriteButton && onToggleFavorito && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onToggleFavorito(mototaxista)}
+                >
+                  {isFavorito ? (
+                    <Heart className="h-4 w-4 fill-primary text-primary" />
+                  ) : (
+                    <HeartOff className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
+              
+              {mototaxista.ativo && onSelecionar ? (
+                <Button
+                  onClick={() => onSelecionar(mototaxista)}
+                  size="sm"
+                >
+                  Selecionar
+                </Button>
+              ) : (
+                <Badge 
+                  variant={mototaxista.ativo ? "default" : "secondary"}
+                  className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
+                >
+                  {mototaxista.ativo ? "Disponível" : "Inativo"}
+                </Badge>
+              )}
+            </div>
             
             {showToggle && (
               <Button

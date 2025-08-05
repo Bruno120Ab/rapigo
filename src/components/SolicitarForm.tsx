@@ -5,16 +5,25 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Solicitacao } from "@/types/mototaxi";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Solicitacao, Mototaxista } from "@/types/mototaxi";
+import { EnderecoPadrao } from "@/hooks/useEnderecosPadrao";
 import { MapComponent } from "./MapComponent";
 import { useToast } from "@/hooks/use-toast";
 
 interface SolicitarFormProps {
   onSolicitar: (solicitacao: Omit<Solicitacao, 'id'>) => void;
   onCancel: () => void;
+  mototaxistaSelecionado?: Mototaxista | null;
+  enderecosPadrao?: EnderecoPadrao[];
 }
 
-export const SolicitarForm = ({ onSolicitar, onCancel,  }: SolicitarFormProps) => {
+export const SolicitarForm = ({ 
+  onSolicitar, 
+  onCancel, 
+  mototaxistaSelecionado,
+  enderecosPadrao = []
+}: SolicitarFormProps) => {
   const [nome, setNome] = useState("");
   const [endereco, setEndereco] = useState("");
   const [destino, setDestino] = useState("");
@@ -97,8 +106,13 @@ export const SolicitarForm = ({ onSolicitar, onCancel,  }: SolicitarFormProps) =
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <MapPin className="h-5 w-5" />
-          Solicitar Moto-Táxi 
-      </CardTitle>
+          Solicitar Moto-Táxi
+          {mototaxistaSelecionado && (
+            <span className="text-sm font-normal text-muted-foreground block">
+              Mototaxista: {mototaxistaSelecionado.nome}
+            </span>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <Tabs defaultValue="endereco" className="w-full">
@@ -122,6 +136,20 @@ export const SolicitarForm = ({ onSolicitar, onCancel,  }: SolicitarFormProps) =
 
             <div className="space-y-2">
               <Label htmlFor="endereco">Endereço de coleta</Label>
+              {enderecosPadrao.length > 0 && (
+                <Select onValueChange={setEndereco}>
+                  <SelectTrigger className="mb-2">
+                    <SelectValue placeholder="Selecionar endereço salvo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {enderecosPadrao.map((enderecoPadrao) => (
+                      <SelectItem key={enderecoPadrao.id} value={enderecoPadrao.endereco}>
+                        {enderecoPadrao.nome} - {enderecoPadrao.endereco}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
               <div className="flex gap-2">
                 <Input
                   id="endereco"
@@ -144,6 +172,20 @@ export const SolicitarForm = ({ onSolicitar, onCancel,  }: SolicitarFormProps) =
 
             <div className="space-y-2">
               <Label htmlFor="destino">Destino (opcional)</Label>
+              {enderecosPadrao.length > 0 && (
+                <Select onValueChange={setDestino}>
+                  <SelectTrigger className="mb-2">
+                    <SelectValue placeholder="Selecionar destino salvo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {enderecosPadrao.map((enderecoPadrao) => (
+                      <SelectItem key={enderecoPadrao.id} value={enderecoPadrao.endereco}>
+                        {enderecoPadrao.nome} - {enderecoPadrao.endereco}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
               <Input
                 id="destino"
                 type="text"
