@@ -17,6 +17,8 @@ import { useEnderecosPadrao } from "@/hooks/useEnderecosPadrao";
 import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useToast } from "@/hooks/use-toast";
 import { AddToHomeScreenCarousel } from "@/components/AddToWarn";
+import usePWAInstall from "@/hooks/usePWAInstall";
+import InstallPWAButton from "@/components/InstallPWAButton";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
@@ -233,6 +235,7 @@ const Index = () => {
               <p className="text-muted-foreground">
                 Transporte rápido e seguro para sua cidade
               </p>
+              <InstallPWAButton />
             </div>
 
             {/* Seção de Favoritos */}
