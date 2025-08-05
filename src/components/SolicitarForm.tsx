@@ -67,7 +67,7 @@ export const SolicitarForm = ({
   
 
   const handleSubmit = async () => {
-    if (!nome.trim() || !endereco.trim()) return;
+    if (!nome.trim() || !endereco.trim() ) return;
     
     // Validar agendamento
     if (isAgendamento && (!dataAgendamento || !horaAgendamento)) {
@@ -110,7 +110,8 @@ export const SolicitarForm = ({
       dataHora: dataHoraFinal,
       dataAgendamento: dataAgendamentoFinal,
       isAgendamento,
-      status: 'pendente'
+      status: 'pendente',
+      motoBoy:  mototaxistaSelecionado?.nome.trim() ?? "Não informado"
     };
     
     onSolicitar(solicitacao);

@@ -1,4 +1,4 @@
-import { History, MapPin, Calendar } from "lucide-react";
+import { History, MapPin, Calendar, Bike } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Solicitacao } from "@/types/mototaxi";
@@ -40,6 +40,12 @@ export const HistoricoSection = ({ historico, onReutilizarViagem }: HistoricoSec
                   <div className="flex items-center gap-2 ml-6">
                     <MapPin className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">{viagem.destino}</span>
+                  </div>
+                )}
+                {viagem.motoBoy&& (
+                  <div className="flex items-center gap-2 ml-6">
+                    <Bike className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{viagem.motoBoy}</span>
                   </div>
                 )}
                 <span className="text-xs text-muted-foreground ml-6">

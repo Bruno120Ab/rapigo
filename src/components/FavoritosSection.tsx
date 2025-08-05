@@ -12,6 +12,7 @@ interface FavoritosSectionProps {
 
 export const FavoritosSection = ({ favoritos, onSelecionarFavorito }: FavoritosSectionProps) => {
   if (favoritos.length === 0) return null;
+ 
 
   return (
     <Card>
@@ -32,7 +33,7 @@ export const FavoritosSection = ({ favoritos, onSelecionarFavorito }: FavoritosS
             >
               <div className="flex items-center gap-3">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={mototaxista.foto} alt={mototaxista.nome} />
+                  <AvatarImage src={mototaxista.foto} alt={mototaxista.nome} /> 
                   <AvatarFallback>
                     <User className="h-4 w-4" />
                   </AvatarFallback>

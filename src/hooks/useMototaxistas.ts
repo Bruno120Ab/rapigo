@@ -34,6 +34,14 @@ const mototaxistasIniciais: Mototaxista[] = [
     foto: "/placeholder.svg",
     ativo: true,
     tipoVeiculo: "carro"
+  },
+  {
+    id: "5",
+    nome: "Ain",
+    telefone: "(11) 99999-4444",
+    foto: "/placeholder.svg",
+    ativo: true,
+    tipoVeiculo: "carro"
   }
 ];
 

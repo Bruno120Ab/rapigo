@@ -39,16 +39,16 @@ export const MototaxistaCard = ({
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-lg">{mototaxista.nome}</h3>
-                {mototaxista.tipoVeiculo === 'carro' ? (
-                  <Car className="h-4 w-4 text-primary" />
+                {/* {mototaxista.tipoVeiculo === 'carro' ? (
+                  <Car className="h-4 w-6 text-primary" />
                 ) : (
                   <Bike className="h-4 w-4 text-primary" />
-                )}
+                )} */}
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
+              {/* <div className="flex items-center gap-2 text-muted-foreground">
                 <Phone className="h-4 w-4" />
                 <span>{mototaxista.telefone}</span>
-              </div>
+              </div> */}
             </div>
           </div>
           

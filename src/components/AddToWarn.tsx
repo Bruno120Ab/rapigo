@@ -7,16 +7,16 @@ type Passo = {
 
 const passos: Passo[] = [
   {
-    img: "/public/icon-512.png", // substitua pela sua imagem
-    descricao: "Toque no menu do navegador (ícone dos três pontinhos)",
+    img: "/public/Image.png", // substitua pela sua imagem
+    descricao: "Moto taxi a um toque",
   },
  {
-    img: "/public/icon-512.png", // substitua pela sua imagem
+    img: "/public/screen01.png", // substitua pela sua imagem
     descricao: "Toque no menu do navegador (ícone dos três pontinhos)",
   },
 {
-    img: "/public/icon-512.png", // substitua pela sua imagem
-    descricao: "Toque no menu do navegador (ícone dos três pontinhos)",
+    img: "/public/screen02.png", // substitua pela sua imagem
+    descricao: "Adicione a tela do seu celular",
   },
 ];
 
@@ -92,7 +92,7 @@ export function AddToHomeScreenCarousel() {
           <div
             key={i}
             style={{
-              minWidth: 240,
+              minWidth: 250,
               flexShrink: 0,
               textAlign: "center",
               opacity: i === stepIndex ? 1 : 0,
@@ -101,7 +101,7 @@ export function AddToHomeScreenCarousel() {
               pointerEvents: i === stepIndex ? "auto" : "none",
             }}
           >
-            <img
+            {/* <img
               src={passo.img}
               alt={passo.descricao}
               style={{
@@ -109,19 +109,20 @@ export function AddToHomeScreenCarousel() {
                 height: 100,
                 objectFit: "contain",
                 borderRadius: 8,
-                boxShadow: "0 0 8px rgba(0,0,0,0.3)",
+
+                // boxShadow: "0 0 8px rgba(0,0,0,0.3)",
               }}
               loading="lazy"
-            />
-            {/* <p
+            /> */}
+            { <p
               style={{
-                marginTop: 8,
-                fontSize: 14,
+                marginTop: 3,
+                fontSize: 16,
                 lineHeight: 1.3,
               }}
             >
               {passo.descricao}
-            </p> */}
+            </p> }
           </div>
         ))}
       </div>

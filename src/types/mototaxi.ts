@@ -18,6 +18,7 @@ export interface Solicitacao {
   dataAgendamento?: Date;
   status: 'pendente' | 'aceita' | 'concluida';
   isAgendamento?: boolean;
+  motoBoy: string;
 }
 
 export type StatusMototaxista = 'ativo' | 'inativo';

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Car, Settings, Users } from "lucide-react";
+import { Bike, Car, Settings, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -227,7 +227,7 @@ const Index = () => {
             {/* Header */}
             <div className="text-center space-y-2">
               <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-                <Car className="h-8 w-8 text-primary" />
+                <Bike className="h-8 w-8 text-primary" />
                 Moto-Táxi de Itambé
               </h1>
               <p className="text-muted-foreground">
@@ -252,12 +252,12 @@ const Index = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  Mototaxistas Disponíveis ({quantidadeAtivos})
+                  Mototaxistas Disponíveis 
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {mototaxistasAtivos.slice(0, 2).map((mototaxista) => (
+                  {mototaxistasAtivos.slice(0, 3).map((mototaxista) => (
                     <MototaxistaCard
                       key={mototaxista.id}
                       mototaxista={mototaxista}
@@ -268,13 +268,13 @@ const Index = () => {
                       showFavoriteButton={true}
                     />
                   ))}
-                  {quantidadeAtivos > 2 && (
+                  {quantidadeAtivos  > 2 && (
                     <Button
                       variant="outline"
                       className="w-full"
                       onClick={() => setTelaAtual('selecionar-mototaxista')}
                     >
-                      Ver todos ({quantidadeAtivos} disponíveis)
+                      Ver todos motoboys do app ({quantidadeAtivos} disponíveis)
                     </Button>
                   )}
                 </div>

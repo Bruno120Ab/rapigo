@@ -126,7 +126,7 @@ export const ConfirmacaoSolicitacao = ({
           <Button
             variant="outline"
             onClick={() => {
-              localStorage.clear(); // Limpa todos os dados do localStorage
+              localStorage.removeItem('mototaxista'); // Limpa todos os dados do localStorage
               onVoltarInicio();     // Executa a função que você já tinha
             }}
             className="w-full"
