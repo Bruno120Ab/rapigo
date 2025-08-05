@@ -4,6 +4,7 @@ export interface Mototaxista {
   telefone: string;
   foto: string;
   ativo: boolean;
+  tipoVeiculo: 'moto' | 'carro';
 }
 
 export interface Solicitacao {
@@ -14,7 +15,9 @@ export interface Solicitacao {
   coordenadasOrigem?: { lat: number; lng: number };
   coordenadasDestino?: { lat: number; lng: number };
   dataHora: Date;
+  dataAgendamento?: Date;
   status: 'pendente' | 'aceita' | 'concluida';
+  isAgendamento?: boolean;
 }
 
 export type StatusMototaxista = 'ativo' | 'inativo';

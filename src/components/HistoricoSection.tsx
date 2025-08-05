@@ -1,4 +1,4 @@
-import { History, MapPin } from "lucide-react";
+import { History, MapPin, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Solicitacao } from "@/types/mototaxi";
@@ -32,6 +32,9 @@ export const HistoricoSection = ({ historico, onReutilizarViagem }: HistoricoSec
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-primary" />
                   <span className="font-medium text-sm">{viagem.endereco}</span>
+                  {viagem.isAgendamento && (
+                    <Calendar className="h-3 w-3 text-orange-500" />
+                  )}
                 </div>
                 {viagem.destino && (
                   <div className="flex items-center gap-2 ml-6">
@@ -40,7 +43,8 @@ export const HistoricoSection = ({ historico, onReutilizarViagem }: HistoricoSec
                   </div>
                 )}
                 <span className="text-xs text-muted-foreground ml-6">
-                  {viagem.dataHora.toLocaleDateString('pt-BR')}
+                  {viagem.isAgendamento ? 'Agendada para: ' : ''}
+                  {viagem.dataHora.toLocaleDateString('pt-BR')} {viagem.dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             </Button>

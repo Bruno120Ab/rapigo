@@ -1,4 +1,4 @@
-import { CheckCircle, MessageCircle, Home, Clock } from "lucide-react";
+import { CheckCircle, MapPin, User, Phone, MessageCircle, Clock, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +46,18 @@ export const ConfirmacaoSolicitacao = ({
         <div className="mx-auto mb-4">
           <CheckCircle className="h-16 w-16 text-success mx-auto" />
         </div>
+        
+        {solicitacao.isAgendamento && (
+          <div className="flex items-start gap-3 p-3 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-800 mb-4">
+            <Calendar className="h-5 w-5 text-orange-600 mt-0.5" />
+            <div>
+              <div className="font-medium text-orange-900 dark:text-orange-100">Corrida Agendada</div>
+              <div className="text-sm text-orange-700 dark:text-orange-300">
+                {solicitacao.dataAgendamento?.toLocaleDateString('pt-BR')} às {solicitacao.dataAgendamento?.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            </div>
+          </div>
+        )}
         <CardTitle className="text-success">Solicitação Completa!</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -111,7 +123,7 @@ export const ConfirmacaoSolicitacao = ({
             Enviar pelo WhatsApp
           </Button>
           
-         <Button
+          <Button
             variant="outline"
             onClick={() => {
               localStorage.clear(); // Limpa todos os dados do localStorage
@@ -119,7 +131,7 @@ export const ConfirmacaoSolicitacao = ({
             }}
             className="w-full"
           >
-            <Home className="h-4 w-4 mr-2" />
+            <MessageCircle className="h-4 w-4 mr-2" />
             Voltar ao Início
           </Button>
         </div>

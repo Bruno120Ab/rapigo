@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { MapPin, Send, Navigation } from "lucide-react";
+import { MapPin, Send, Navigation, Calendar, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Solicitacao, Mototaxista } from "@/types/mototaxi";
 import { EnderecoPadrao } from "@/hooks/useEnderecosPadrao";
+import { coordenadasParaEndereco, enderecoParaCoordenadas } from "@/utils/geocoding";
 import { MapComponent } from "./MapComponent";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,32 +31,27 @@ export const SolicitarForm = ({
   const [destino, setDestino] = useState("");
   const [coordenadasOrigem, setCoordendasOrigem] = useState<{ lat: number; lng: number } | null>(null);
   const [coordenadasDestino, setCoordendasDestino] = useState<{ lat: number; lng: number } | null>(null);
+  const [isAgendamento, setIsAgendamento] = useState(false);
+  const [dataAgendamento, setDataAgendamento] = useState("");
+  const [horaAgendamento, setHoraAgendamento] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const obterLocalizacaoAtual = () => {
+  const obterLocalizacaoAtual = async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
           setCoordendasOrigem({ lat: latitude, lng: longitude });
           
-          // Reverse geocoding para obter endereço
-          try {
-            const response = await fetch(
-              `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=YOUR_MAPBOX_TOKEN`
-            );
-            const data = await response.json();
-            const address = data.features[0]?.place_name || `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-            setEndereco(address);
-            
-            toast({
-              title: "Localização obtida",
-              description: "Sua localização atual foi definida como origem",
-            });
-          } catch (error) {
-            setEndereco(`${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
-          }
+          // Converter coordenadas para endereço legível
+          const endereco = await coordenadasParaEndereco(latitude, longitude);
+          setEndereco(endereco);
+          
+          toast({
+            title: "Localização obtida",
+            description: "Sua localização atual foi definida como origem",
+          });
         },
         (error) => {
           console.error('Erro ao obter localização:', error);
@@ -72,15 +69,47 @@ export const SolicitarForm = ({
   const handleSubmit = async () => {
     if (!nome.trim() || !endereco.trim()) return;
     
+    // Validar agendamento
+    if (isAgendamento && (!dataAgendamento || !horaAgendamento)) {
+      toast({
+        title: "Dados incompletos",
+        description: "Para agendamento, informe data e hora",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setLoading(true);
+
+    // Converter endereços para coordenadas se necessário
+    let coordsOrigem = coordenadasOrigem;
+    let coordsDestino = coordenadasDestino;
+    
+    if (!coordsOrigem) {
+      coordsOrigem = await enderecoParaCoordenadas(endereco);
+    }
+    
+    if (destino && !coordsDestino) {
+      coordsDestino = await enderecoParaCoordenadas(destino);
+    }
+
+    let dataHoraFinal = new Date();
+    let dataAgendamentoFinal: Date | undefined;
+    
+    if (isAgendamento && dataAgendamento && horaAgendamento) {
+      dataAgendamentoFinal = new Date(`${dataAgendamento}T${horaAgendamento}`);
+      dataHoraFinal = dataAgendamentoFinal;
+    }
 
     const solicitacao: Omit<Solicitacao, 'id'> = {
       nome: nome.trim(),
       endereco: endereco.trim(),
       destino: destino.trim() || undefined,
-      coordenadasOrigem,
-      coordenadasDestino,
-      dataHora: new Date(),
+      coordenadasOrigem: coordsOrigem,
+      coordenadasDestino: coordsDestino,
+      dataHora: dataHoraFinal,
+      dataAgendamento: dataAgendamentoFinal,
+      isAgendamento,
       status: 'pendente'
     };
     
@@ -170,6 +199,49 @@ export const SolicitarForm = ({
               </div>
             </div>
 
+            {/* Seção de Agendamento */}
+            <div className="space-y-3 p-4 border rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-primary" />
+                  <Label htmlFor="agendamento" className="text-sm font-medium">
+                    Agendar para depois
+                  </Label>
+                </div>
+                <Switch
+                  id="agendamento"
+                  checked={isAgendamento}
+                  onCheckedChange={setIsAgendamento}
+                />
+              </div>
+              
+              {isAgendamento && (
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <Label htmlFor="data" className="text-xs">Data</Label>
+                    <Input
+                      id="data"
+                      type="date"
+                      value={dataAgendamento}
+                      onChange={(e) => setDataAgendamento(e.target.value)}
+                      min={new Date().toISOString().split('T')[0]}
+                      className="text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="hora" className="text-xs">Hora</Label>
+                    <Input
+                      id="hora"
+                      type="time"
+                      value={horaAgendamento}
+                      onChange={(e) => setHoraAgendamento(e.target.value)}
+                      className="text-sm"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="destino">Destino (opcional)</Label>
               {enderecosPadrao.length > 0 && (
@@ -222,11 +294,11 @@ export const SolicitarForm = ({
           </Button>
           <Button
             onClick={handleSubmit}
-            disabled={!nome.trim() || !endereco.trim() || loading}
+            disabled={!nome.trim() || !endereco.trim() || loading || (isAgendamento && (!dataAgendamento || !horaAgendamento))}
             className="flex-1"
           >
             <Send className="h-4 w-4 mr-2" />
-            {loading ? "Enviando..." : "Confirmar Solicitação"}
+            {loading ? "Enviando..." : isAgendamento ? "Agendar Corrida" : "Confirmar Solicitação"}
           </Button>
         </div>
       </CardContent>

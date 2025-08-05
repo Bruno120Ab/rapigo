@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { MototaxistaCard } from "@/components/MototaxistaCard";
 import { SolicitarForm } from "@/components/SolicitarForm";
 import { ConfirmacaoSolicitacao } from "@/components/ConfirmacaoSolicitacao";
+import { ConfirmarRepetirViagem } from "@/components/ConfirmarRepetirViagem";
 import { FavoritosSection } from "@/components/FavoritosSection";
 import { HistoricoSection } from "@/components/HistoricoSection";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
@@ -23,6 +24,8 @@ const Index = () => {
   const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
   const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
   const [mototaxistaSelecionado, setMototaxistaSelecionado] = useState<Mototaxista | null>(null);
+  const [viagemParaRepetir, setViagemParaRepetir] = useState<Solicitacao | null>(null);
+  const [mostrarConfirmacaoRepeticao, setMostrarConfirmacaoRepeticao] = useState(false);
   const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus } = useMototaxistas();
   const { adicionarSolicitacao } = useSolicitacoes();
   const { favoritos, adicionarFavorito, removerFavorito, isFavorito } = useFavoritos();
@@ -53,7 +56,20 @@ const Index = () => {
   };
 
   const handleReutilizarViagem = (viagem: Solicitacao) => {
-    setTelaAtual('solicitar');
+    setViagemParaRepetir(viagem);
+    setMostrarConfirmacaoRepeticao(true);
+  };
+
+  const handleConfirmarRepeticaoViagem = (novaViagem: Solicitacao) => {
+    const solicitacao = adicionarSolicitacao(novaViagem);
+    setUltimaSolicitacao(solicitacao);
+    adicionarViagem(solicitacao);
+    setTelaAtual('confirmacao');
+    
+    toast({
+      title: "Viagem repetida!",
+      description: "Agora envie seu pedido.",
+    });
   };
 
   const handleToggleFavorito = (mototaxista: Mototaxista) => {
@@ -287,8 +303,17 @@ const Index = () => {
     <div className="max-w-md mx-auto">
       {renderTela()}
     </div>
-        <AddToHomeScreenCarousel />
-
+    <AddToHomeScreenCarousel />
+    
+    <ConfirmarRepetirViagem
+      viagem={viagemParaRepetir}
+      isOpen={mostrarConfirmacaoRepeticao}
+      onClose={() => {
+        setMostrarConfirmacaoRepeticao(false);
+        setViagemParaRepetir(null);
+      }}
+      onConfirmar={handleConfirmarRepeticaoViagem}
+    />
   </div>
   );
 };

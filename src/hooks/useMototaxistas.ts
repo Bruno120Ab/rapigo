@@ -8,28 +8,32 @@ const mototaxistasIniciais: Mototaxista[] = [
     nome: "Allysson",
     telefone: "7798861-9707",
     foto: "../assets/file.enc",
-    ativo: true
+    ativo: true,
+    tipoVeiculo: "moto"
   },
   {
     id: "2", 
     nome: "Maria Santos",
     telefone: "(11) 99999-2222",
     foto: "/placeholder.svg",
-    ativo: true
+    ativo: true,
+    tipoVeiculo: "carro"
   },
   {
     id: "3",
     nome: "Pedro Costa",
     telefone: "(11) 99999-3333", 
     foto: "/placeholder.svg",
-    ativo: false
+    ativo: false,
+    tipoVeiculo: "moto"
   },
   {
     id: "4",
     nome: "Ana Oliveira",
     telefone: "(11) 99999-4444",
     foto: "/placeholder.svg",
-    ativo: true
+    ativo: true,
+    tipoVeiculo: "carro"
   }
 ];
 
