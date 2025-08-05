@@ -27,6 +27,8 @@ export const HistoricoSection = ({ historico, onReutilizarViagem }: HistoricoSec
               variant="outline"
               className="w-full justify-start h-auto p-3"
               onClick={() => onReutilizarViagem(viagem)}
+
+              // onClick={() => !viagem.isAgendamento && onReutilizarViagem(viagem)}
             >
               <div className="flex flex-col items-start gap-1 w-full">
                 <div className="flex items-center gap-2">

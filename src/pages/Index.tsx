@@ -233,7 +233,7 @@ const Index = () => {
                 Moto-Táxi de Itambé
               </h1>
               <p className="text-muted-foreground">
-                Transporte rápido e seguro para sua cidade
+                Seu táxi na palma da mão, Você no controle da corrida.             
               </p>
               <InstallPWAButton />
             </div>

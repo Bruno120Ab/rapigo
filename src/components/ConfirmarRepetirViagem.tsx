@@ -87,7 +87,13 @@ export const ConfirmarRepetirViagem = ({
             <div className="flex items-start gap-2">
               <Clock className="h-4 w-4 mt-1 text-muted-foreground" />
               <div>
-                <div className="text-sm font-medium">Viagem original:</div>
+                <div className="text-sm font-medium">
+                   {viagem.isAgendamento ? (
+                    'Viagem agendada :'
+                    ) : (
+                    'Viagem original :'
+                    )}
+                </div>
                 <div className="text-sm text-muted-foreground">
                   {viagem.dataHora.toLocaleString('pt-BR')}
                 </div>
@@ -97,19 +103,33 @@ export const ConfirmarRepetirViagem = ({
         </div>
         
         <DialogFooter className="gap-2">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={loading}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleConfirmar}
-            disabled={loading}
-          >
-            {loading ? "Confirmando..." : "Confirmar Viagem"}
-          </Button>
+         <>
+          {viagem.isAgendamento ? (
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={loading}
+            >
+              Agende uma nova Viagem
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                onClick={onClose}
+                disabled={loading}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmar}
+                disabled={loading}
+              >
+                {loading ? "Confirmando..." : "Confirmar Viagem"}
+              </Button>
+            </>
+          )}
+        </>
         </DialogFooter>
       </DialogContent>
     </Dialog>
