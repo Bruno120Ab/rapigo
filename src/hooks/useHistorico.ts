@@ -28,6 +28,11 @@ export const useHistorico = () => {
     const avaliacoes = avaliacoesSalvas ? JSON.parse(avaliacoesSalvas) : {};
     avaliacoes[viagemId] = avaliacao;
     localStorage.setItem("avaliacoes-viagens", JSON.stringify(avaliacoes));
+    
+    // Dispara evento customizado para notificar outros hooks
+    window.dispatchEvent(new CustomEvent('avaliacaoAdicionada', { 
+      detail: { viagemId, avaliacao } 
+    }));
   };
 
   const obterAvaliacao = (viagemId: string) => {

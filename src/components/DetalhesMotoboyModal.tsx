@@ -10,7 +10,7 @@ interface DetalhesMotoboyModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelecionar: (mototaxista: Mototaxista) => void;
-  metricas?: { mediaEstrelas: number; taxaAceite: number };
+  metricas?: { mediaEstrelas: number; taxaAceite: number; totalViagens: number; viagensAvaliadas: number };
 }
 
 export const DetalhesMotoboyModal = ({ 
@@ -84,7 +84,7 @@ export const DetalhesMotoboyModal = ({
           </div>
 
           {/* Métricas */}
-          {metricas && (
+          {metricas && metricas.totalViagens > 0 && (
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                 <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
@@ -92,7 +92,9 @@ export const DetalhesMotoboyModal = ({
                   <p className="font-medium">
                     {metricas.mediaEstrelas > 0 ? metricas.mediaEstrelas.toFixed(1) : "N/A"}
                   </p>
-                  <p className="text-xs text-muted-foreground">Avaliação</p>
+                  <p className="text-xs text-muted-foreground">
+                    Avaliação ({metricas.viagensAvaliadas} avaliações)
+                  </p>
                 </div>
               </div>
               
@@ -100,7 +102,9 @@ export const DetalhesMotoboyModal = ({
                 <Shield className="h-5 w-5 text-green-600" />
                 <div>
                   <p className="font-medium">{Math.round(metricas.taxaAceite)}%</p>
-                  <p className="text-xs text-muted-foreground">Taxa de aceite</p>
+                  <p className="text-xs text-muted-foreground">
+                    Taxa de aceite ({metricas.totalViagens} viagens)
+                  </p>
                 </div>
               </div>
             </div>

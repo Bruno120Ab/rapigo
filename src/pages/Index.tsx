@@ -38,7 +38,7 @@ const Index = () => {
   const { historico, adicionarViagem, adicionarAvaliacao, obterAvaliacao } = useHistorico();
   const { enderecos } = useEnderecosPadrao();
   const { toast } = useToast();
-  const { calcularMetricasMotorista } = useAvaliacoes();
+  const { calcularMetricasMotorista, adicionarAvaliacao: adicionarAvaliacaoReativa } = useAvaliacoes();
 
   const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
     const solicitacao = adicionarSolicitacao(dadosSolicitacao);
@@ -263,7 +263,7 @@ const Index = () => {
             <HistoricoSection 
               historico={historico}
               onReutilizarViagem={handleReutilizarViagem}
-              onSalvarAvaliacao={adicionarAvaliacao}
+              onSalvarAvaliacao={adicionarAvaliacaoReativa}
               obterAvaliacao={obterAvaliacao}
             />
 

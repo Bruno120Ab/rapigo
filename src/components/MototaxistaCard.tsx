@@ -13,7 +13,7 @@ interface MototaxistaCardProps {
   isFavorito?: boolean;
   onToggleFavorito?: (mototaxista: Mototaxista) => void;
   showFavoriteButton?: boolean;
-  metricas?: { mediaEstrelas: number; taxaAceite: number };
+  metricas?: { mediaEstrelas: number; taxaAceite: number; totalViagens: number; viagensAvaliadas: number };
 }
 
 export const MototaxistaCard = ({ 
@@ -26,6 +26,30 @@ export const MototaxistaCard = ({
   showFavoriteButton = false,
   metricas
 }: MototaxistaCardProps) => {
+  const renderMetricas = () => {
+    if (!metricas || metricas.totalViagens === 0) return null;
+    
+    return (
+      <div className="flex items-center gap-3 mt-1">
+        {metricas.mediaEstrelas > 0 && (
+          <div className="flex items-center gap-1">
+            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+            <span className="text-sm text-muted-foreground">
+              {metricas.mediaEstrelas.toFixed(1)} ({metricas.viagensAvaliadas})
+            </span>
+          </div>
+        )}
+        
+        <div className="flex items-center gap-1">
+          <Shield className="h-3 w-3 text-green-600" />
+          <span className="text-sm text-muted-foreground">
+            {Math.round(metricas.taxaAceite)}% aceite
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Card className="w-full">
       <CardContent className="p-4">
@@ -49,25 +73,7 @@ export const MototaxistaCard = ({
               </div>
               
               {/* Métricas do motorista */}
-              {metricas && (
-                <div className="flex items-center gap-3 mt-1">
-                  {metricas.mediaEstrelas > 0 && (
-                    <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm text-muted-foreground">
-                        {metricas.mediaEstrelas.toFixed(1)}
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-center gap-1">
-                    <Shield className="h-3 w-3 text-green-600" />
-                    <span className="text-sm text-muted-foreground">
-                      {Math.round(metricas.taxaAceite)}% aceite
-                    </span>
-                  </div>
-                </div>
-              )}
+              {renderMetricas()}
             </div>
           </div>
           
