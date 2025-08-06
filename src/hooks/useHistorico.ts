@@ -18,13 +18,29 @@ export const useHistorico = () => {
   }, []);
 
   const adicionarViagem = (solicitacao: Solicitacao) => {
-    const novoHistorico = [solicitacao, ...historico].slice(0, 5); // Manter apenas as últimas 5
+    const novoHistorico = [solicitacao, ...historico].slice(0, 15); // Manter apenas as últimas 15
     setHistorico(novoHistorico);
     localStorage.setItem("historico-viagens", JSON.stringify(novoHistorico));
   };
 
+  const adicionarAvaliacao = (viagemId: string, avaliacao: { estrelas: number; aceita: boolean; feedback: string }) => {
+    const avaliacoesSalvas = localStorage.getItem("avaliacoes-viagens");
+    const avaliacoes = avaliacoesSalvas ? JSON.parse(avaliacoesSalvas) : {};
+    avaliacoes[viagemId] = avaliacao;
+    localStorage.setItem("avaliacoes-viagens", JSON.stringify(avaliacoes));
+  };
+
+  const obterAvaliacao = (viagemId: string) => {
+    const avaliacoesSalvas = localStorage.getItem("avaliacoes-viagens");
+    if (!avaliacoesSalvas) return null;
+    const avaliacoes = JSON.parse(avaliacoesSalvas);
+    return avaliacoes[viagemId] || null;
+  };
+
   return {
     historico,
-    adicionarViagem
+    adicionarViagem,
+    adicionarAvaliacao,
+    obterAvaliacao
   };
 };

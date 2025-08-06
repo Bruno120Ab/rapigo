@@ -14,6 +14,7 @@ import { useSolicitacoes } from "@/hooks/useSolicitacoes";
 import { useFavoritos } from "@/hooks/useFavoritos";
 import { useHistorico } from "@/hooks/useHistorico";
 import { useEnderecosPadrao } from "@/hooks/useEnderecosPadrao";
+import { useAvaliacoes } from "@/hooks/useAvaliacoes";
 import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useToast } from "@/hooks/use-toast";
 import { AddToHomeScreenCarousel } from "@/components/AddToWarn";
@@ -31,9 +32,10 @@ const Index = () => {
   const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus } = useMototaxistas();
   const { adicionarSolicitacao } = useSolicitacoes();
   const { favoritos, adicionarFavorito, removerFavorito, isFavorito } = useFavoritos();
-  const { historico, adicionarViagem } = useHistorico();
+  const { historico, adicionarViagem, adicionarAvaliacao, obterAvaliacao } = useHistorico();
   const { enderecos } = useEnderecosPadrao();
   const { toast } = useToast();
+  const { calcularMetricasMotorista } = useAvaliacoes();
 
   const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
     const solicitacao = adicionarSolicitacao(dadosSolicitacao);
@@ -173,17 +175,21 @@ const Index = () => {
             </div>
             
             <div className="space-y-3">
-              {mototaxistasAtivos.map((mototaxista) => (
-                <MototaxistaCard
-                  key={mototaxista.id}
-                  mototaxista={mototaxista}
-                  onToggleStatus={toggleStatus}
-                  onSelecionar={handleSelecionarMototaxista}
-                  isFavorito={isFavorito(mototaxista.id)}
-                  onToggleFavorito={handleToggleFavorito}
-                  showFavoriteButton={true}
-                />
-              ))}
+              {mototaxistasAtivos.map((mototaxista) => {
+                const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
+                return (
+                  <MototaxistaCard
+                    key={mototaxista.id}
+                    mototaxista={mototaxista}
+                    onToggleStatus={toggleStatus}
+                    onSelecionar={handleSelecionarMototaxista}
+                    isFavorito={isFavorito(mototaxista.id)}
+                    onToggleFavorito={handleToggleFavorito}
+                    showFavoriteButton={true}
+                    metricas={metricas}
+                  />
+                );
+              })}
             </div>
           </div>
         );
@@ -248,6 +254,8 @@ const Index = () => {
             <HistoricoSection 
               historico={historico}
               onReutilizarViagem={handleReutilizarViagem}
+              onSalvarAvaliacao={adicionarAvaliacao}
+              obterAvaliacao={obterAvaliacao}
             />
 
             {/* Status Card */}
@@ -260,17 +268,21 @@ const Index = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {mototaxistasAtivos.slice(0, 3).map((mototaxista) => (
-                    <MototaxistaCard
-                      key={mototaxista.id}
-                      mototaxista={mototaxista}
-                      onToggleStatus={toggleStatus}
-                      onSelecionar={handleSelecionarMototaxista}
-                      isFavorito={isFavorito(mototaxista.id)}
-                      onToggleFavorito={handleToggleFavorito}
-                      showFavoriteButton={true}
-                    />
-                  ))}
+                  {mototaxistasAtivos.slice(0, 3).map((mototaxista) => {
+                    const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
+                    return (
+                      <MototaxistaCard
+                        key={mototaxista.id}
+                        mototaxista={mototaxista}
+                        onToggleStatus={toggleStatus}
+                        onSelecionar={handleSelecionarMototaxista}
+                        isFavorito={isFavorito(mototaxista.id)}
+                        onToggleFavorito={handleToggleFavorito}
+                        showFavoriteButton={true}
+                        metricas={metricas}
+                      />
+                    );
+                  })}
                   {quantidadeAtivos  > 2 && (
                     <Button
                       variant="outline"

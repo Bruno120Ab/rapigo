@@ -1,4 +1,4 @@
-import { Phone, User, Heart, HeartOff, Car, Bike } from "lucide-react";
+import { Phone, User, Heart, HeartOff, Car, Bike, Star, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ interface MototaxistaCardProps {
   isFavorito?: boolean;
   onToggleFavorito?: (mototaxista: Mototaxista) => void;
   showFavoriteButton?: boolean;
+  metricas?: { mediaEstrelas: number; taxaAceite: number };
 }
 
 export const MototaxistaCard = ({ 
@@ -22,7 +23,8 @@ export const MototaxistaCard = ({
   onSelecionar,
   isFavorito = false,
   onToggleFavorito,
-  showFavoriteButton = false
+  showFavoriteButton = false,
+  metricas
 }: MototaxistaCardProps) => {
   return (
     <Card className="w-full">
@@ -39,16 +41,33 @@ export const MototaxistaCard = ({
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-lg">{mototaxista.nome}</h3>
-                {/* {mototaxista.tipoVeiculo === 'carro' ? (
-                  <Car className="h-4 w-6 text-primary" />
+                {mototaxista.tipoVeiculo === 'carro' ? (
+                  <Car className="h-4 w-4 text-primary" />
                 ) : (
                   <Bike className="h-4 w-4 text-primary" />
-                )} */}
+                )}
               </div>
-              {/* <div className="flex items-center gap-2 text-muted-foreground">
-                <Phone className="h-4 w-4" />
-                <span>{mototaxista.telefone}</span>
-              </div> */}
+              
+              {/* Métricas do motorista */}
+              {metricas && (
+                <div className="flex items-center gap-3 mt-1">
+                  {metricas.mediaEstrelas > 0 && (
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm text-muted-foreground">
+                        {metricas.mediaEstrelas.toFixed(1)}
+                      </span>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center gap-1">
+                    <Shield className="h-3 w-3 text-green-600" />
+                    <span className="text-sm text-muted-foreground">
+                      {Math.round(metricas.taxaAceite)}% aceite
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
