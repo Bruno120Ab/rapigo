@@ -21,6 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AddToHomeScreenCarousel } from "@/components/AddToWarn";
 import usePWAInstall from "@/hooks/usePWAInstall";
 import InstallPWAButton from "@/components/InstallPWAButton";
+import { calcularDistanciaETempo } from "@/hooks/routing";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
@@ -108,7 +109,55 @@ const Index = () => {
     }
   };
 
-  const enviarWhatsApp = () => {
+//   const enviarWhatsApp = () => {
+//   if (!ultimaSolicitacao) return;
+
+//   // Pega o mototaxista salvo no localStorage
+//   const dadosMototaxista = localStorage.getItem("mototaxista");
+//   let telefone = "71999099688"; // fallback padrão
+
+//   if (dadosMototaxista) {
+//     try {
+//       const mototaxista = JSON.parse(dadosMototaxista);
+//       if (mototaxista.telefone) {
+//         // Remove qualquer caractere não numérico e adiciona DDI +55
+//         telefone = mototaxista.telefone.replace(/\D/g, "");
+//         if (!telefone.startsWith("55")) {
+//           telefone = "55" + telefone;
+//         }
+//       }
+//     } catch (error) {
+//       console.error("Erro ao ler telefone do mototaxista no localStorage", error);
+//     }
+//   }
+
+//   let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
+//   mensagem += `👤 *Cliente:* ${ultimaSolicitacao.nome}\n`;
+//   mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
+
+//   if (ultimaSolicitacao.destino) {
+//     mensagem += `🎯 *Destino:* ${ultimaSolicitacao.destino}\n`;
+//   }
+
+//   if (ultimaSolicitacao.coordenadasOrigem) {
+//     const { lat, lng } = ultimaSolicitacao.coordenadasOrigem;
+//     mensagem += `📱 *Link Origem:* https://maps.google.com/?q=${lat},${lng}\n`;
+//   }
+
+//   if (ultimaSolicitacao.coordenadasDestino) {
+//     const { lat, lng } = ultimaSolicitacao.coordenadasDestino;
+//     mensagem += `📱 *Link Destino:* https://maps.google.com/?q=${lat},${lng}\n`;
+//   }
+
+//   mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
+//   mensagem += `\n*Favor confirmar se pode atender! 🙏*`;
+
+//   const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+
+//   window.open(url, "_blank");
+// };
+
+const enviarWhatsApp = async () => {
   if (!ultimaSolicitacao) return;
 
   // Pega o mototaxista salvo no localStorage
@@ -119,7 +168,6 @@ const Index = () => {
     try {
       const mototaxista = JSON.parse(dadosMototaxista);
       if (mototaxista.telefone) {
-        // Remove qualquer caractere não numérico e adiciona DDI +55
         telefone = mototaxista.telefone.replace(/\D/g, "");
         if (!telefone.startsWith("55")) {
           telefone = "55" + telefone;
@@ -127,6 +175,19 @@ const Index = () => {
       }
     } catch (error) {
       console.error("Erro ao ler telefone do mototaxista no localStorage", error);
+    }
+  }
+
+  // Calcula distância e tempo se possível
+  let infoRota = "";
+  if (ultimaSolicitacao.coordenadasOrigem && ultimaSolicitacao.coordenadasDestino) {
+    const resultado = await calcularDistanciaETempo(
+      ultimaSolicitacao.coordenadasOrigem,
+      ultimaSolicitacao.coordenadasDestino
+    );
+    if (resultado) {
+      infoRota = `\n🚗 *Distância:* ${resultado.distanciaKm.toFixed(2)} km` +
+                 `\n⏱️ *Tempo estimado:* ${resultado.tempoMin.toFixed(0)} min`;
     }
   }
 
@@ -148,14 +209,15 @@ const Index = () => {
     mensagem += `📱 *Link Destino:* https://maps.google.com/?q=${lat},${lng}\n`;
   }
 
-  mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
+  mensagem += infoRota;
+
+  mensagem += `\n\n⏰ *Horário:* ${new Date(ultimaSolicitacao.dataHora).toLocaleString('pt-BR')}\n`;
   mensagem += `\n*Favor confirmar se pode atender! 🙏*`;
 
   const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
 
   window.open(url, "_blank");
 };
-
 
   const renderTela = () => {
     switch (telaAtual) {

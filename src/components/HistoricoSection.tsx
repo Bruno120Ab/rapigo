@@ -55,7 +55,7 @@ export const HistoricoSection = ({
                     <div className="flex flex-col items-start gap-1 w-full">
                       <div className="flex items-center gap-2 w-full">
                         <MapPin className="h-4 w-4 text-primary" />
-                        <span className="font-medium text-sm flex-1">{viagem.endereco}</span>
+                        <span className="font-medium text-sm flex-1">{viagem.destino}</span>
                         {avaliacao && (
                           <div className="flex items-center gap-1">
                             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
@@ -69,7 +69,7 @@ export const HistoricoSection = ({
                       {viagem.destino && (
                         <div className="flex items-center gap-2 ml-6">
                           <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">{viagem.destino}</span>
+                          <span className="text-sm text-muted-foreground">{viagem.endereco}</span>
                         </div>
                       )}
                       {viagem.motoBoy && (
@@ -84,9 +84,8 @@ export const HistoricoSection = ({
                           {viagem.dataHora.toLocaleDateString('pt-BR')} {viagem.dataHora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                         <Button
-                          variant="ghost"
                           size="sm"
-                          className="h-6 px-2 text-xs"
+                          className="h-6 px-2 text-xs mr-4"
                           onClick={(e) => handleAbrirDetalhes(viagem, e)}
                         >
                           Avaliar
