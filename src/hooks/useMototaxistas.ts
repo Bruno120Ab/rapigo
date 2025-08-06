@@ -9,40 +9,30 @@ const mototaxistasIniciais: Mototaxista[] = [
     telefone: "7798861-9707",
     foto: "../assets/file.enc",
     ativo: true,
-    tipoVeiculo: "moto"
+    tipoVeiculo: "moto",
+    detalhes: "Twister 160",
+    detalhes_foto:"/public/Mt01-Mto.png"
   },
   {
-    id: "2", 
-    nome: "Maria Santos",
-    telefone: "(11) 99999-2222",
-    foto: "/placeholder.svg",
+    id: "2",
+    nome: "Renan",
+    telefone: "7798861-9707",
+    foto: "../assets/file.enc",
     ativo: true,
-    tipoVeiculo: "carro"
+    tipoVeiculo: "moto",
+    detalhes: "Twister 160",
+    detalhes_foto:"/public/Mt01-Mto.png"
   },
   {
     id: "3",
-    nome: "Pedro Costa",
-    telefone: "(11) 99999-3333", 
-    foto: "/placeholder.svg",
-    ativo: false,
-    tipoVeiculo: "moto"
-  },
-  {
-    id: "4",
-    nome: "Ana Oliveira",
-    telefone: "(11) 99999-4444",
-    foto: "/placeholder.svg",
+    nome: "Patrick",
+    telefone: "7798861-9707",
+    foto: "../assets/file.enc",
     ativo: true,
-    tipoVeiculo: "carro"
+    tipoVeiculo: "moto",
+    detalhes: "Twister 160",
+    detalhes_foto:"/public/Mt01-Mto.png"
   },
-  {
-    id: "5",
-    nome: "Ain",
-    telefone: "(11) 99999-4444",
-    foto: "/placeholder.svg",
-    ativo: true,
-    tipoVeiculo: "carro"
-  }
 ];
 
 export const useMototaxistas = () => {

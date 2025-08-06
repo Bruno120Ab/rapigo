@@ -51,7 +51,7 @@ export const DetalhesMotoboyModal = ({
                   variant={mototaxista.ativo ? "default" : "secondary"}
                   className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
                 >
-                  {mototaxista.ativo ? "Disponível" : "Indisponível"}
+                  {metricas.mediaEstrelas > 4 ? "Bem avaliado" : "Indisponível"}
                 </Badge>
               </div>
               
@@ -68,20 +68,21 @@ export const DetalhesMotoboyModal = ({
               <>
                 <Car className="h-6 w-6 text-primary" />
                 <div>
-                  <p className="font-medium">Veículo: Carro</p>
+                  <p className="font-medium">MOdelo do carro: {mototaxista.detalhes}</p>
                   <p className="text-sm text-muted-foreground">Mais conforto e proteção</p>
                 </div>
               </>
             ) : (
               <>
-                <Bike className="h-6 w-6 text-primary" />
+                <img   className="w-16 h-16 rounded-md object-cover" src={mototaxista.detalhes_foto} alt="" />
                 <div>
-                  <p className="font-medium">Veículo: Moto</p>
+                  <p className="font-medium">Modelo da moto: {mototaxista.detalhes}</p>
                   <p className="text-sm text-muted-foreground">Mais ágil no trânsito</p>
                 </div>
               </>
             )}
           </div>
+          <p className="font-medium mx-auto" >Historico de viagens com você :</p>
 
           {/* Métricas */}
           {metricas && metricas.totalViagens > 0 && (

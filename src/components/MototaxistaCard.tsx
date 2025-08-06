@@ -98,7 +98,7 @@ export const MototaxistaCard = ({
                   onClick={() => onSelecionar(mototaxista)}
                   size="sm"
                 >
-                  Selecionar
+                  Detalhar
                 </Button>
               ) : (
                 <Badge 

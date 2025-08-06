@@ -5,6 +5,8 @@ export interface Mototaxista {
   foto: string;
   ativo: boolean;
   tipoVeiculo: 'moto' | 'carro';
+  detalhes: string;
+  detalhes_foto:string;
 }
 
 export interface Solicitacao {

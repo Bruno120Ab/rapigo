@@ -38,7 +38,7 @@ export const HistoricoSection = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <History className="h-5 w-5 text-primary" />
-            Últimas Viagens
+            Historico de Viagens
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -85,7 +85,7 @@ export const HistoricoSection = ({
                         </span>
                         <Button
                           size="sm"
-                          className="h-6 px-2 text-xs mr-4"
+                          className="h-8 px-2 text-sm mr-4"
                           onClick={(e) => handleAbrirDetalhes(viagem, e)}
                         >
                           Avaliar
