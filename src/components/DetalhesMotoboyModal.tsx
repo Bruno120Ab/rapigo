@@ -1,0 +1,119 @@
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { User, Car, Bike, Star, Shield, Phone } from "lucide-react";
+import { Mototaxista } from "@/types/mototaxi";
+
+interface DetalhesMotoboyModalProps {
+  mototaxista: Mototaxista | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSelecionar: (mototaxista: Mototaxista) => void;
+  metricas?: { mediaEstrelas: number; taxaAceite: number };
+}
+
+export const DetalhesMotoboyModal = ({ 
+  mototaxista, 
+  isOpen, 
+  onClose, 
+  onSelecionar,
+  metricas 
+}: DetalhesMotoboyModalProps) => {
+  if (!mototaxista) return null;
+
+  const handleSelecionar = () => {
+    onSelecionar(mototaxista);
+    onClose();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Detalhes do Motorista</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-6">
+          {/* Avatar e info básica */}
+          <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src={mototaxista.foto} alt={mototaxista.nome} />
+              <AvatarFallback>
+                <User className="h-8 w-8" />
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-xl font-semibold">{mototaxista.nome}</h3>
+                <Badge 
+                  variant={mototaxista.ativo ? "default" : "secondary"}
+                  className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
+                >
+                  {mototaxista.ativo ? "Disponível" : "Indisponível"}
+                </Badge>
+              </div>
+              
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Phone className="h-4 w-4" />
+                <span>{mototaxista.telefone}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Tipo de veículo */}
+          <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+            {mototaxista.tipoVeiculo === 'carro' ? (
+              <>
+                <Car className="h-6 w-6 text-primary" />
+                <div>
+                  <p className="font-medium">Veículo: Carro</p>
+                  <p className="text-sm text-muted-foreground">Mais conforto e proteção</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <Bike className="h-6 w-6 text-primary" />
+                <div>
+                  <p className="font-medium">Veículo: Moto</p>
+                  <p className="text-sm text-muted-foreground">Mais ágil no trânsito</p>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Métricas */}
+          {metricas && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                <div>
+                  <p className="font-medium">
+                    {metricas.mediaEstrelas > 0 ? metricas.mediaEstrelas.toFixed(1) : "N/A"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Avaliação</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                <Shield className="h-5 w-5 text-green-600" />
+                <div>
+                  <p className="font-medium">{Math.round(metricas.taxaAceite)}%</p>
+                  <p className="text-xs text-muted-foreground">Taxa de aceite</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Botão de seleção */}
+          {mototaxista.ativo && (
+            <Button onClick={handleSelecionar} className="w-full">
+              Selecionar este motorista
+            </Button>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};

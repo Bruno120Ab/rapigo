@@ -9,6 +9,7 @@ import { ConfirmacaoSolicitacao } from "@/components/ConfirmacaoSolicitacao";
 import { ConfirmarRepetirViagem } from "@/components/ConfirmarRepetirViagem";
 import { FavoritosSection } from "@/components/FavoritosSection";
 import { HistoricoSection } from "@/components/HistoricoSection";
+import { DetalhesMotoboyModal } from "@/components/DetalhesMotoboyModal";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
 import { useSolicitacoes } from "@/hooks/useSolicitacoes";
 import { useFavoritos } from "@/hooks/useFavoritos";
@@ -29,6 +30,8 @@ const Index = () => {
   const [mototaxistaSelecionado, setMototaxistaSelecionado] = useState<Mototaxista | null>(null);
   const [viagemParaRepetir, setViagemParaRepetir] = useState<Solicitacao | null>(null);
   const [mostrarConfirmacaoRepeticao, setMostrarConfirmacaoRepeticao] = useState(false);
+  const [motoboyDetalhes, setMotoboyDetalhes] = useState<Mototaxista | null>(null);
+  const [mostrarDetalhesModal, setMostrarDetalhesModal] = useState(false);
   const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus } = useMototaxistas();
   const { adicionarSolicitacao } = useSolicitacoes();
   const { favoritos, adicionarFavorito, removerFavorito, isFavorito } = useFavoritos();
@@ -57,6 +60,11 @@ const Index = () => {
 
   const handleSelecionarFavorito = (mototaxista: Mototaxista) => {
     handleSelecionarMototaxista(mototaxista);
+  };
+
+  const handleMostrarDetalhes = (mototaxista: Mototaxista) => {
+    setMotoboyDetalhes(mototaxista);
+    setMostrarDetalhesModal(true);
   };
 
   const handleReutilizarViagem = (viagem: Solicitacao) => {
@@ -182,7 +190,7 @@ const Index = () => {
                     key={mototaxista.id}
                     mototaxista={mototaxista}
                     onToggleStatus={toggleStatus}
-                    onSelecionar={handleSelecionarMototaxista}
+                    onSelecionar={handleMostrarDetalhes}
                     isFavorito={isFavorito(mototaxista.id)}
                     onToggleFavorito={handleToggleFavorito}
                     showFavoriteButton={true}
@@ -248,6 +256,7 @@ const Index = () => {
             <FavoritosSection 
               favoritos={favoritos} 
               onSelecionarFavorito={handleSelecionarFavorito}
+              onRemoverFavorito={removerFavorito}
             />
 
             {/* Seção de Histórico */}
@@ -275,7 +284,7 @@ const Index = () => {
                         key={mototaxista.id}
                         mototaxista={mototaxista}
                         onToggleStatus={toggleStatus}
-                        onSelecionar={handleSelecionarMototaxista}
+                        onSelecionar={handleMostrarDetalhes}
                         isFavorito={isFavorito(mototaxista.id)}
                         onToggleFavorito={handleToggleFavorito}
                         showFavoriteButton={true}
@@ -328,6 +337,17 @@ const Index = () => {
         setViagemParaRepetir(null);
       }}
       onConfirmar={handleConfirmarRepeticaoViagem}
+    />
+
+    <DetalhesMotoboyModal
+      mototaxista={motoboyDetalhes}
+      isOpen={mostrarDetalhesModal}
+      onClose={() => {
+        setMostrarDetalhesModal(false);
+        setMotoboyDetalhes(null);
+      }}
+      onSelecionar={handleSelecionarMototaxista}
+      metricas={motoboyDetalhes ? calcularMetricasMotorista(motoboyDetalhes.nome, historico) : undefined}
     />
   </div>
   );
