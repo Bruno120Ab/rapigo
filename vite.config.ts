@@ -37,6 +37,9 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true // <- isso permite rodar PWA mesmo em modo dev
+      },
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'MotoTáxi App',

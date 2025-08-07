@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Bike, Car, Settings, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MototaxistaCard } from "@/components/MototaxistaCard";
 import { SolicitarForm } from "@/components/SolicitarForm";
@@ -23,9 +23,26 @@ import { useToast } from "@/hooks/use-toast";
 import { AddToHomeScreenCarousel } from "@/components/AddToWarn";
 import usePWAInstall from "@/hooks/usePWAInstall";
 import InstallPWAButton from "@/components/InstallPWAButton";
+import { BannerSection } from "@/components/Banners";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
+const handleNotificacaoLocal = () => {
+  if (!("Notification" in window)) {
+    alert("Este navegador não suporta notificações.");
+    return;
+  }
 
+  Notification.requestPermission().then(permission => {
+    if (permission === "granted") {
+      new Notification("🚀 Notificação de Teste", {
+        body: "Esta é uma notificação de teste enviada do seu app PWA!",
+        icon: "/icons/icon-192x192.png" // ajuste para seu ícone
+      });
+    } else {
+      alert("Permissão para notificação negada.");
+    }
+  });
+};
 const Index = () => {
   const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
   const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
@@ -263,6 +280,13 @@ const Index = () => {
                 Seu táxi na palma da mão, Você no controle da corrida.             
               </p>
               <InstallPWAButton />
+              <Button
+  onClick={handleNotificacaoLocal}
+  variant="outline"
+  className="w-full h-14 text-lg"
+>
+  Enviar Notificação de Teste
+</Button>
             </div>
 
             {/* Seção de Favoritos */}
@@ -326,10 +350,25 @@ const Index = () => {
                 className="w-full h-14 text-lg"
                 size="lg"
               >
-                <Car className="h-5 w-5 mr-2" />
+              <Car className="h-5 w-5 mr-2" />
                 Solicitar Moto-Táxi
               </Button>
             </div>
+
+           
+
+            <div className="flex flex-col items-center mr-top-10 justify-center space-y-3 mx-auto">
+              <img src="/caminho/para/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+              <h1 className="text-sm text-center">
+              Desenvolvedor: Bruno Abreu
+              </h1>
+              <h1 className="text-sm text-center">
+              Contato: brunoabreudevs@gmail.com
+              </h1>
+            </div>
+
+            <BannerSection/>
+
           </div>
         );
     }
@@ -340,7 +379,7 @@ const Index = () => {
     <div className="max-w-md mx-auto">
       {renderTela()}
     </div>
-    <AddToHomeScreenCarousel />
+    {/* <AddToHomeScreenCarousel /> */}
     
     <ConfirmarRepetirViagem
       viagem={viagemParaRepetir}

@@ -5,7 +5,7 @@ import { ArrowDownToLine } from 'lucide-react';
 export default function InstallPWAButton() {
   const { isInstallable, promptInstall } = usePWAInstall();
 
-//   if (!isInstallable) return null;
+  if (!isInstallable) return null;
 
   return (
     <button
