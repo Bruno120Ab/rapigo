@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
-import { enviarNotificacao } from "@/hooks/use-notification";
+import { enviarPedidoParaGoogleForms } from "@/hooks/use-enviarPedido";
+
 
 interface ConfirmacaoSolicitacaoProps {
   solicitacao: Solicitacao;
@@ -116,16 +117,20 @@ export const ConfirmacaoSolicitacao = ({
         </div>
         
         <div className="space-y-2">
-          <Button
-            onClick={() => {            
-            enviarNotificacao();
+       <Button
+          onClick={async () => {
+            await enviarPedidoParaGoogleForms({
+              nome: solicitacao.nome,
+              corrida: solicitacao.endereco,
+              motoboy: solicitacao.motoBoy,
+            });
             onEnviarWhatsApp();
-            }}            
-            className="w-full bg-success hover:bg-success/90"
-          >
-            <MessageCircle className="h-4 w-4 mr-2" />
-            Enviar pelo WhatsApp
-          </Button>
+          }}
+          className="w-full bg-success hover:bg-success/90"
+        >
+          <MessageCircle className="h-4 w-4 mr-2" />
+          Enviar pelo WhatsApp
+        </Button>
           
           <Button
             variant="outline"
@@ -135,6 +140,8 @@ export const ConfirmacaoSolicitacao = ({
             }}
             className="w-full"
           >
+         
+
             <MessageCircle className="h-4 w-4 mr-2" />
             Voltar ao Início
           </Button>

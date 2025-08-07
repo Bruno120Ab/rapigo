@@ -24,7 +24,7 @@ import { AddToHomeScreenCarousel } from "@/components/AddToWarn";
 import usePWAInstall from "@/hooks/usePWAInstall";
 import InstallPWAButton from "@/components/InstallPWAButton";
 import { BannerSection } from "@/components/Banners";
-import { enviarNotificacao } from "@/hooks/use-notification";
+import EnviarEmail from "@/components/EnviarEmail";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
@@ -332,21 +332,14 @@ const Index = () => {
                   onClick={() => setMostrarConfiguracoesModal(true)}
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  <Settings className="h-5 w-5" />
+                              
+                <Settings className="h-5 w-5" />
                 </Button>
               </div>
               <p className="text-muted-foreground">
                 Seu táxi na palma da mão, Você no controle da corrida.             
               </p>
               <InstallPWAButton />
-             
-              <button
-                onClick={enviarNotificacao}
-                className="bg-blue-600 text-white px-4 py-2 rounded"
-              >
-                Enviar Notificação
-              </button>
-
             </div>
 
             {/* Seção de Favoritos */}
@@ -415,8 +408,6 @@ const Index = () => {
               </Button>
             </div>
 
-           
-
             <div className="flex flex-col items-center mr-top-10 justify-center space-y-3 mx-auto">
               <img src="/caminho/para/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
               <h1 className="text-sm text-center">
@@ -425,6 +416,7 @@ const Index = () => {
               <h1 className="text-sm text-center">
               Contato: brunoabreudevs@gmail.com
               </h1>
+              <EnviarEmail />
             </div>
 
             <BannerSection/>
