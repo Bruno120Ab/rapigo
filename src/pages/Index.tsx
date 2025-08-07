@@ -36,7 +36,7 @@ export function NotificacaoPermissao() {
     }
   }, []);
 
-  const pedirPermissao = () => {
+  const pedirPermissao = async () => {
     if (!("Notification" in window)) {
       alert("Este navegador não suporta notificações.");
       return;
@@ -49,36 +49,58 @@ export function NotificacaoPermissao() {
 
     if (permStatus === "denied") {
       alert(
-        "Você negou a permissão. Para receber notificações, revogue a permissão manualmente nas configurações do navegador e tente novamente."
+        "Você negou a permissão. Para receber notificações, vá até as configurações do navegador e ative novamente."
       );
       return;
     }
 
-    // permStatus === 'default'
-    Notification.requestPermission().then((permission) => {
-      setPermStatus(permission);
-      if (permission === "granted") {
-        alert("Permissão concedida!");
-      } else {
-        alert("Permissão negada ou não concedida.");
-      }
+    const permission = await Notification.requestPermission();
+    setPermStatus(permission);
+
+    if (permission === "granted") {
+      alert("Permissão concedida!");
+    } else {
+      alert("Permissão negada ou cancelada.");
+    }
+  };
+
+  const enviarNotificacao = () => {
+    new Notification("🚀 Promoção ativa!", {
+      body: "Acesse agora e aproveite ofertas exclusivas na sua cidade.",
+      icon: "/pwa-192x192.png", // ajuste para o caminho do seu ícone
     });
   };
 
   return (
-    <div className="space-y-2">
-      <p>Status atual da permissão: <strong>{permStatus}</strong></p>
-      <Button onClick={pedirPermissao} variant="outline">
-        {permStatus === "granted" ? "Permissão concedida" : "Pedir permissão de notificação"}
-      </Button>
+    <div className="space-y-4 p-4 border rounded-xl bg-muted shadow-md">
+      <p>
+        Status da permissão:{" "}
+        <strong className={permStatus === "granted" ? "text-green-600" : "text-red-600"}>
+          {permStatus}
+        </strong>
+      </p>
+
+      {permStatus !== "granted" && (
+        <Button onClick={pedirPermissao} variant="default">
+          Pedir permissão de notificação
+        </Button>
+      )}
+
+      {permStatus === "granted" && (
+        <Button onClick={enviarNotificacao} variant="outline">
+          Testar notificação
+        </Button>
+      )}
+
       {permStatus === "denied" && (
-        <p className="text-sm text-red-600">
-          Para alterar, vá nas configurações do navegador e revogue a permissão.
+        <p className="text-sm text-red-500">
+          ⚠️ Vá nas configurações do navegador e ative as notificações para este site.
         </p>
       )}
     </div>
   );
 }
+
 const Index = () => {
   const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
   const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
