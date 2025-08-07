@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Solicitacao } from "@/types/mototaxi";
 import { MapPin, Clock, User, Bike } from "lucide-react";
+import { buscarMototaxistaPorNome, salvarMototaxistaNoLocalStorage } from "@/utils/mototaxistas";
 
 interface ConfirmarRepetirViagemProps {
   viagem: Solicitacao | null;
@@ -24,23 +25,27 @@ export const ConfirmarRepetirViagem = ({
   const handleConfirmar = async () => {
     setLoading(true);
     
-    // Buscar e salvar dados completos do mototaxista no localStorage
+    // FLUXO DE REFAZER VIAGEM:
+    // 1. Primeiro, buscar o mototaxista completo baseado no nome salvo na viagem
+    // 2. Salvar as informações completas do mototaxista no localStorage 
+    // 3. Criar nova solicitação mantendo os mesmos dados da viagem anterior
+    // 4. A tela de confirmação vai ler essas informações do localStorage
+    
     if (viagem.motoBoy) {
-      const mototaxistasSalvos = localStorage.getItem("mototaxistas");
-      if (mototaxistasSalvos) {
-        try {
-          const mototaxistas = JSON.parse(mototaxistasSalvos);
-          const mototaxista = mototaxistas.find((m: any) => m.nome === viagem.motoBoy);
-          if (mototaxista) {
-            localStorage.setItem("mototaxista", JSON.stringify(mototaxista));
-          }
-        } catch (error) {
-          console.error("Erro ao buscar mototaxista:", error);
-        }
+      // Buscar o mototaxista pelo nome usando a função utilitária
+      const mototaxista = buscarMototaxistaPorNome(viagem.motoBoy);
+      
+      if (mototaxista) {
+        // Salvar todas as informações do mototaxista no localStorage
+        // Isso garantirá que a tela de confirmação tenha todos os dados necessários
+        salvarMototaxistaNoLocalStorage(mototaxista);
+      } else {
+        console.error("Mototaxista não encontrado para refazer viagem:", viagem.motoBoy);
       }
     }
     
     // Criar nova solicitação baseada na viagem anterior
+    // Mantemos todos os dados originais mas com novo ID, data e status
     const novaViagem: Solicitacao = {
       ...viagem,
       id: Date.now().toString(),
@@ -48,6 +53,10 @@ export const ConfirmarRepetirViagem = ({
       status: 'pendente'
     };
     
+    // Chamar a função de confirmação que irá:
+    // 1. Adicionar a nova viagem ao sistema
+    // 2. Redirecionar para a tela de confirmação
+    // 3. A tela de confirmação lerá o mototaxista do localStorage
     onConfirmar(novaViagem);
     setLoading(false);
     onClose();
