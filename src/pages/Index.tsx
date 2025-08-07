@@ -24,99 +24,83 @@ import { AddToHomeScreenCarousel } from "@/components/AddToWarn";
 import usePWAInstall from "@/hooks/usePWAInstall";
 import InstallPWAButton from "@/components/InstallPWAButton";
 import { BannerSection } from "@/components/Banners";
+import { enviarNotificacao } from "@/hooks/use-notification";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
-export function NotificacaoPermissao() {
-  const [permStatus, setPermStatus] = useState<NotificationPermission>("default");
+// export function NotificacaoPermissao() {
+//   const [permStatus, setPermStatus] = useState<NotificationPermission>("default");
 
-  useEffect(() => {
-    if ("Notification" in window) {
-      setPermStatus(Notification.permission);
-    }
-  }, []);
+//   useEffect(() => {
+//     if ("Notification" in window) {
+//       setPermStatus(Notification.permission);
+//     }
+//   }, []);
 
-  const pedirPermissao = async () => {
-    if (!("Notification" in window)) {
-      alert("Este navegador não suporta notificações.");
-      return;
-    }
+//   const pedirPermissao = async () => {
+//     if (!("Notification" in window)) {
+//       alert("Este navegador não suporta notificações.");
+//       return;
+//     }
 
-    if (permStatus === "granted") {
-      alert("Permissão já concedida!");
-      return;
-    }
+//     if (permStatus === "granted") {
+//       alert("Permissão já concedida!");
+//       return;
+//     }
 
-    if (permStatus === "denied") {
-      alert(
-        "Você negou a permissão. Para receber notificações, vá até as configurações do navegador e ative novamente."
-      );
-      return;
-    }
+//     if (permStatus === "denied") {
+//       alert(
+//         "Você negou a permissão. Para receber notificações, vá até as configurações do navegador e ative novamente."
+//       );
+//       return;
+//     }
 
-    const permission = await Notification.requestPermission();
-    setPermStatus(permission);
+//     const permission = await Notification.requestPermission();
+//     setPermStatus(permission);
 
-    if (permission === "granted") {
-      alert("Permissão concedida!");
-    } else {
-      alert("Permissão negada ou cancelada.");
-    }
-  };
+//     if (permission === "granted") {
+//       alert("Permissão concedida!");
+//     } else {
+//       alert("Permissão negada ou cancelada.");
+//     }
+//   };
 
-  const enviarNotificacao = () => {
-    new Notification("🚀 Promoção ativa!", {
-      body: "Acesse agora e aproveite ofertas exclusivas na sua cidade.",
-      icon: "/pwa-192x192.png", // ajuste para o caminho do seu ícone
-    });
-  };
+//   const enviarNotificacao = () => {
+//     new Notification("🚀 Promoção ativa!", {
+//       body: "Acesse agora e aproveite ofertas exclusivas na sua cidade.",
+//       icon: "/pwa-192x192.png", // ajuste para o caminho do seu ícone
+//     });
+//   };
 
-  return (
-    <div className="space-y-4 p-4 border rounded-xl bg-muted shadow-md">
-      <p>
-        Status da permissão:{" "}
-        <strong className={permStatus === "granted" ? "text-green-600" : "text-red-600"}>
-          {permStatus}
-        </strong>
-      </p>
+//   return (
+//     <div className="space-y-4 p-4 border rounded-xl bg-muted shadow-md">
+//       <p>
+//         Status da permissão:{" "}
+//         <strong className={permStatus === "granted" ? "text-green-600" : "text-red-600"}>
+//           {permStatus}
+//         </strong>
+//       </p>
 
-      {permStatus !== "granted" && (
-        <Button onClick={pedirPermissao} variant="default">
-          Pedir permissão de notificação
-        </Button>
-      )}
+//       {permStatus !== "granted" && (
+//         <Button onClick={pedirPermissao} variant="default">
+//           Pedir permissão de notificação
+//         </Button>
+//       )}
 
-      {permStatus === "granted" && (
-        <Button onClick={enviarNotificacao} variant="outline">
-          Testar notificação
-        </Button>
-      )}
+//       {permStatus === "granted" && (
+//         <Button onClick={enviarNotificacao} variant="outline">
+//           Testar notificação
+//         </Button>
+//       )}
 
-      {permStatus === "denied" && (
-        <p className="text-sm text-red-500">
-          ⚠️ Vá nas configurações do navegador e ative as notificações para este site.
-        </p>
-      )}
-    </div>
-  );
-}
-const enviarNotificacao = async () => {
-    const permission = await Notification.requestPermission()
-    if (permission !== 'granted') {
-      alert('Permissão negada')
-      return
-    }
-
-    const registration = await navigator.serviceWorker.getRegistration()
-    if (registration) {
-      registration.showNotification('🛍️ Promoção!', {
-        body: 'Clique aqui para ver as promoções imperdíveis!',
-        icon: '/pwa-192x192.png',
-        tag: 'promocao',
-      })
-    }
-  }
-
+//       {permStatus === "denied" && (
+//         <p className="text-sm text-red-500">
+//           ⚠️ Vá nas configurações do navegador e ative as notificações para este site.
+//         </p>
+//       )}
+//     </div>
+//   );
+// }
 
 const Index = () => {
   const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
@@ -355,13 +339,13 @@ const Index = () => {
                 Seu táxi na palma da mão, Você no controle da corrida.             
               </p>
               <InstallPWAButton />
-              <NotificacaoPermissao />
+             
               <button
-        onClick={enviarNotificacao}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Enviar Notificação
-      </button>
+                onClick={enviarNotificacao}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Enviar Notificação
+              </button>
 
             </div>
 

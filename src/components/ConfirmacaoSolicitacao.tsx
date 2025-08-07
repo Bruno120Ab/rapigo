@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
+import { enviarNotificacao } from "@/hooks/use-notification";
 
 interface ConfirmacaoSolicitacaoProps {
   solicitacao: Solicitacao;
@@ -116,8 +117,10 @@ export const ConfirmacaoSolicitacao = ({
         
         <div className="space-y-2">
           <Button
-            onClick={onEnviarWhatsApp}
-            className="w-full bg-success hover:bg-success/90"
+            onClick={() => {
+            onEnviarWhatsApp();
+            enviarNotificacao();
+            }}            className="w-full bg-success hover:bg-success/90"
           >
             <MessageCircle className="h-4 w-4 mr-2" />
             Enviar pelo WhatsApp
