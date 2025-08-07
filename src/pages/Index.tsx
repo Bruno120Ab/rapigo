@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Bike, Car, Settings, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,23 +26,59 @@ import InstallPWAButton from "@/components/InstallPWAButton";
 import { BannerSection } from "@/components/Banners";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
-const handleNotificacaoLocal = () => {
-  if (!("Notification" in window)) {
-    alert("Este navegador não suporta notificações.");
-    return;
-  }
 
-  Notification.requestPermission().then(permission => {
-    if (permission === "granted") {
-      new Notification("🚀 Notificação de Teste", {
-        body: "Esta é uma notificação de teste enviada do seu app PWA!",
-        icon: "/icons/icon-192x192.png" // ajuste para seu ícone
-      });
-    } else {
-      alert("Permissão para notificação negada.");
+export function NotificacaoPermissao() {
+  const [permStatus, setPermStatus] = useState<NotificationPermission>("default");
+
+  useEffect(() => {
+    if ("Notification" in window) {
+      setPermStatus(Notification.permission);
     }
-  });
-};
+  }, []);
+
+  const pedirPermissao = () => {
+    if (!("Notification" in window)) {
+      alert("Este navegador não suporta notificações.");
+      return;
+    }
+
+    if (permStatus === "granted") {
+      alert("Permissão já concedida!");
+      return;
+    }
+
+    if (permStatus === "denied") {
+      alert(
+        "Você negou a permissão. Para receber notificações, revogue a permissão manualmente nas configurações do navegador e tente novamente."
+      );
+      return;
+    }
+
+    // permStatus === 'default'
+    Notification.requestPermission().then((permission) => {
+      setPermStatus(permission);
+      if (permission === "granted") {
+        alert("Permissão concedida!");
+      } else {
+        alert("Permissão negada ou não concedida.");
+      }
+    });
+  };
+
+  return (
+    <div className="space-y-2">
+      <p>Status atual da permissão: <strong>{permStatus}</strong></p>
+      <Button onClick={pedirPermissao} variant="outline">
+        {permStatus === "granted" ? "Permissão concedida" : "Pedir permissão de notificação"}
+      </Button>
+      {permStatus === "denied" && (
+        <p className="text-sm text-red-600">
+          Para alterar, vá nas configurações do navegador e revogue a permissão.
+        </p>
+      )}
+    </div>
+  );
+}
 const Index = () => {
   const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
   const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
@@ -280,13 +316,8 @@ const Index = () => {
                 Seu táxi na palma da mão, Você no controle da corrida.             
               </p>
               <InstallPWAButton />
-              <Button
-  onClick={handleNotificacaoLocal}
-  variant="outline"
-  className="w-full h-14 text-lg"
->
-  Enviar Notificação de Teste
-</Button>
+              <NotificacaoPermissao />
+
             </div>
 
             {/* Seção de Favoritos */}
