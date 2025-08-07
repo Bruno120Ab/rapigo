@@ -117,10 +117,11 @@ export const ConfirmacaoSolicitacao = ({
         
         <div className="space-y-2">
           <Button
-            onClick={() => {
-            onEnviarWhatsApp();
+            onClick={() => {            
             enviarNotificacao();
-            }}            className="w-full bg-success hover:bg-success/90"
+            onEnviarWhatsApp();
+            }}            
+            className="w-full bg-success hover:bg-success/90"
           >
             <MessageCircle className="h-4 w-4 mr-2" />
             Enviar pelo WhatsApp

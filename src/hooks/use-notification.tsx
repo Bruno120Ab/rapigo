@@ -1,18 +1,29 @@
-export const enviarNotificacao = async () => {
-  const permission = await Notification.requestPermission()
-  if (permission !== 'granted') {
-    alert('Permissão negada')
-    return
-  }
+import { useEffect } from "react";
 
-  setTimeout(async () => {
-    const registration = await navigator.serviceWorker.getRegistration()
-    if (registration) {
-      registration.showNotification('❗ Motoboy aceitou a viagem ?!', {
-        body: 'Clique aqui para ver os motoboys disponíveis.',
-        icon: '/pwa-192x192.png',
-        tag: 'motoboy-aceitou',
-      })
+export const enviarNotificacao = async () => {
+   useEffect(() => {
+    // Pede permissão ao carregar a página (ou você pode fazer em outro lugar)
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
     }
-  }, 120000) // 2 minutos = 120000 ms
+
+    // Só agenda a notificação se permissão concedida
+    if (Notification.permission === "granted") {
+      const timeoutId = setTimeout(async () => {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          registration.showNotification("👋 Bem-vindo!", {
+            body: "Conheça nossos serviços e ofertas exclusivas!",
+            icon: "/pwa-192x192.png",
+            tag: "welcome",
+            data: { url: "/download" }, // URL para abrir no clique
+          });
+        }
+      }, 30000); // 30 segundos
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, []);
+
+  return null;
 }

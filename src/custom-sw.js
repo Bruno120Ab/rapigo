@@ -1,16 +1,18 @@
-self.addEventListener('notificationclick', function (event) {
-  event.notification.close()
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const urlToOpen = event.notification.data?.url || "/";
 
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then(function (clientList) {
+    clients.matchAll({ type: "window" }).then((clientList) => {
       for (const client of clientList) {
-        if (client.url === '/' && 'focus' in client) {
-          return client.focus()
+        if (client.url === urlToOpen && "focus" in client) {
+          return client.focus();
         }
       }
       if (clients.openWindow) {
-        return clients.openWindow('/promocoes')
+        return clients.openWindow(urlToOpen);
       }
     })
-  )
-})
+  );
+});
