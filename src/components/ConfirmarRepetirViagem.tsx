@@ -24,6 +24,22 @@ export const ConfirmarRepetirViagem = ({
   const handleConfirmar = async () => {
     setLoading(true);
     
+    // Buscar e salvar dados completos do mototaxista no localStorage
+    if (viagem.motoBoy) {
+      const mototaxistasSalvos = localStorage.getItem("mototaxistas");
+      if (mototaxistasSalvos) {
+        try {
+          const mototaxistas = JSON.parse(mototaxistasSalvos);
+          const mototaxista = mototaxistas.find((m: any) => m.nome === viagem.motoBoy);
+          if (mototaxista) {
+            localStorage.setItem("mototaxista", JSON.stringify(mototaxista));
+          }
+        } catch (error) {
+          console.error("Erro ao buscar mototaxista:", error);
+        }
+      }
+    }
+    
     // Criar nova solicitação baseada na viagem anterior
     const novaViagem: Solicitacao = {
       ...viagem,

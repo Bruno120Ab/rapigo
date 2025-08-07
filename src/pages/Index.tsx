@@ -10,7 +10,9 @@ import { ConfirmarRepetirViagem } from "@/components/ConfirmarRepetirViagem";
 import { FavoritosSection } from "@/components/FavoritosSection";
 import { HistoricoSection } from "@/components/HistoricoSection";
 import { DetalhesMotoboyModal } from "@/components/DetalhesMotoboyModal";
+import { ConfiguracoesModal } from "@/components/ConfiguracoesModal";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
+import { useConfiguracoes } from "@/hooks/useConfiguracoes";
 import { useSolicitacoes } from "@/hooks/useSolicitacoes";
 import { useFavoritos } from "@/hooks/useFavoritos";
 import { useHistorico } from "@/hooks/useHistorico";
@@ -32,6 +34,7 @@ const Index = () => {
   const [mostrarConfirmacaoRepeticao, setMostrarConfirmacaoRepeticao] = useState(false);
   const [motoboyDetalhes, setMotoboyDetalhes] = useState<Mototaxista | null>(null);
   const [mostrarDetalhesModal, setMostrarDetalhesModal] = useState(false);
+  const [mostrarConfiguracoesModal, setMostrarConfiguracoesModal] = useState(false);
   const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus } = useMototaxistas();
   const { adicionarSolicitacao } = useSolicitacoes();
   const { favoritos, adicionarFavorito, removerFavorito, isFavorito } = useFavoritos();
@@ -39,6 +42,7 @@ const Index = () => {
   const { enderecos } = useEnderecosPadrao();
   const { toast } = useToast();
   const { calcularMetricasMotorista, adicionarAvaliacao: adicionarAvaliacaoReativa } = useAvaliacoes();
+  const { configuracao } = useConfiguracoes();
 
   const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
     const solicitacao = adicionarSolicitacao(dadosSolicitacao);
@@ -240,10 +244,21 @@ const Index = () => {
           <div className="space-y-6">
             {/* Header */}
             <div className="text-center space-y-2">
-              <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-                <Bike className="h-8 w-8 text-primary" />
-                Moto-Táxi de Itambé
-              </h1>
+              <div className="flex items-center justify-between">
+                <div></div>
+                <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+                  <Bike className="h-8 w-8 text-primary" />
+                  Moto-Táxi de Itambé
+                </h1>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMostrarConfiguracoesModal(true)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </div>
               <p className="text-muted-foreground">
                 Seu táxi na palma da mão, Você no controle da corrida.             
               </p>
@@ -346,6 +361,11 @@ const Index = () => {
       }}
       onSelecionar={handleSelecionarMototaxista}
       metricas={motoboyDetalhes ? calcularMetricasMotorista(motoboyDetalhes.nome, historico) : undefined}
+    />
+
+    <ConfiguracoesModal
+      isOpen={mostrarConfiguracoesModal}
+      onClose={() => setMostrarConfiguracoesModal(false)}
     />
   </div>
   );

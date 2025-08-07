@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Solicitacao, Mototaxista } from "@/types/mototaxi";
 import { EnderecoPadrao } from "@/hooks/useEnderecosPadrao";
+import { useConfiguracoes } from "@/hooks/useConfiguracoes";
 import { coordenadasParaEndereco, enderecoParaCoordenadas } from "@/utils/geocoding";
 import { MapComponent } from "./MapComponent";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +37,14 @@ export const SolicitarForm = ({
   const [horaAgendamento, setHoraAgendamento] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const { configuracao } = useConfiguracoes();
+
+  // Inicializar nome com configurações padrão
+  useEffect(() => {
+    if (configuracao.nomeClientePadrao && !nome) {
+      setNome(configuracao.nomeClientePadrao);
+    }
+  }, [configuracao.nomeClientePadrao]);
 
   const obterLocalizacaoAtual = async () => {
     if (navigator.geolocation) {

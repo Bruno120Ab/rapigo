@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Star, MessageSquare, Check, Send } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,18 @@ export const AvaliacaoModal = ({
   onSalvarAvaliacao,
   avaliacaoExistente 
 }: AvaliacaoModalProps) => {
-  const [estrelas, setEstrelas] = useState(avaliacaoExistente?.estrelas || 0);
-  const [aceita, setAceita] = useState(avaliacaoExistente?.aceita || false);
-  const [feedback, setFeedback] = useState(avaliacaoExistente?.feedback || "");
+  const [estrelas, setEstrelas] = useState(0);
+  const [aceita, setAceita] = useState(false);
+  const [feedback, setFeedback] = useState("");
+
+  // Resetar estado quando uma nova viagem é selecionada ou modal é aberto
+  useEffect(() => {
+    if (viagem && isOpen) {
+      setEstrelas(avaliacaoExistente?.estrelas || 0);
+      setAceita(avaliacaoExistente?.aceita || false);
+      setFeedback(avaliacaoExistente?.feedback || "");
+    }
+  }, [viagem?.id, isOpen, avaliacaoExistente]);
 
   if (!viagem) return null;
 

@@ -37,7 +37,7 @@ export const ConfirmacaoSolicitacao = ({
           console.error("Erro ao fazer parse do mototaxista:", e);
         }
       }
-    }, []);
+    }, [solicitacao]); // Adicionar solicitacao como dependência para atualizar quando refazer viagem
  
 
   return (
