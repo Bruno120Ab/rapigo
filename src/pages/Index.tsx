@@ -100,6 +100,23 @@ export function NotificacaoPermissao() {
     </div>
   );
 }
+const enviarNotificacao = async () => {
+    const permission = await Notification.requestPermission()
+    if (permission !== 'granted') {
+      alert('Permissão negada')
+      return
+    }
+
+    const registration = await navigator.serviceWorker.getRegistration()
+    if (registration) {
+      registration.showNotification('🛍️ Promoção!', {
+        body: 'Clique aqui para ver as promoções imperdíveis!',
+        icon: '/pwa-192x192.png',
+        tag: 'promocao',
+      })
+    }
+  }
+
 
 const Index = () => {
   const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
@@ -339,6 +356,12 @@ const Index = () => {
               </p>
               <InstallPWAButton />
               <NotificacaoPermissao />
+              <button
+        onClick={enviarNotificacao}
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        Enviar Notificação
+      </button>
 
             </div>
 
