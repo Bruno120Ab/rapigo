@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
 import { enviarPedidoParaGoogleForms } from "@/hooks/use-enviarPedido";
+import { buscarMototaxistaPorNome } from "@/utils/mototaxistas";
 
 
 interface ConfirmacaoSolicitacaoProps {
@@ -29,18 +30,25 @@ export const ConfirmacaoSolicitacao = ({
 
   const [motoboySelecionado, setMotoboySelecionado] = useState<Mototaxista | null>(null);
   
-    useEffect(() => {
-      const dados = localStorage.getItem("mototaxista");
-      if (dados) {
-        try {
-          const obj = JSON.parse(dados);
-          setMotoboySelecionado(obj);
-        } catch (e) {
-          console.error("Erro ao fazer parse do mototaxista:", e);
-        }
+  useEffect(() => {
+    // 1) Tenta buscar do localStorage (quando veio de "refazer viagem")
+    const dados = localStorage.getItem("mototaxista");
+    if (dados) {
+      try {
+        const obj = JSON.parse(dados);
+        setMotoboySelecionado(obj);
+        return; // já encontrou
+      } catch (e) {
+        console.error("Erro ao fazer parse do mototaxista:", e);
       }
-    }, [solicitacao]); // Adicionar solicitacao como dependência para atualizar quando refazer viagem
- 
+    }
+    // 2) Fallback: busca pelo nome que está na solicitação
+    if (solicitacao?.motoBoy) {
+      const encontrado = buscarMototaxistaPorNome(solicitacao.motoBoy);
+      if (encontrado) setMotoboySelecionado(encontrado);
+    }
+  }, [solicitacao]);
+  
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -105,6 +113,12 @@ export const ConfirmacaoSolicitacao = ({
             </div>
 </div>
             </div>
+            
+            {solicitacao.serviceType && (
+              <p className="text-sm font-medium">
+                🧭 Tipo de serviço: {solicitacao.serviceType}
+              </p>
+            )}
             
             <p className="text-sm text-muted-foreground font-medium">
               💰 Valor a negociar diretamente com o motorista

@@ -30,14 +30,11 @@ export const ConfirmarRepetirViagem = ({
     // 2. Salvar as informações completas do mototaxista no localStorage 
     // 3. Criar nova solicitação mantendo os mesmos dados da viagem anterior
     // 4. A tela de confirmação vai ler essas informações do localStorage
+    // OBS: Também adicionamos fallback na tela de confirmação para buscar por nome caso o localStorage falhe.
     
     if (viagem.motoBoy) {
-      // Buscar o mototaxista pelo nome usando a função utilitária
       const mototaxista = buscarMototaxistaPorNome(viagem.motoBoy);
-      
       if (mototaxista) {
-        // Salvar todas as informações do mototaxista no localStorage
-        // Isso garantirá que a tela de confirmação tenha todos os dados necessários
         salvarMototaxistaNoLocalStorage(mototaxista);
       } else {
         console.error("Mototaxista não encontrado para refazer viagem:", viagem.motoBoy);

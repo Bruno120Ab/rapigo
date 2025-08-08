@@ -25,6 +25,7 @@ import usePWAInstall from "@/hooks/usePWAInstall";
 import InstallPWAButton from "@/components/InstallPWAButton";
 import { BannerSection } from "@/components/Banners";
 import EnviarEmail from "@/components/EnviarEmail";
+import { PoliticaSeguranca } from "@/components/PoliticaSeguranca";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
@@ -190,6 +191,7 @@ const Index = () => {
   
     let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
     mensagem += `👤 *Cliente:* ${ultimaSolicitacao.nome}\n`;
+    mensagem += `🧭 *Serviço:* ${ultimaSolicitacao.serviceType ?? 'corrida'}\n`;
     mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
   
     if (ultimaSolicitacao.destino) {
@@ -423,6 +425,7 @@ const Index = () => {
                             <EnviarEmail />
                         </div>
 
+                        <PoliticaSeguranca />
                         <BannerSection/>
                     </div>
                 );

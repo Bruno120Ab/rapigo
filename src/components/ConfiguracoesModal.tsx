@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Settings, User, Moon, Sun, Type, UserCheck, ShieldCheck, ShieldX } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useConfiguracoes, Configuracao } from "@/hooks/useConfiguracoes";
+import { useToast } from "@/hooks/use-toast";
 
 interface ConfiguracoesModalProps {
   Premium: boolean;
@@ -18,6 +19,8 @@ interface ConfiguracoesModalProps {
 export const ConfiguracoesModal = ({Premium, isOpen, dateExpira, onClose }: ConfiguracoesModalProps) => {
   const { configuracao, salvarConfiguracao } = useConfiguracoes();
   const [configLocal, setConfigLocal] = useState<Configuracao>(configuracao);
+  const { toast } = useToast();
+  const inputNomeRef = useRef<HTMLInputElement>(null);
 
   const handleSalvar = () => {
     salvarConfiguracao(configLocal);
@@ -25,8 +28,19 @@ export const ConfiguracoesModal = ({Premium, isOpen, dateExpira, onClose }: Conf
   };
 
   const enviarDadosPremiumWhatsApp = () => {
-  let userId = null;
-  let nomeCliente = null;
+  let userId = null as string | null;
+  let nomeCliente = configLocal.nomeClientePadrao?.trim() || null;
+
+  // Se não tiver nome, alerta, foca no campo e não prossegue
+  if (!nomeCliente) {
+    toast({
+      title: "Nome obrigatório",
+      description: "Informe seu nome completo para continuar.",
+      variant: "destructive",
+    });
+    inputNomeRef.current?.focus();
+    return;
+  }
 
   // 1. Tenta pegar os dados do localStorage
   const configString = localStorage.getItem('configuracoes-usuario');
@@ -35,15 +49,24 @@ export const ConfiguracoesModal = ({Premium, isOpen, dateExpira, onClose }: Conf
     try {
       const config = JSON.parse(configString);
       userId = config.userId;
-      nomeCliente = config.nomeClientePadrao;
+      // Garante que o nome informado nesta tela seja salvo
+      config.nomeClientePadrao = nomeCliente;
+      localStorage.setItem('configuracoes-usuario', JSON.stringify(config));
+      salvarConfiguracao({ nomeClientePadrao: nomeCliente });
     } catch (error) {
       console.error("Erro ao ler configurações do usuário:", error);
     }
+  } else {
+    // Se não houver config ainda, cria uma mínima
+    const novo = { userId: `user-${Math.random().toString(36).slice(2)}`, nomeClientePadrao: nomeCliente };
+    localStorage.setItem('configuracoes-usuario', JSON.stringify(novo));
+    userId = novo.userId;
+    salvarConfiguracao({ nomeClientePadrao: nomeCliente });
   }
 
-  // Se não encontrar o ID ou nome, usa um fallback
+  // Se não encontrar o ID, usa um fallback
   const idParaEnvio = userId || 'ID_NÃO_ENCONTRADO';
-  const nomeParaEnvio = nomeCliente || 'Cliente Sem Nome';
+  const nomeParaEnvio = nomeCliente;
 
   // 2. Monta a mensagem para o WhatsApp
   const numeroMeuWhatsapp = "5571999099688"; // <-- Mude para o seu número
@@ -55,7 +78,7 @@ Segue minhas informações para liberação:
 *ID de Usuário:* ${idParaEnvio}
 
 Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
-  `.trim(); // O .trim() remove espaços extras no início e no final
+  `.trim();
 
   // 3. Monta a URL e abre o WhatsApp
   const url = `https://wa.me/${numeroMeuWhatsapp}?text=${encodeURIComponent(mensagem)}`;
@@ -88,12 +111,13 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
               <User className="h-4 w-4" />
               Nome do Cliente Padrão
             </Label>
-            <Input
-              id="nome-cliente"
-              placeholder="Digite seu nome"
-              value={configLocal.nomeClientePadrao}
-              onChange={(e) => setConfigLocal({ ...configLocal, nomeClientePadrao: e.target.value })}
-            />
+              <Input
+                id="nome-cliente"
+                placeholder="Digite seu nome"
+                value={configLocal.nomeClientePadrao}
+                onChange={(e) => setConfigLocal({ ...configLocal, nomeClientePadrao: e.target.value })}
+                ref={inputNomeRef}
+              />
           </div>
 
           {/* Modo escuro */}
@@ -179,13 +203,11 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
             Salvar
           </Button>
             {!Premium && (
-           
-                <Button 
-                onClick={enviarDadosPremiumWhatsApp} variant="outline"          
-                >
-                  Torne-se Membro
-                </Button>
-           
+            <Button 
+              onClick={enviarDadosPremiumWhatsApp} variant="outline"          
+            >
+              Torne-se Membro
+            </Button>
           )}
         </div>
       </DialogContent>

@@ -38,6 +38,7 @@ export const SolicitarForm = ({
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
   const { configuracao } = useConfiguracoes();
+  const [serviceType, setServiceType] = useState<'corrida' | 'entrega' | 'coleta' | 'buscar_pessoa'>('corrida');
 
   // Inicializar nome com configurações padrão
   useEffect(() => {
@@ -120,7 +121,8 @@ export const SolicitarForm = ({
       dataAgendamento: dataAgendamentoFinal,
       isAgendamento,
       status: 'pendente',
-      motoBoy:  mototaxistaSelecionado?.nome.trim() ?? "Não informado"
+      motoBoy:  mototaxistaSelecionado?.nome.trim() ?? "Não informado",
+      serviceType
     };
     
     onSolicitar(solicitacao);
@@ -189,6 +191,23 @@ export const SolicitarForm = ({
                   </SelectContent>
                 </Select>
               )}
+
+              {/* Tipo de serviço */}
+              <div className="space-y-2">
+                <Label htmlFor="serviceType">Tipo de serviço</Label>
+                <Select value={serviceType} onValueChange={(v) => setServiceType(v as any)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar tipo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="corrida">Corrida padrão</SelectItem>
+                    <SelectItem value="entrega">Entrega de objeto</SelectItem>
+                    <SelectItem value="coleta">Buscar objeto</SelectItem>
+                    <SelectItem value="buscar_pessoa">Buscar pessoa e trazer até mim</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="flex gap-2">
                 <Input
                   id="endereco"
