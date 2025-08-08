@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings, User, Moon, Sun, Type, UserCheck } from "lucide-react";
+import { Settings, User, Moon, Sun, Type, UserCheck, ShieldCheck, ShieldX } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,11 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useConfiguracoes, Configuracao } from "@/hooks/useConfiguracoes";
 
 interface ConfiguracoesModalProps {
+  Premium: boolean;
   isOpen: boolean;
+  dateExpira: string;
   onClose: () => void;
 }
 
-export const ConfiguracoesModal = ({ isOpen, onClose }: ConfiguracoesModalProps) => {
+export const ConfiguracoesModal = ({Premium, isOpen, dateExpira, onClose }: ConfiguracoesModalProps) => {
   const { configuracao, salvarConfiguracao } = useConfiguracoes();
   const [configLocal, setConfigLocal] = useState<Configuracao>(configuracao);
 
@@ -21,6 +23,48 @@ export const ConfiguracoesModal = ({ isOpen, onClose }: ConfiguracoesModalProps)
     salvarConfiguracao(configLocal);
     onClose();
   };
+
+  const enviarDadosPremiumWhatsApp = () => {
+  let userId = null;
+  let nomeCliente = null;
+
+  // 1. Tenta pegar os dados do localStorage
+  const configString = localStorage.getItem('configuracoes-usuario');
+
+  if (configString) {
+    try {
+      const config = JSON.parse(configString);
+      userId = config.userId;
+      nomeCliente = config.nomeClientePadrao;
+    } catch (error) {
+      console.error("Erro ao ler configurações do usuário:", error);
+    }
+  }
+
+  // Se não encontrar o ID ou nome, usa um fallback
+  const idParaEnvio = userId || 'ID_NÃO_ENCONTRADO';
+  const nomeParaEnvio = nomeCliente || 'Cliente Sem Nome';
+
+  // 2. Monta a mensagem para o WhatsApp
+  const numeroMeuWhatsapp = "5571999099688"; // <-- Mude para o seu número
+  const mensagem = `
+Olá! Gostaria de assinar o plano premium.
+Segue minhas informações para liberação:
+
+*Nome:* ${nomeParaEnvio}
+*ID de Usuário:* ${idParaEnvio}
+
+Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
+  `.trim(); // O .trim() remove espaços extras no início e no final
+
+  // 3. Monta a URL e abre o WhatsApp
+  const url = `https://wa.me/${numeroMeuWhatsapp}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, "_blank");
+};
+
+
+  const data = new Date(dateExpira + 'T00:00:00')
+
 
   const handleCancel = () => {
     setConfigLocal(configuracao); // Reseta para os valores salvos
@@ -104,6 +148,27 @@ export const ConfiguracoesModal = ({ isOpen, onClose }: ConfiguracoesModalProps)
               onCheckedChange={(checked) => setConfigLocal({ ...configLocal, usuarioPadrao: checked })}
             />
           </div>
+          {Premium ? 
+          (
+            <div className="flex items-center justify-between">
+              <Label className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-green-500" />
+                Usuario Premium
+                <ShieldCheck className="h-4 w-4 text-green-500" />
+                Data de expiração  - { data.toLocaleDateString('pt-BR') }
+              </Label>
+            </div>
+          ) :
+          (
+            <div className="flex items-center justify-between">
+              <Label className="flex items-center gap-2">
+                <ShieldX className="h-4 w-4 text-red-500 " />
+                Assine o Premium
+              </Label>
+            </div>
+          )}
+        
+          
         </div>
 
         <div className="flex gap-2 pt-4">
@@ -113,6 +178,15 @@ export const ConfiguracoesModal = ({ isOpen, onClose }: ConfiguracoesModalProps)
           <Button onClick={handleSalvar} className="flex-1">
             Salvar
           </Button>
+            {!Premium && (
+           
+                <Button 
+                onClick={enviarDadosPremiumWhatsApp} variant="outline"          
+                >
+                  Torne-se Membro
+                </Button>
+           
+          )}
         </div>
       </DialogContent>
     </Dialog>

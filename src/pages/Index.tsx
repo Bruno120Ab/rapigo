@@ -28,438 +28,443 @@ import EnviarEmail from "@/components/EnviarEmail";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
-// export function NotificacaoPermissao() {
-//   const [permStatus, setPermStatus] = useState<NotificationPermission>("default");
-
-//   useEffect(() => {
-//     if ("Notification" in window) {
-//       setPermStatus(Notification.permission);
-//     }
-//   }, []);
-
-//   const pedirPermissao = async () => {
-//     if (!("Notification" in window)) {
-//       alert("Este navegador não suporta notificações.");
-//       return;
-//     }
-
-//     if (permStatus === "granted") {
-//       alert("Permissão já concedida!");
-//       return;
-//     }
-
-//     if (permStatus === "denied") {
-//       alert(
-//         "Você negou a permissão. Para receber notificações, vá até as configurações do navegador e ative novamente."
-//       );
-//       return;
-//     }
-
-//     const permission = await Notification.requestPermission();
-//     setPermStatus(permission);
-
-//     if (permission === "granted") {
-//       alert("Permissão concedida!");
-//     } else {
-//       alert("Permissão negada ou cancelada.");
-//     }
-//   };
-
-//   const enviarNotificacao = () => {
-//     new Notification("🚀 Promoção ativa!", {
-//       body: "Acesse agora e aproveite ofertas exclusivas na sua cidade.",
-//       icon: "/pwa-192x192.png", // ajuste para o caminho do seu ícone
-//     });
-//   };
-
-//   return (
-//     <div className="space-y-4 p-4 border rounded-xl bg-muted shadow-md">
-//       <p>
-//         Status da permissão:{" "}
-//         <strong className={permStatus === "granted" ? "text-green-600" : "text-red-600"}>
-//           {permStatus}
-//         </strong>
-//       </p>
-
-//       {permStatus !== "granted" && (
-//         <Button onClick={pedirPermissao} variant="default">
-//           Pedir permissão de notificação
-//         </Button>
-//       )}
-
-//       {permStatus === "granted" && (
-//         <Button onClick={enviarNotificacao} variant="outline">
-//           Testar notificação
-//         </Button>
-//       )}
-
-//       {permStatus === "denied" && (
-//         <p className="text-sm text-red-500">
-//           ⚠️ Vá nas configurações do navegador e ative as notificações para este site.
-//         </p>
-//       )}
-//     </div>
-//   );
-// }
-
 const Index = () => {
-  const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
-  const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
-  const [mototaxistaSelecionado, setMototaxistaSelecionado] = useState<Mototaxista | null>(null);
-  const [viagemParaRepetir, setViagemParaRepetir] = useState<Solicitacao | null>(null);
-  const [mostrarConfirmacaoRepeticao, setMostrarConfirmacaoRepeticao] = useState(false);
-  const [motoboyDetalhes, setMotoboyDetalhes] = useState<Mototaxista | null>(null);
-  const [mostrarDetalhesModal, setMostrarDetalhesModal] = useState(false);
-  const [mostrarConfiguracoesModal, setMostrarConfiguracoesModal] = useState(false);
-  const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus } = useMototaxistas();
-  const { adicionarSolicitacao } = useSolicitacoes();
-  const { favoritos, adicionarFavorito, removerFavorito, isFavorito } = useFavoritos();
-  const { historico, adicionarViagem, adicionarAvaliacao, obterAvaliacao } = useHistorico();
-  const { enderecos } = useEnderecosPadrao();
-  const { toast } = useToast();
-  const { calcularMetricasMotorista, adicionarAvaliacao: adicionarAvaliacaoReativa } = useAvaliacoes();
-  const { configuracao } = useConfiguracoes();
+    // Novos estados para o controle premium
+    const [userId, setUserId] = useState(null);
+    const [isPremium, setIsPremium] = useState(false);
+    const [ dateExpiration, setDateExpiration ] = useState();
+    const [premiumLoading, setPremiumLoading] = useState(true);
 
-  const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
-    const solicitacao = adicionarSolicitacao(dadosSolicitacao);
-    setUltimaSolicitacao(solicitacao);
-    adicionarViagem(solicitacao);
-    setTelaAtual('confirmacao');
-    
-    toast({
-      title: "Solicitação Completa!",
-      description: "Agora envie seu pedido.",
-    });
-  };
+    // useEffect 1: Geração e recuperação do ID do usuário, agora dentro de 'configuracoes-usuario'
+    useEffect(() => {
+        let storedConfig;
+        const configString = localStorage.getItem('configuracoes-usuario');
 
-  const handleSelecionarMototaxista = (mototaxista: Mototaxista) => {
-    setMototaxistaSelecionado(mototaxista);
-    localStorage.setItem("mototaxista", JSON.stringify(mototaxista));
-    setTelaAtual('solicitar');
-  };
-
-  const handleSelecionarFavorito = (mototaxista: Mototaxista) => {
-    handleSelecionarMototaxista(mototaxista);
-  };
-
-  const handleMostrarDetalhes = (mototaxista: Mototaxista) => {
-    setMotoboyDetalhes(mototaxista);
-    setMostrarDetalhesModal(true);
-  };
-
-  const handleReutilizarViagem = (viagem: Solicitacao) => {
-    setViagemParaRepetir(viagem);
-    setMostrarConfirmacaoRepeticao(true);
-  };
-
-  const handleConfirmarRepeticaoViagem = (novaViagem: Solicitacao) => {
-    const solicitacao = adicionarSolicitacao(novaViagem);
-    setUltimaSolicitacao(solicitacao);
-    adicionarViagem(solicitacao);
-    setTelaAtual('confirmacao');
-    
-    toast({
-      title: "Viagem repetida!",
-      description: "Agora envie seu pedido.",
-    });
-  };
-
-  const handleToggleFavorito = (mototaxista: Mototaxista) => {
-    if (isFavorito(mototaxista.id)) {
-      removerFavorito(mototaxista.id);
-      toast({
-        title: "Removido dos favoritos",
-        description: `${mototaxista.nome} foi removido dos seus favoritos.`,
-      });
-    } else {
-      const sucesso = adicionarFavorito(mototaxista);
-      if (sucesso) {
-        toast({
-          title: "Adicionado aos favoritos",
-          description: `${mototaxista.nome} foi adicionado aos seus favoritos.`,
-        });
-      } else {
-        toast({
-          title: "Limite atingido",
-          description: "Você pode ter no máximo 3 motoboys favoritos.",
-          variant: "destructive"
-        });
-      }
-    }
-  };
-
-  const enviarWhatsApp = () => {
-  if (!ultimaSolicitacao) return;
-
-  // Pega o mototaxista salvo no localStorage
-  const dadosMototaxista = localStorage.getItem("mototaxista");
-  let telefone = "71999099688"; // fallback padrão
-
-  if (dadosMototaxista) {
-    try {
-      const mototaxista = JSON.parse(dadosMototaxista);
-      if (mototaxista.telefone) {
-        // Remove qualquer caractere não numérico e adiciona DDI +55
-        telefone = mototaxista.telefone.replace(/\D/g, "");
-        if (!telefone.startsWith("55")) {
-          telefone = "55" + telefone;
+        try {
+            storedConfig = configString ? JSON.parse(configString) : {};
+        } catch (error) {
+            console.error('Erro ao ler configurações do usuário no localStorage:', error);
+            storedConfig = {};
         }
+
+        let storedId = storedConfig.userId;
+        if (!storedId) {
+            const newId = `user-${Math.random().toString(36).substring(2, 15)}`;
+            storedConfig.userId = newId;
+            localStorage.setItem('configuracoes-usuario', JSON.stringify(storedConfig));
+            storedId = newId;
+        }
+        
+        setUserId(storedId);
+    }, []);
+
+    // useEffect 2: Verificação do status premium usando o proxy
+    useEffect(() => {
+        if (userId) {
+            const proxyUrl = 'https://script.google.com/macros/s/AKfycbwLwHbG41s1g6u35tlHOzaEmuGwD0nuJskkV_ypJDdrwy1CXd_f9YHlw63EbmUwKj7e/exec';
+            
+            fetch(`${proxyUrl}?id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setIsPremium(data.is_premium);
+                    setDateExpiration(data.expiration_date)
+                    setPremiumLoading(false);
+                    console.log(data)
+                })
+                .catch(error => {
+                    console.error('Erro ao verificar status premium:', error);
+                    setIsPremium(false);
+                    setPremiumLoading(false);
+                });
+        } else {
+            // Se o userId ainda não foi gerado, consideramos em loading
+            setPremiumLoading(true);
+        }
+    }, [userId]);
+
+    // Seus estados e hooks existentes
+    const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
+    const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
+    const [mototaxistaSelecionado, setMototaxistaSelecionado] = useState<Mototaxista | null>(null);
+    const [viagemParaRepetir, setViagemParaRepetir] = useState<Solicitacao | null>(null);
+    const [mostrarConfirmacaoRepeticao, setMostrarConfirmacaoRepeticao] = useState(false);
+    const [motoboyDetalhes, setMotoboyDetalhes] = useState<Mototaxista | null>(null);
+    const [mostrarDetalhesModal, setMostrarDetalhesModal] = useState(false);
+    const [mostrarConfiguracoesModal, setMostrarConfiguracoesModal] = useState(false);
+    const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus } = useMototaxistas();
+    const { adicionarSolicitacao } = useSolicitacoes();
+    const { favoritos, adicionarFavorito, removerFavorito, isFavorito } = useFavoritos();
+    const { historico, adicionarViagem, adicionarAvaliacao, obterAvaliacao } = useHistorico();
+    const { enderecos } = useEnderecosPadrao();
+    const { toast } = useToast();
+    const { calcularMetricasMotorista, adicionarAvaliacao: adicionarAvaliacaoReativa } = useAvaliacoes();
+    const { configuracao } = useConfiguracoes();
+
+    const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
+        const solicitacao = adicionarSolicitacao(dadosSolicitacao);
+        setUltimaSolicitacao(solicitacao);
+        adicionarViagem(solicitacao);
+        setTelaAtual('confirmacao');
+        
+        toast({
+            title: "Solicitação Completa!",
+            description: "Agora envie seu pedido.",
+        });
+    };
+
+    const handleSelecionarMototaxista = (mototaxista: Mototaxista) => {
+        setMototaxistaSelecionado(mototaxista);
+        localStorage.setItem("mototaxista", JSON.stringify(mototaxista));
+        setTelaAtual('solicitar');
+    };
+
+    const handleSelecionarFavorito = (mototaxista: Mototaxista) => {
+        handleSelecionarMototaxista(mototaxista);
+    };
+
+    const handleMostrarDetalhes = (mototaxista: Mototaxista) => {
+        setMotoboyDetalhes(mototaxista);
+        setMostrarDetalhesModal(true);
+    };
+
+    const handleReutilizarViagem = (viagem: Solicitacao) => {
+        setViagemParaRepetir(viagem);
+        setMostrarConfirmacaoRepeticao(true);
+    };
+
+    const handleConfirmarRepeticaoViagem = (novaViagem: Solicitacao) => {
+        const solicitacao = adicionarSolicitacao(novaViagem);
+        setUltimaSolicitacao(solicitacao);
+        adicionarViagem(solicitacao);
+        setTelaAtual('confirmacao');
+        
+        toast({
+            title: "Viagem repetida!",
+            description: "Agora envie seu pedido.",
+        });
+    };
+
+    const handleToggleFavorito = (mototaxista: Mototaxista) => {
+        if (isFavorito(mototaxista.id)) {
+            removerFavorito(mototaxista.id);
+            toast({
+                title: "Removido dos favoritos",
+                description: `${mototaxista.nome} foi removido dos seus favoritos.`,
+            });
+        } else {
+            const sucesso = adicionarFavorito(mototaxista);
+            if (sucesso) {
+                toast({
+                    title: "Adicionado aos favoritos",
+                    description: `${mototaxista.nome} foi adicionado aos seus favoritos.`,
+                });
+            } else {
+                toast({
+                    title: "Limite atingido",
+                    description: "Você pode ter no máximo 3 motoboys favoritos.",
+                    variant: "destructive"
+                });
+            }
+        }
+    };
+
+    const enviarWhatsApp = () => {
+    if (!ultimaSolicitacao) return;
+  
+    const dadosMototaxista = localStorage.getItem("mototaxista");
+    let telefone = "71999099688";
+  
+    if (dadosMototaxista) {
+      try {
+        const mototaxista = JSON.parse(dadosMototaxista);
+        if (mototaxista.telefone) {
+          telefone = mototaxista.telefone.replace(/\D/g, "");
+          if (!telefone.startsWith("55")) {
+            telefone = "55" + telefone;
+          }
+        }
+      } catch (error) {
+        console.error("Erro ao ler telefone do mototaxista no localStorage", error);
       }
-    } catch (error) {
-      console.error("Erro ao ler telefone do mototaxista no localStorage", error);
     }
-  }
-
-  let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
-  mensagem += `👤 *Cliente:* ${ultimaSolicitacao.nome}\n`;
-  mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
-
-  if (ultimaSolicitacao.destino) {
-    mensagem += `🎯 *Destino:* ${ultimaSolicitacao.destino}\n`;
-  }
-
-  if (ultimaSolicitacao.coordenadasOrigem) {
-    const { lat, lng } = ultimaSolicitacao.coordenadasOrigem;
-    mensagem += `📱 *Link Origem:* https://maps.google.com/?q=${lat},${lng}\n`;
-  }
-
-  if (ultimaSolicitacao.isAgendamento) {
-    mensagem += `*Tipo de viagem: Agendadada*`;
-  }
-
-  mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
-  mensagem += `\n*Favor confirmar se pode atender! 🙏*`;
-
-  const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-
-  window.open(url, "_blank");
-};
-
-  const renderTela = () => {
-    switch (telaAtual) {
-      case 'solicitar':
-        return (
-          <SolicitarForm
-            onSolicitar={handleSolicitar}
-            onCancel={() => setTelaAtual('inicial')}
-            mototaxistaSelecionado={mototaxistaSelecionado}
-            enderecosPadrao={enderecos}
-          />
-        );
-
-      case 'selecionar-mototaxista':
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Selecionar Mototaxista</h2>
-              <Button 
-                variant="outline" 
-                onClick={() => setTelaAtual('inicial')}
-              >
-                Voltar
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              {mototaxistasAtivos.map((mototaxista) => {
-                const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
-                return (
-                  <MototaxistaCard
-                    key={mototaxista.id}
-                    mototaxista={mototaxista}
-                    onToggleStatus={toggleStatus}
-                    onSelecionar={handleMostrarDetalhes}
-                    isFavorito={isFavorito(mototaxista.id)}
-                    onToggleFavorito={handleToggleFavorito}
-                    showFavoriteButton={true}
-                    metricas={metricas}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        );
-      
-      case 'confirmacao':
-        return ultimaSolicitacao ? (
-          <ConfirmacaoSolicitacao
-            solicitacao={ultimaSolicitacao}
-            onVoltarInicio={() => setTelaAtual('inicial')}
-            onEnviarWhatsApp={enviarWhatsApp}
-          />
-        ) : null;
-      
-      case 'gerenciar':
-        return (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Gerenciar Mototaxistas</h2>
-              <Button 
-                variant="outline" 
-                onClick={() => setTelaAtual('inicial')}
-              >
-                Voltar
-              </Button>
-            </div>
-            
-            <div className="space-y-3">
-              {mototaxistas.map((mototaxista) => (
-                <MototaxistaCard
-                  key={mototaxista.id}
-                  mototaxista={mototaxista}
-                  onToggleStatus={toggleStatus}
-                  showToggle={true}
-                />
-              ))}
-            </div>
-          </div>
-        );
-      
-      default:
-        return (
-          <div className="space-y-6">
-            {/* Header */}
-            <div className="text-center space-y-2">
-              <div className="flex items-center justify-between">
-                <div></div>
-                <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-                  <Bike className="h-8 w-8 text-primary" />
-                  Moto-Táxi de Itambé
-                </h1>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setMostrarConfiguracoesModal(true)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                              
-                <Settings className="h-5 w-5" />
-                </Button>
-              </div>
-              <p className="text-muted-foreground">
-                Seu táxi na palma da mão, Você no controle da corrida.             
-              </p>
-              <InstallPWAButton />
-            </div>
-
-            {/* Seção de Favoritos */}
-            <FavoritosSection 
-              favoritos={favoritos} 
-              onSelecionarFavorito={handleSelecionarFavorito}
-              onRemoverFavorito={removerFavorito}
-            />
-
-            {/* Seção de Histórico */}
-            <HistoricoSection 
-              historico={historico}
-              onReutilizarViagem={handleReutilizarViagem}
-              onSalvarAvaliacao={adicionarAvaliacaoReativa}
-              obterAvaliacao={obterAvaliacao}
-            />
-
-            {/* Status Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Mototaxistas Disponíveis 
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {mototaxistasAtivos.slice(0, 3).map((mototaxista) => {
-                    const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
-                    return (
-                      <MototaxistaCard
-                        key={mototaxista.id}
-                        mototaxista={mototaxista}
-                        onToggleStatus={toggleStatus}
-                        onSelecionar={handleMostrarDetalhes}
-                        isFavorito={isFavorito(mototaxista.id)}
-                        onToggleFavorito={handleToggleFavorito}
-                        showFavoriteButton={true}
-                        metricas={metricas}
-                      />
-                    );
-                  })}
-                  {quantidadeAtivos  > 2 && (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => setTelaAtual('selecionar-mototaxista')}
-                    >
-                      Ver todos motoboys do app ({quantidadeAtivos} disponíveis)
-                    </Button>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Botões de ação */}
-            <div className="space-y-3">
-              <Button
-                onClick={() => setTelaAtual('selecionar-mototaxista')}
-                disabled={quantidadeAtivos === 0}
-                className="w-full h-14 text-lg"
-                size="lg"
-              >
-              <Car className="h-5 w-5 mr-2" />
-                Solicitar Moto-Táxi
-              </Button>
-            </div>
-
-            <div className="flex flex-col items-center mr-top-10 justify-center space-y-3 mx-auto">
-              <img src="/caminho/para/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
-              <h1 className="text-sm text-center">
-              Desenvolvedor: Bruno Abreu
-              </h1>
-              <h1 className="text-sm text-center">
-              Contato: brunoabreudevs@gmail.com
-              </h1>
-              <EnviarEmail />
-            </div>
-
-            <BannerSection/>
-
-          </div>
-        );
+  
+    let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
+    mensagem += `👤 *Cliente:* ${ultimaSolicitacao.nome}\n`;
+    mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
+  
+    if (ultimaSolicitacao.destino) {
+      mensagem += `🎯 *Destino:* ${ultimaSolicitacao.destino}\n`;
     }
+  
+    if (ultimaSolicitacao.coordenadasOrigem) {
+      const { lat, lng } = ultimaSolicitacao.coordenadasOrigem;
+      mensagem += `📱 *Link Origem:* https://maps.google.com/?q=${lat},${lng}\n`;
+    }
+  
+    if (ultimaSolicitacao.isAgendamento) {
+      mensagem += `*Tipo de viagem: Agendadada*`;
+    }
+  
+    mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
+    mensagem += `\n*Favor confirmar se pode atender! 🙏*`;
+  
+    const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, "_blank");
   };
+  
+    const renderTela = () => {
+        switch (telaAtual) {
+            case 'solicitar':
+                return (
+                    <SolicitarForm
+                        onSolicitar={handleSolicitar}
+                        onCancel={() => setTelaAtual('inicial')}
+                        mototaxistaSelecionado={mototaxistaSelecionado}
+                        enderecosPadrao={enderecos}
+                    />
+                );
+            case 'selecionar-mototaxista':
+                return (
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-bold">Selecionar Mototaxista</h2>
+                            <Button 
+                                variant="outline" 
+                                onClick={() => setTelaAtual('inicial')}
+                            >
+                                Voltar
+                            </Button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            {mototaxistasAtivos.map((mototaxista) => {
+                                const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
+                                return (
+                                    <MototaxistaCard
+                                        key={mototaxista.id}
+                                        mototaxista={mototaxista}
+                                        onToggleStatus={toggleStatus}
+                                        onSelecionar={handleMostrarDetalhes}
+                                        isFavorito={isFavorito(mototaxista.id)}
+                                        onToggleFavorito={handleToggleFavorito}
+                                        showFavoriteButton={true}
+                                        metricas={metricas}
+                                    />
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            case 'confirmacao':
+                return ultimaSolicitacao ? (
+                    <ConfirmacaoSolicitacao
+                        solicitacao={ultimaSolicitacao}
+                        onVoltarInicio={() => setTelaAtual('inicial')}
+                        onEnviarWhatsApp={enviarWhatsApp}
+                    />
+                ) : null;
+            case 'gerenciar':
+                return (
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-2xl font-bold">Gerenciar Mototaxistas</h2>
+                            <Button 
+                                variant="outline" 
+                                onClick={() => setTelaAtual('inicial')}
+                            >
+                                Voltar
+                            </Button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            {mototaxistas.map((mototaxista) => (
+                                <MototaxistaCard
+                                    key={mototaxista.id}
+                                    mototaxista={mototaxista}
+                                    onToggleStatus={toggleStatus}
+                                    showToggle={true}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                );
+            default:
+                return (
+                    <div className="space-y-6">
+                        {/* Header */}
+                        <div className="text-center space-y-2">
+                            <div className="flex items-center justify-between">
+                                <div></div>
+                                <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
+                                    <Bike className="h-8 w-8 text-primary" />
+                                    Moto-Táxi de Itambé
+                                </h1>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setMostrarConfiguracoesModal(true)}
+                                    className="text-muted-foreground hover:text-foreground"
+                                >
+                                <Settings className="h-5 w-5" />
+                                </Button>
+                            </div>
+                            <p className="text-muted-foreground">
+                                Seu táxi na palma da mão, Você no controle da corrida.             
+                            </p>
+                            <InstallPWAButton />
+                        </div>
+                         <FavoritosSection 
+                              favoritos={favoritos} 
+                              onSelecionarFavorito={handleSelecionarFavorito}
+                              onRemoverFavorito={removerFavorito}
+                        />
+                        <HistoricoSection 
+                            historico={historico}
+                            onReutilizarViagem={handleReutilizarViagem}
+                            onSalvarAvaliacao={adicionarAvaliacaoReativa}
+                            obterAvaliacao={obterAvaliacao}
+                        />
 
-  return (
-   <div className="min-h-screen bg-background p-4">
-    <div className="max-w-md mx-auto">
-      {renderTela()}
-    </div>
-    {/* <AddToHomeScreenCarousel /> */}
+                        {/* <div className="relative">
+                            {premiumLoading ? (
+                                <div className="flex items-center justify-center p-8">
+                                    <p>Verificando status premium...</p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className={`
+                                        transition-all duration-300
+                                        ${!isPremium ? 'blur-sm pointer-events-none' : ''}
+                                    `}>
+                                        <FavoritosSection 
+                                            favoritos={favoritos} 
+                                            onSelecionarFavorito={handleSelecionarFavorito}
+                                            onRemoverFavorito={removerFavorito}
+                                        />
+                                        <HistoricoSection 
+                                            historico={historico}
+                                            onReutilizarViagem={handleReutilizarViagem}
+                                            onSalvarAvaliacao={adicionarAvaliacaoReativa}
+                                            obterAvaliacao={obterAvaliacao}
+                                        />
+                                    </div>
+                                    
+                                    {!isPremium && (
+                                        <div className="absolute inset-0 flex items-center justify-center z-10">
+                                            <div className="text-center">
+                                                <Button size="lg" className="h-12 text-lg">
+                                                    Torne-se Membro
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>  */}
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    <Users className="h-5 w-5" />
+                                    Mototaxistas Disponíveis 
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-2">
+                                    {mototaxistasAtivos.slice(0, 3).map((mototaxista) => {
+                                        const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
+                                        return (
+                                            <MototaxistaCard
+                                                key={mototaxista.id}
+                                                mototaxista={mototaxista}
+                                                onToggleStatus={toggleStatus}
+                                                onSelecionar={handleMostrarDetalhes}
+                                                isFavorito={isFavorito(mototaxista.id)}
+                                                onToggleFavorito={handleToggleFavorito}
+                                                showFavoriteButton={true}
+                                                metricas={metricas}
+                                            />
+                                        );
+                                    })}
+                                    {quantidadeAtivos  > 2 && (
+                                        <Button
+                                            variant="outline"
+                                            className="w-full"
+                                            onClick={() => setTelaAtual('selecionar-mototaxista')}
+                                        >
+                                            Ver todos motoboys do app ({quantidadeAtivos} disponíveis)
+                                        </Button>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <div className="space-y-3">
+                            <Button
+                                onClick={() => setTelaAtual('selecionar-mototaxista')}
+                                disabled={quantidadeAtivos === 0}
+                                className="w-full h-14 text-lg"
+                                size="lg"
+                            >
+                            <Car className="h-5 w-5 mr-2" />
+                                Solicitar Moto-Táxi
+                            </Button>
+                        </div>
+
+                        <div className="flex flex-col items-center mr-top-10 justify-center space-y-3 mx-auto">
+                            <img src="/caminho/para/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+                            <h1 className="text-sm text-center">
+                            Desenvolvedor: Bruno Abreu                                 
+
+                            </h1>
+                            <h1 className="text-sm text-center">
+                            Contato: brunoabreudevs@gmail.com
+                            </h1>
+                            <EnviarEmail />
+                        </div>
+
+                        <BannerSection/>
+                    </div>
+                );
+        }
+    };
     
-    <ConfirmarRepetirViagem
-      viagem={viagemParaRepetir}
-      isOpen={mostrarConfirmacaoRepeticao}
-      onClose={() => {
-        setMostrarConfirmacaoRepeticao(false);
-        setViagemParaRepetir(null);
-      }}
-      onConfirmar={handleConfirmarRepeticaoViagem}
-    />
-
-    <DetalhesMotoboyModal
-      mototaxista={motoboyDetalhes}
-      isOpen={mostrarDetalhesModal}
-      onClose={() => {
-        setMostrarDetalhesModal(false);
-        setMotoboyDetalhes(null);
-      }}
-      onSelecionar={handleSelecionarMototaxista}
-      metricas={motoboyDetalhes ? calcularMetricasMotorista(motoboyDetalhes.nome, historico) : undefined}
-    />
-
-    <ConfiguracoesModal
-      isOpen={mostrarConfiguracoesModal}
-      onClose={() => setMostrarConfiguracoesModal(false)}
-    />
-  </div>
-  );
+    // Retorno principal do componente Index
+    return (
+     <div className="min-h-screen bg-background p-4">
+      <div className="max-w-md mx-auto">
+        {renderTela()}
+      </div>
+      
+      <ConfirmarRepetirViagem
+        viagem={viagemParaRepetir}
+        isOpen={mostrarConfirmacaoRepeticao}
+        onClose={() => {
+          setMostrarConfirmacaoRepeticao(false);
+          setViagemParaRepetir(null);
+        }}
+        onConfirmar={handleConfirmarRepeticaoViagem}
+      />
+  
+      <DetalhesMotoboyModal
+        mototaxista={motoboyDetalhes}
+        isOpen={mostrarDetalhesModal}
+        onClose={() => {
+          setMostrarDetalhesModal(false);
+          setMotoboyDetalhes(null);
+        }}
+        onSelecionar={handleSelecionarMototaxista}
+        metricas={motoboyDetalhes ? calcularMetricasMotorista(motoboyDetalhes.nome, historico) : undefined}
+      />
+  
+      <ConfiguracoesModal
+        Premium={isPremium}
+        dateExpira={dateExpiration}
+        isOpen={mostrarConfiguracoesModal}
+        onClose={() => setMostrarConfiguracoesModal(false)}
+      />
+    </div>
+    );
 };
 
 export default Index;
