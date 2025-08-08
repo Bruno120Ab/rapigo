@@ -2,12 +2,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, Car, Bike, Star, Shield, Phone } from "lucide-react";
+import { User, Car, Bike, Star, Shield, Phone, ShieldCheck } from "lucide-react";
 import { Mototaxista } from "@/types/mototaxi";
 
 interface DetalhesMotoboyModalProps {
   mototaxista: Mototaxista | null;
   isOpen: boolean;
+  loading: boolean;
+  premium: boolean;
   onClose: () => void;
   onSelecionar: (mototaxista: Mototaxista) => void;
   metricas?: { mediaEstrelas: number; taxaAceite: number; totalViagens: number; viagensAvaliadas: number };
@@ -15,6 +17,8 @@ interface DetalhesMotoboyModalProps {
 
 export const DetalhesMotoboyModal = ({ 
   mototaxista, 
+  loading,
+  premium,
   isOpen, 
   onClose, 
   onSelecionar,
@@ -51,7 +55,7 @@ export const DetalhesMotoboyModal = ({
                   variant={mototaxista.ativo ? "default" : "secondary"}
                   className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
                 >
-                  {metricas.mediaEstrelas > 4 ? "Bem avaliado" : "Indisponível"}
+                  {metricas.mediaEstrelas > 4 ? "Bem avaliado" : "Pontual"}
                 </Badge>
               </div>
               
@@ -82,6 +86,7 @@ export const DetalhesMotoboyModal = ({
               </>
             )}
           </div>
+
           <p className="font-medium mx-auto" >Historico de viagens com você :</p>
 
           {/* Métricas */}
@@ -110,7 +115,56 @@ export const DetalhesMotoboyModal = ({
               </div>
             </div>
           )}
+          <span className="flex items-center mr-0">
+            <ShieldCheck className="h-4 w-4 text-green-500" />
+            <h3 className="font-medium ml-1" > Quer mais confiança?</h3> 
+          </span>
+            <h5 className="text-sm text-muted-foreground">Veja o desempenho do motoboy com outros usuários, histórico de atendimento e avaliações detalhadas.</h5>
+          {loading ? (
+                            <div className="flex items-center justify-center p-8">
+                                <p>Verificando status premium...</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className={`
+                                    transition-all duration-300
+                                    ${!premium ? 'blur-sm pointer-events-none' : ''}
+                                `}>
 
+                                  
+                                      {metricas && metricas.totalViagens > 0 && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                      <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+                      <div>
+                        <p className="font-medium">
+                          {metricas.mediaEstrelas > 0 ? metricas.mediaEstrelas.toFixed(1) : "N/A"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Avaliação ({metricas.viagensAvaliadas} avaliações)
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                      <Shield className="h-5 w-5 text-green-600" />
+                      <div>
+                        <p className="font-medium">{Math.round(metricas.taxaAceite)}%</p>
+                        <p className="text-xs text-muted-foreground">
+                          Taxa de aceite ({metricas.totalViagens} viagens)
+                        </p>
+                      </div>
+                    </div>
+                
+                                
+                      </div>
+        )}
+                                    </div>
+                                
+                            
+                            </>
+                        )}    
+                 
           {/* Botão de seleção */}
           {mototaxista.ativo && (
             <Button onClick={handleSelecionar} className="w-full">

@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Solicitacao } from "@/types/mototaxi";
+import { enviarAvaParaGoogleForms } from "@/hooks/use-enviarAva";
 
 interface AvaliacaoModalProps {
   viagem: Solicitacao | null;
@@ -82,7 +83,16 @@ export const AvaliacaoModal = ({
     const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, "_blank");
   };
+const data = viagem.dataHora;
 
+const dia = String(data.getDate()).padStart(2, '0');
+const mes = String(data.getMonth() + 1).padStart(2, '0'); // Janeiro é 0
+const ano = data.getFullYear();
+
+const hora = String(data.getHours()).padStart(2, '0');
+const minuto = String(data.getMinutes()).padStart(2, '0');
+
+const dataHoraFormatada = `${dia}/${mes}/${ano} ${hora}:${minuto}`;
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
@@ -167,9 +177,24 @@ export const AvaliacaoModal = ({
           <Button variant="outline" onClick={onClose} className="flex-1">
             Cancelar
           </Button>
-          <Button onClick={handleSalvar} disabled={estrelas === 0} className="flex-1">
-            Salvar Avaliação
-          </Button>
+         <Button
+  disabled={estrelas === 0}
+  className="flex-1 "
+  onClick={async () => {
+    await enviarAvaParaGoogleForms({
+      Avaliacao: estrelas,
+      Feita: aceita,
+      Comentario: feedback,
+      Motoboy: viagem.motoBoy,
+      TimeRun: dataHoraFormatada,
+      Type: viagem.serviceType,
+    });
+    handleSalvar();
+  }}
+>
+  Enviar avaliação
+</Button>
+        
         </div>
       </DialogContent>
     </Dialog>

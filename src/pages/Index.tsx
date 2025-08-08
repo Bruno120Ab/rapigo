@@ -412,9 +412,10 @@ const Index = () => {
                                 Solicitar Moto-Táxi
                             </Button>
                         </div>
-
-                        <div className="flex flex-col items-center mr-top-10 justify-center space-y-3 mx-auto">
-                            <img src="/caminho/para/logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+                        <PoliticaSeguranca />
+                        <BannerSection/>
+                         <div className="flex flex-col items-center mr-top-10 justify-center space-y-3 mx-auto">
+                            {/* <img src="/caminho/para/logo.png" alt="Logo" className="w-10 h-10 object-contain" /> */}
                             <h1 className="text-sm text-center">
                             Desenvolvedor: Bruno Abreu                                 
 
@@ -424,9 +425,6 @@ const Index = () => {
                             </h1>
                             <EnviarEmail />
                         </div>
-
-                        <PoliticaSeguranca />
-                        <BannerSection/>
                     </div>
                 );
         }
@@ -450,6 +448,8 @@ const Index = () => {
       />
   
       <DetalhesMotoboyModal
+        loading={premiumLoading}
+        premium={isPremium}
         mototaxista={motoboyDetalhes}
         isOpen={mostrarDetalhesModal}
         onClose={() => {
