@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bike, Car, Settings, Users } from "lucide-react";
+import { Bike, Car, Settings, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -307,7 +307,7 @@ const Index = () => {
                                     onClick={() => setMostrarConfiguracoesModal(true)}
                                     className="text-muted-foreground hover:text-foreground"
                                 >
-                                <Settings className="h-5 w-5" />
+                                <User className="h-15 w-15" />
                                 </Button>
                             </div>
                             <p className="text-muted-foreground">
@@ -418,7 +418,6 @@ const Index = () => {
                             {/* <img src="/caminho/para/logo.png" alt="Logo" className="w-10 h-10 object-contain" /> */}
                             <h1 className="text-sm text-center">
                             Desenvolvedor: Bruno Abreu                                 
-
                             </h1>
                             <h1 className="text-sm text-center">
                             Contato: brunoabreudevs@gmail.com

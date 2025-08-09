@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Solicitacao } from "@/types/mototaxi";
 import { enviarAvaParaGoogleForms } from "@/hooks/use-enviarAva";
+import { useHistoricoCorridas } from "@/hooks/use-historicoCorrida";
 
 interface AvaliacaoModalProps {
   viagem: Solicitacao | null;
@@ -26,6 +27,8 @@ export const AvaliacaoModal = ({
   const [estrelas, setEstrelas] = useState(0);
   const [aceita, setAceita] = useState(false);
   const [feedback, setFeedback] = useState("");
+
+
 
   // Resetar estado quando uma nova viagem é selecionada ou modal é aberto
   useEffect(() => {
@@ -161,7 +164,6 @@ const dataHoraFormatada = `${dia}/${mes}/${ano} ${hora}:${minuto}`;
               rows={3}
             />
           </div>
-
           {/* Botão WhatsApp */}
           <Button
             onClick={enviarFeedbackWhatsApp}
@@ -192,7 +194,7 @@ const dataHoraFormatada = `${dia}/${mes}/${ano} ${hora}:${minuto}`;
     handleSalvar();
   }}
 >
-  Enviar avaliação
+  Salvar avaliação
 </Button>
         
         </div>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Solicitacao } from "@/types/mototaxi";
-import { MapPin, Clock, User, Bike } from "lucide-react";
+import { MapPin, Clock, User, Bike, MapPinHouse } from "lucide-react";
 import { buscarMototaxistaPorNome, salvarMototaxistaNoLocalStorage } from "@/utils/mototaxistas";
 
 interface ConfirmarRepetirViagemProps {
@@ -76,20 +76,33 @@ export const ConfirmarRepetirViagem = ({
           
           <div className="space-y-3 p-4 bg-muted/50 rounded-lg">
             <div className="flex items-start gap-2">
-              <Bike className="h-4 w-4 mt-1 text-primary" />
-              <div>
-                <div className="font-medium">{viagem.motoBoy}</div>
-              </div>
-            </div>
-            <div className="flex items-start gap-2">
               <User className="h-4 w-4 mt-1 text-primary" />
               <div>
                 <div className="font-medium">{viagem.nome}</div>
               </div>
             </div>
+
+            <div className="flex items-start gap-2">
+              <Bike className="h-4 w-4 mt-1 text-primary" />
+              <div>
+                <div className="font-medium">{viagem.motoBoy}</div>
+              </div>
+            </div>
             
             <div className="flex items-start gap-2">
-              <MapPin className="h-4 w-4 mt-1 text-primary" />
+                <Bike className="h-4 w-4 mt-1 text-primary" />
+                <div>
+                  <div className="text-sm font-medium">Tipo de serviço:</div>
+                  <div className="text-sm text-muted-foreground">{viagem.serviceType}</div>
+                </div>
+            </div>
+
+          
+            
+          
+
+            <div className="flex items-start gap-2">
+              <MapPinHouse  className="h-4 w-4 mt-1 text-primary" />
               <div>
                 <div className="text-sm font-medium">Origem:</div>
                 <div className="text-sm text-muted-foreground">{viagem.endereco}</div>
