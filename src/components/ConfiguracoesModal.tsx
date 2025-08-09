@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useConfiguracoes, Configuracao } from "@/hooks/useConfiguracoes";
 import { useToast } from "@/hooks/use-toast";
+import HistoricoCorridas from "./HistoricoCorridas";
 
 interface ConfiguracoesModalProps {
   Premium: boolean;
@@ -16,11 +17,13 @@ interface ConfiguracoesModalProps {
   onClose: () => void;
 }
 
-export const ConfiguracoesModal = ({Premium, isOpen, dateExpira, onClose }: ConfiguracoesModalProps) => {
+export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: ConfiguracoesModalProps) => {
   const { configuracao, salvarConfiguracao } = useConfiguracoes();
   const [configLocal, setConfigLocal] = useState<Configuracao>(configuracao);
   const { toast } = useToast();
   const inputNomeRef = useRef<HTMLInputElement>(null);
+
+  const nomeMotoboy = "Allysson"; // Exemplo fixo (pode vir de estado ou prop)
 
   const handleSalvar = () => {
     salvarConfiguracao(configLocal);
@@ -28,49 +31,43 @@ export const ConfiguracoesModal = ({Premium, isOpen, dateExpira, onClose }: Conf
   };
 
   const enviarDadosPremiumWhatsApp = () => {
-  let userId = null as string | null;
-  let nomeCliente = configLocal.nomeClientePadrao?.trim() || null;
+    let userId = null as string | null;
+    let nomeCliente = configLocal.nomeClientePadrao?.trim() || null;
 
-  // Se não tiver nome, alerta, foca no campo e não prossegue
-  if (!nomeCliente) {
-    toast({
-      title: "Nome obrigatório",
-      description: "Informe seu nome completo para continuar.",
-      variant: "destructive",
-    });
-    inputNomeRef.current?.focus();
-    return;
-  }
-
-  // 1. Tenta pegar os dados do localStorage
-  const configString = localStorage.getItem('configuracoes-usuario');
-
-  if (configString) {
-    try {
-      const config = JSON.parse(configString);
-      userId = config.userId;
-      // Garante que o nome informado nesta tela seja salvo
-      config.nomeClientePadrao = nomeCliente;
-      localStorage.setItem('configuracoes-usuario', JSON.stringify(config));
-      salvarConfiguracao({ nomeClientePadrao: nomeCliente });
-    } catch (error) {
-      console.error("Erro ao ler configurações do usuário:", error);
+    if (!nomeCliente) {
+      toast({
+        title: "Nome obrigatório",
+        description: "Informe seu nome completo para continuar.",
+        variant: "destructive",
+      });
+      inputNomeRef.current?.focus();
+      return;
     }
-  } else {
-    // Se não houver config ainda, cria uma mínima
-    const novo = { userId: `user-${Math.random().toString(36).slice(2)}`, nomeClientePadrao: nomeCliente };
-    localStorage.setItem('configuracoes-usuario', JSON.stringify(novo));
-    userId = novo.userId;
-    salvarConfiguracao({ nomeClientePadrao: nomeCliente });
-  }
 
-  // Se não encontrar o ID, usa um fallback
-  const idParaEnvio = userId || 'ID_NÃO_ENCONTRADO';
-  const nomeParaEnvio = nomeCliente;
+    const configString = localStorage.getItem("configuracoes-usuario");
 
-  // 2. Monta a mensagem para o WhatsApp
-  const numeroMeuWhatsapp = "5571999099688"; // <-- Mude para o seu número
-  const mensagem = `
+    if (configString) {
+      try {
+        const config = JSON.parse(configString);
+        userId = config.userId;
+        config.nomeClientePadrao = nomeCliente;
+        localStorage.setItem("configuracoes-usuario", JSON.stringify(config));
+        salvarConfiguracao({ nomeClientePadrao: nomeCliente });
+      } catch (error) {
+        console.error("Erro ao ler configurações do usuário:", error);
+      }
+    } else {
+      const novo = { userId: `user-${Math.random().toString(36).slice(2)}`, nomeClientePadrao: nomeCliente };
+      localStorage.setItem("configuracoes-usuario", JSON.stringify(novo));
+      userId = novo.userId;
+      salvarConfiguracao({ nomeClientePadrao: nomeCliente });
+    }
+
+    const idParaEnvio = userId || "ID_NÃO_ENCONTRADO";
+    const nomeParaEnvio = nomeCliente;
+
+    const numeroMeuWhatsapp = "5571999099688"; 
+    const mensagem = `
 Olá! Gostaria de assinar o plano premium.
 Segue minhas informações para liberação:
 
@@ -78,56 +75,49 @@ Segue minhas informações para liberação:
 *ID de Usuário:* ${idParaEnvio}
 
 Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
-  `.trim();
+    `.trim();
 
-  // 3. Monta a URL e abre o WhatsApp
-  const url = `https://wa.me/${numeroMeuWhatsapp}?text=${encodeURIComponent(mensagem)}`;
-  window.open(url, "_blank");
-};
+    const url = `https://wa.me/${numeroMeuWhatsapp}?text=${encodeURIComponent(mensagem)}`;
+    window.open(url, "_blank");
+  };
 
-
-  const data = new Date(dateExpira + 'T00:00:00')
-
+  const data = new Date(dateExpira + "T00:00:00");
 
   const handleCancel = () => {
-    setConfigLocal(configuracao); // Reseta para os valores salvos
+    setConfigLocal(configuracao);
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            Configurações
+            Perfil
           </DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-6">
-          {/* Nome do cliente padrão */}
+
+        {/* Conteúdo com scroll vertical interno */}
+        <div className="space-y-6 overflow-y-auto max-h-[calc(80vh-6rem)] px-4 py-2">
+          {/* Campos de configuração */}
           <div className="space-y-2">
             <Label htmlFor="nome-cliente" className="flex items-center gap-2">
               <User className="h-4 w-4" />
               Nome do Cliente Padrão
             </Label>
-              <Input
-                id="nome-cliente"
-                placeholder="Digite seu nome"
-                value={configLocal.nomeClientePadrao}
-                onChange={(e) => setConfigLocal({ ...configLocal, nomeClientePadrao: e.target.value })}
-                ref={inputNomeRef}
-              />
+            <Input
+              id="nome-cliente"
+              placeholder="Digite seu nome"
+              value={configLocal.nomeClientePadrao}
+              onChange={(e) => setConfigLocal({ ...configLocal, nomeClientePadrao: e.target.value })}
+              ref={inputNomeRef}
+            />
           </div>
 
-          {/* Modo escuro */}
           <div className="flex items-center justify-between">
             <Label htmlFor="modo-escuro" className="flex items-center gap-2">
-              {configLocal.modoEscuro ? (
-                <Moon className="h-4 w-4" />
-              ) : (
-                <Sun className="h-4 w-4" />
-              )}
+              {configLocal.modoEscuro ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               Modo Escuro
             </Label>
             <Switch
@@ -137,7 +127,6 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
             />
           </div>
 
-          {/* Tamanho da fonte */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
               <Type className="h-4 w-4" />
@@ -145,7 +134,7 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
             </Label>
             <Select
               value={configLocal.tamanhoFonte}
-              onValueChange={(value: 'pequeno' | 'medio' | 'grande') => 
+              onValueChange={(value: "pequeno" | "medio" | "grande") =>
                 setConfigLocal({ ...configLocal, tamanhoFonte: value })
               }
             >
@@ -160,7 +149,6 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
             </Select>
           </div>
 
-          {/* Usuário padrão */}
           <div className="flex items-center justify-between">
             <Label htmlFor="usuario-padrao" className="flex items-center gap-2">
               <UserCheck className="h-4 w-4" />
@@ -172,18 +160,17 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
               onCheckedChange={(checked) => setConfigLocal({ ...configLocal, usuarioPadrao: checked })}
             />
           </div>
-          {Premium ? 
-          (
+
+          {Premium ? (
             <div className="flex items-center justify-between">
               <Label className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-green-500" />
-                Usuario Premium
+                Usuário Premium
                 <ShieldCheck className="h-4 w-4 text-green-500" />
-                Data de expiração  - { data.toLocaleDateString('pt-BR') }
+                Data de expiração - {data.toLocaleDateString("pt-BR")}
               </Label>
             </div>
-          ) :
-          (
+          ) : (
             <div className="flex items-center justify-between">
               <Label className="flex items-center gap-2">
                 <ShieldX className="h-4 w-4 text-red-500 " />
@@ -191,21 +178,23 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
               </Label>
             </div>
           )}
-        
-          
+
+          {/* Histórico com altura limitada e scroll interno */}
+          <div className="border rounded-md p-3 max-h-60 overflow-auto">
+            <HistoricoCorridas  isPremium={Premium} nomeDoMotoboy={nomeMotoboy} />
+          </div>
         </div>
 
-        <div className="flex gap-2 pt-4">
+        {/* Botões fixos embaixo */}
+        <div className="flex gap-2 pt-4 px-4 pb-4 border-t bg-white sticky bottom-0">
           <Button variant="outline" onClick={handleCancel} className="flex-1">
             Cancelar
           </Button>
           <Button onClick={handleSalvar} className="flex-1">
             Salvar
           </Button>
-            {!Premium && (
-            <Button 
-              onClick={enviarDadosPremiumWhatsApp} variant="outline"          
-            >
+          {!Premium && (
+            <Button onClick={enviarDadosPremiumWhatsApp} variant="outline" className="flex-1">
               Torne-se Membro
             </Button>
           )}
