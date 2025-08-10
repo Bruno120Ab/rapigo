@@ -1,3 +1,4 @@
+import { Star } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "precosCorridas";
@@ -191,15 +192,22 @@ export default function HistoricoCorridas({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold mb-3 text-gray-800">
-        Corridas do Motoboy: {dados.motoboy}{" "}
-        {!isPremium ? "(Hoje)" : "(Últimas corridas)"}
+    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg ">
+      <h2 className="mb-3 text-gray-800">
+       <strong>Corridas do Motoboy - </strong> 
+       {dados.motoboy} 
+        {!isPremium ? "(Hoje)" : ""}
       </h2>
+        {!isPremium && (
+        <p className="mb-4 text-center text-sm text-yellow-700 bg-yellow-100 p-2 rounded">
+          Você está no plano básico e visualiza apenas as corridas feitas no dia.
+          Para acessar todas as corridas do mês, assine o plano Premium mensal.
+        </p>
+      )}
 
       {/* Inputs para filtro de datas só para premium */}
       {isPremium && (
-        <div className="mb-4 flex gap-4 justify-center">
+        <div className="mb-4 flex gap-4 justify-center flex-col">
           <label>
             Data início:{" "}
             <input
@@ -221,51 +229,91 @@ export default function HistoricoCorridas({
           </label>
         </div>
       )}
-
-      <div className="mb-6 p-4 bg-gray-100 rounded-md text-gray-700 space-y-2">
-        <p>
-          <strong>Total de corridas {isPremium ? "disponíveis" : "hoje"}:</strong>{" "}
-          {dados.totalCorridas}
-        </p>
-        <p>
-          <strong>Horário com mais corridas:</strong>{" "}
-          {faixaHorariaMaisCorridas.chave
-            ? `${faixaHorariaMaisCorridas.chave} (${faixaHorariaMaisCorridas.valor} corrida${
-                faixaHorariaMaisCorridas.valor > 1 ? "s" : ""
-              })`
-            : "N/D"}
-        </p>
-        <p>
-          <strong>Local com mais chamadas:</strong>{" "}
-          {localMaisChamado.chave
-            ? `${localMaisChamado.chave} (${localMaisChamado.valor} chamada${
-                localMaisChamado.valor > 1 ? "s" : ""
-              })`
-            : "N/D"}
-        </p>
-        <p>
-          <strong>Bairro que mais pede mototáxi:</strong>{" "}
+   <div className="grid grid-cols-2 gap-1 mb-5">
+          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <div>
+              <p className="font-medium">
+                Horarios com mais corrida
+              </p>
+              <p className="text-xs text-muted-foreground">
+                    {faixaHorariaMaisCorridas.chave
+                ? `${faixaHorariaMaisCorridas.chave} (${faixaHorariaMaisCorridas.valor} corrida${
+                    faixaHorariaMaisCorridas.valor > 1 ? "s" : ""
+                  })`
+                : "N/D"}          
+              </p>
+            </div>
+          </div>
+           <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <div>
+              <p className="font-medium">
+                  Quantidade de Corridas
+              </p>
+              <p className="text-xs text-muted-foreground">
+                   <strong>Total de corridas {isPremium ? "disponíveis" : "hoje"}:</strong>{" "}
+                   {dados.totalCorridas}        
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <div>
+              <p className="font-medium">
+                  Volume financeiro
+              </p>
+              <p className="text-xs text-muted-foreground">
+                    {totalFinanceiro.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}       
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <div>
+              <p className="font-medium">
+               Top pedidos
+              </p>
+              <p className="text-xs text-muted-foreground">
           {bairroMaisAtivo.chave
             ? `${bairroMaisAtivo.chave} (${bairroMaisAtivo.valor} chamada${
                 bairroMaisAtivo.valor > 1 ? "s" : ""
               })`
+            : "N/D"}   
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <div>
+              <p className="font-medium">
+               Locais que mais pede
+              </p>
+              <p className="text-xs text-muted-foreground">
+               {localMaisChamado.chave
+            ? `${localMaisChamado.chave} (${localMaisChamado.valor} chamada${
+                localMaisChamado.valor > 1 ? "s" : ""
+              })`
             : "N/D"}
-        </p>
-        <p>
-          <strong>Total financeiro informado:</strong>{" "}
-          {totalFinanceiro.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
-        </p>
-      </div>
+              </p>
+            </div>
+          </div>
+           <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <div>
+            <p className="font-medium">
+              Ticket médio
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {(
+                Number(totalFinanceiro) / (dados.totalCorridas || 1)
+              ).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </p>
+            </div>
+          </div>
+    </div>
 
-      {!isPremium && (
-        <p className="mb-4 text-center text-sm text-yellow-700 bg-yellow-100 p-2 rounded">
-          Você está no plano básico e visualiza apenas as corridas feitas no dia.
-          Para acessar todas as corridas do mês, assine o plano Premium mensal.
-        </p>
-      )}
+
 
       {dados.corridas.length === 0 ? (
         <p className="text-center text-gray-500">
@@ -299,6 +347,7 @@ export default function HistoricoCorridas({
           })}
         </ul>
       )}
+    
 
       {/* Modal simples */}
       {precoEditando && (

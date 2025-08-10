@@ -90,7 +90,7 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
@@ -180,7 +180,7 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
           )}
 
           {/* Histórico com altura limitada e scroll interno */}
-          <div className="border rounded-md p-3 max-h-60 overflow-auto">
+          <div className="border rounded-md p-3 max-h-80 overflow-auto">
             <HistoricoCorridas  isPremium={Premium} nomeDoMotoboy={nomeMotoboy} />
           </div>
         </div>
