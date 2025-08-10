@@ -170,11 +170,12 @@ export default function HistoricoCorridas({
     return "";
   };
 
-  const totalFinanceiro = Object.values(precos).reduce((acc: number, preco) => {
-    const precoStr = preco as string | number;
-    const precoNum = parseFloat(precoStr.toString().replace(",", "."));
-    return acc + (isNaN(precoNum) ? 0 : precoNum);
-  }, 0);
+const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
+  const precoStr = precos[corrida.id]?.toString() || "0";
+  const precoNum = parseFloat(precoStr.replace(",", "."));
+  return acc + (isNaN(precoNum) ? 0 : precoNum);
+}, 0);
+
 
   // Modal para informar preço
   const abrirModalPreco = (id: string) => {
