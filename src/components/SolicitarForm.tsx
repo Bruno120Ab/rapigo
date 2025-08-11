@@ -120,6 +120,7 @@ export const SolicitarForm = ({
       dataHora: dataHoraFinal,
       dataAgendamento: dataAgendamentoFinal,
       isAgendamento,
+      idmotoBoy: mototaxistaSelecionado.id,
       status: 'pendente',
       motoBoy:  mototaxistaSelecionado?.nome.trim() ?? "Não informado",
       serviceType

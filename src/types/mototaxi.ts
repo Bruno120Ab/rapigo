@@ -21,6 +21,7 @@ export interface Solicitacao {
   status: 'pendente' | 'aceita' | 'concluida';
   isAgendamento?: boolean;
   motoBoy: string;
+  idmotoBoy: string;
   serviceType?: 'corrida' | 'entrega' | 'coleta' | 'buscar_pessoa';
 }
 

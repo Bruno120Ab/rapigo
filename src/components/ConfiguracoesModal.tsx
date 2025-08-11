@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Settings, User, Moon, Sun, Type, UserCheck, ShieldCheck, ShieldX } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -6,9 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useConfiguracoes, Configuracao } from "@/hooks/useConfiguracoes";
 import { useToast } from "@/hooks/use-toast";
 import HistoricoCorridas from "./HistoricoCorridas";
+import { enviarUserParaGoogleForms } from "@/hooks/use-login";
+
+interface Configuracao {
+  nomeClientePadrao: string;
+  email: string;
+  ehMotoboy: boolean;
+  modoEscuro: boolean;
+  tamanhoFonte: "pequeno" | "medio" | "grande";
+  usuarioPadrao: boolean;
+}
 
 interface ConfiguracoesModalProps {
   Premium: boolean;
@@ -17,24 +26,88 @@ interface ConfiguracoesModalProps {
   onClose: () => void;
 }
 
+const STORAGE_KEY = "configuracoes-usuario";
+
 export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: ConfiguracoesModalProps) => {
-  const { configuracao, salvarConfiguracao } = useConfiguracoes();
-  const [configLocal, setConfigLocal] = useState<Configuracao>(configuracao);
   const { toast } = useToast();
   const inputNomeRef = useRef<HTMLInputElement>(null);
 
-  const nomeMotoboy = "Allysson"; // Exemplo fixo (pode vir de estado ou prop)
+  const [configLocal, setConfigLocal] = useState<Configuracao>({
+    nomeClientePadrao: "",
+    email: "",
+    ehMotoboy: false,
+    modoEscuro: false,
+    tamanhoFonte: "medio",
+    usuarioPadrao: false,
+  });
 
-  const handleSalvar = () => {
-    salvarConfiguracao(configLocal);
-    onClose();
+  const [hasConfigSaved, setHasConfigSaved] = useState(false);
+
+  // Carregar dados do localStorage ao abrir modal
+  useEffect(() => {
+    if (isOpen) {
+      const dadosStr = localStorage.getItem(STORAGE_KEY);
+      console.log("useEffect - modal aberto, localStorage:", dadosStr);
+      if (dadosStr) {
+        try {
+          const dados = JSON.parse(dadosStr);
+          setConfigLocal({
+            nomeClientePadrao: dados.nomeClientePadrao || "",
+            email: dados.email || "",
+            ehMotoboy: dados.ehMotoboy || false,
+            modoEscuro: dados.modoEscuro || false,
+            tamanhoFonte: dados.tamanhoFonte || "medio",
+            usuarioPadrao: dados.usuarioPadrao || false,
+          });
+
+          // Define se já existe configuração válida para bloquear salvar
+          if (dados.nomeClientePadrao && dados.email) {
+            setHasConfigSaved(true);
+          } else {
+            setHasConfigSaved(false);
+          }
+        } catch (e) {
+          console.error("Erro ao parsear localStorage:", e);
+          setHasConfigSaved(false);
+          setConfigLocal({
+            nomeClientePadrao: "",
+            email: "",
+            ehMotoboy: false,
+            modoEscuro: false,
+            tamanhoFonte: "medio",
+            usuarioPadrao: false,
+          });
+        }
+      } else {
+        setHasConfigSaved(false);
+      }
+    }
+  }, [isOpen]);
+
+  const getUserId = () => {
+    const dadosStr = localStorage.getItem(STORAGE_KEY);
+    if (dadosStr) {
+      try {
+        const dados = JSON.parse(dadosStr);
+        if (dados.userId) {
+          return dados.userId;
+        }
+      } catch {}
+    }
+    return `user-${Math.random().toString(36).slice(2)}`;
   };
 
-  const enviarDadosPremiumWhatsApp = () => {
-    let userId = null as string | null;
-    let nomeCliente = configLocal.nomeClientePadrao?.trim() || null;
+  const handleSalvar = () => {
+    if (hasConfigSaved) {
+      toast({
+        title: "Configurações já salvas",
+        description: "Você já possui configurações salvas e não pode salvar novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    if (!nomeCliente) {
+    if (!configLocal.nomeClientePadrao.trim()) {
       toast({
         title: "Nome obrigatório",
         description: "Informe seu nome completo para continuar.",
@@ -44,49 +117,64 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: Con
       return;
     }
 
-    const configString = localStorage.getItem("configuracoes-usuario");
-
-    if (configString) {
-      try {
-        const config = JSON.parse(configString);
-        userId = config.userId;
-        config.nomeClientePadrao = nomeCliente;
-        localStorage.setItem("configuracoes-usuario", JSON.stringify(config));
-        salvarConfiguracao({ nomeClientePadrao: nomeCliente });
-      } catch (error) {
-        console.error("Erro ao ler configurações do usuário:", error);
-      }
-    } else {
-      const novo = { userId: `user-${Math.random().toString(36).slice(2)}`, nomeClientePadrao: nomeCliente };
-      localStorage.setItem("configuracoes-usuario", JSON.stringify(novo));
-      userId = novo.userId;
-      salvarConfiguracao({ nomeClientePadrao: nomeCliente });
+    if (!configLocal.email.trim() || !/\S+@\S+\.\S+/.test(configLocal.email)) {
+      toast({
+        title: "Email inválido",
+        description: "Informe um email válido para continuar.",
+        variant: "destructive",
+      });
+      return;
     }
 
-    const idParaEnvio = userId || "ID_NÃO_ENCONTRADO";
-    const nomeParaEnvio = nomeCliente;
+    const userId = getUserId();
 
-    const numeroMeuWhatsapp = "5571999099688"; 
-    const mensagem = `
-Olá! Gostaria de assinar o plano premium.
-Segue minhas informações para liberação:
+    const dadosParaSalvar = { userId, ...configLocal };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dadosParaSalvar));
 
-*Nome:* ${nomeParaEnvio}
-*ID de Usuário:* ${idParaEnvio}
+    const dataCadastro = new Date().toISOString().slice(0, 10);
 
-Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
-    `.trim();
+    enviarUserParaGoogleForms({
+      ehMotoboy: configLocal.ehMotoboy ? "Sim" : "Não",
+      email: configLocal.email,
+      nomeClientePadrao: configLocal.nomeClientePadrao,
+      userId,
+      Premium: Premium ? "Sim" : "Não",
+      DateExpir: dateExpira,
+      DateCAd: dataCadastro,
+    });
 
-    const url = `https://wa.me/${numeroMeuWhatsapp}?text=${encodeURIComponent(mensagem)}`;
-    window.open(url, "_blank");
+    setHasConfigSaved(true);
+
+    toast({
+      title: "Configurações salvas",
+      variant: "default",
+    });
+
+    onClose();
+  };
+
+  // Limpa dados para poder cadastrar novo usuário
+  const handleLimpar = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setConfigLocal({
+      nomeClientePadrao: "",
+      email: "",
+      ehMotoboy: false,
+      modoEscuro: false,
+      tamanhoFonte: "medio",
+      usuarioPadrao: false,
+    });
+    setHasConfigSaved(false);
+    toast({
+      title: "Configurações removidas",
+      description: "Você pode cadastrar um novo usuário agora.",
+      variant: "default",
+    });
   };
 
   const data = new Date(dateExpira + "T00:00:00");
-
-  const handleCancel = () => {
-    setConfigLocal(configuracao);
-    onClose();
-  };
+  const handleCancel = () => onClose();
+  const nomeMotoboy = 'Allysson';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -98,9 +186,7 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
           </DialogTitle>
         </DialogHeader>
 
-        {/* Conteúdo com scroll vertical interno */}
         <div className="space-y-6 overflow-y-auto max-h-[calc(80vh-6rem)] px-4 py-2">
-          {/* Campos de configuração */}
           <div className="space-y-2">
             <Label htmlFor="nome-cliente" className="flex items-center gap-2">
               <User className="h-4 w-4" />
@@ -112,9 +198,34 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
               value={configLocal.nomeClientePadrao}
               onChange={(e) => setConfigLocal({ ...configLocal, nomeClientePadrao: e.target.value })}
               ref={inputNomeRef}
+              disabled={hasConfigSaved}
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="email-cliente" className="flex items-center gap-2">
+              Email
+            </Label>
+            <Input
+              id="email-cliente"
+              type="email"
+              placeholder="Digite seu email"
+              value={configLocal.email}
+              onChange={(e) => setConfigLocal({ ...configLocal, email: e.target.value })}
+              disabled={hasConfigSaved}
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Switch
+              id="eh-motoboy"
+              checked={configLocal.ehMotoboy}
+              onCheckedChange={(checked) => setConfigLocal({ ...configLocal, ehMotoboy: checked })}
+              disabled={hasConfigSaved}
+            />
+            <Label htmlFor="eh-motoboy">Sou motoboy</Label>
+          </div>
+{/* 
           <div className="flex items-center justify-between">
             <Label htmlFor="modo-escuro" className="flex items-center gap-2">
               {configLocal.modoEscuro ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
@@ -124,8 +235,9 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
               id="modo-escuro"
               checked={configLocal.modoEscuro}
               onCheckedChange={(checked) => setConfigLocal({ ...configLocal, modoEscuro: checked })}
+              disabled={hasConfigSaved}
             />
-          </div>
+          </div> */}
 
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
@@ -137,6 +249,7 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
               onValueChange={(value: "pequeno" | "medio" | "grande") =>
                 setConfigLocal({ ...configLocal, tamanhoFonte: value })
               }
+              disabled={hasConfigSaved}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -158,6 +271,7 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
               id="usuario-padrao"
               checked={configLocal.usuarioPadrao}
               onCheckedChange={(checked) => setConfigLocal({ ...configLocal, usuarioPadrao: checked })}
+              disabled={hasConfigSaved}
             />
           </div>
 
@@ -179,22 +293,36 @@ Anexei o comprovante de pagamento neste chat. Por favor, confirme o recebimento.
             </div>
           )}
 
-          {/* Histórico com altura limitada e scroll interno */}
           <div className="border rounded-md p-3 max-h-80 overflow-auto">
-            <HistoricoCorridas  isPremium={Premium} nomeDoMotoboy={nomeMotoboy} />
+            <HistoricoCorridas isPremium={Premium} nomeDoMotoboy={nomeMotoboy} />
           </div>
         </div>
 
-        {/* Botões fixos embaixo */}
         <div className="flex gap-2 pt-4 px-4 pb-4 border-t bg-white sticky bottom-0">
           <Button variant="outline" onClick={handleCancel} className="flex-1">
             Cancelar
           </Button>
-          <Button onClick={handleSalvar} className="flex-1">
-            Salvar
-          </Button>
+
+          {!hasConfigSaved && (
+            <Button onClick={handleSalvar} className="flex-1">
+              Salvar
+            </Button>
+          )}
+
+          {hasConfigSaved && (
+            <Button variant="destructive" onClick={handleLimpar} className="flex-1">
+              Limpar usuário
+            </Button>
+          )}
+
           {!Premium && (
-            <Button onClick={enviarDadosPremiumWhatsApp} variant="outline" className="flex-1">
+            <Button
+              onClick={() => {
+                // Botão para "Torne-se Membro"
+              }}
+              variant="outline"
+              className="flex-1"
+            >
               Torne-se Membro
             </Button>
           )}

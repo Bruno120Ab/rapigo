@@ -187,6 +187,7 @@ const dataHoraFormatada = `${dia}/${mes}/${ano} ${hora}:${minuto}`;
       Avaliacao: estrelas,
       Feita: aceita,
       Comentario: feedback,
+      IdBoy: viagem.idmotoBoy,
       Motoboy: viagem.motoBoy,
       TimeRun: dataHoraFormatada,
       Type: viagem.serviceType,

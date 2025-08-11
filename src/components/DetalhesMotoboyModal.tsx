@@ -26,8 +26,7 @@ export const DetalhesMotoboyModal = ({
   metricas 
 }: DetalhesMotoboyModalProps) => {
   if (!mototaxista) return null;
-
-  const { resumo, loadingHistorico, error } = useHistoricoCorridas(mototaxista.nome);
+  const { resumo, loadingHistorico, error } = useHistoricoCorridas(mototaxista.id);
 
   const handleSelecionar = () => {
     onSelecionar(mototaxista);

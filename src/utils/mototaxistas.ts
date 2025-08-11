@@ -4,7 +4,7 @@ import { Mototaxista } from "@/types/mototaxi";
 // Esta é a mesma lista que está em useMototaxistas.ts
 export const mototaxistasIniciais: Mototaxista[] = [
   {
-    id: "1",
+    id: "t57c73ywswi",
     nome: "Allysson",
     telefone: "7798861-9707",
     foto: "/assets/file.enc",

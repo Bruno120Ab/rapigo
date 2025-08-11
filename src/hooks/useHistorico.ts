@@ -23,7 +23,7 @@ export const useHistorico = () => {
     localStorage.setItem("historico-viagens", JSON.stringify(novoHistorico));
   };
 
-  const adicionarAvaliacao = (viagemId: string, avaliacao: { estrelas: number; aceita: boolean; feedback: string }) => {
+  const adicionarAvaliacao = (viagemId: string, avaliacao: { estrelas: number; aceita: boolean; feedback: string; idMoto: string }) => {
     const avaliacoesSalvas = localStorage.getItem("avaliacoes-viagens");
     const avaliacoes = avaliacoesSalvas ? JSON.parse(avaliacoesSalvas) : {};
     avaliacoes[viagemId] = avaliacao;

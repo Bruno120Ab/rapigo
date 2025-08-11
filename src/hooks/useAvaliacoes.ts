@@ -5,6 +5,7 @@ interface Avaliacao {
   estrelas: number;
   aceita: boolean;
   feedback: string;
+  idMoto: string;
 }
 
 export const useAvaliacoes = () => {

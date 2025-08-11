@@ -136,6 +136,7 @@ export const ConfirmacaoSolicitacao = ({
             await enviarPedidoParaGoogleForms({
               nome: solicitacao.nome,
               corrida: solicitacao.endereco,
+              idMoto: solicitacao.idmotoBoy,
               motoboy: solicitacao.motoBoy,
             });
             onEnviarWhatsApp();

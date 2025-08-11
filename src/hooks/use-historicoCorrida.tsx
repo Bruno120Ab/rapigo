@@ -13,9 +13,11 @@ export function useHistoricoCorridas(nomeDoMotoboy) {
     }
 
     setLoadingHistorico(true);
-    const proxyUrl = 'https://script.google.com/macros/s/AKfycbyvDjpqEzuGN9BV4bOTKmXCHxd5CDLPYr5vjV7If5lAiNMADwyjJB6pxIb3K3b0M-Eo/exec';
+      console.log(`${nomeDoMotoboy} Aqui`)
 
-    fetch(`${proxyUrl}?nome=${encodeURIComponent(nomeDoMotoboy)}`)
+    const proxyUrl = 'https://script.google.com/macros/s/AKfycbxSN5Y25wszm8Z5pfx4z6wxbh87U_C5nxH2E4Qj6wOGDIywtl7saATBMCiWMojgJ6r5/exec';
+
+    fetch(`${proxyUrl}?id=${encodeURIComponent(nomeDoMotoboy)}`)
       .then(response => response.json())
       .then(data => {
         console.log(data)

@@ -506,7 +506,7 @@ import { PoliticaSeguranca } from "@/components/PoliticaSeguranca";
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
 const Index = () => {
-     const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(null);
     const [isPremium, setIsPremium] = useState(false);
     const [ dateExpiration, setDateExpiration ] = useState();
     const [premiumLoading, setPremiumLoading] = useState(true);
@@ -524,34 +524,56 @@ const Index = () => {
         }
 
         let storedId = storedConfig.userId;
-        if (!storedId) {
-            const newId = `user-${Math.random().toString(36).substring(2, 15)}`;
-            storedConfig.userId = newId;
-            localStorage.setItem('configuracoes-usuario', JSON.stringify(storedConfig));
-            storedId = newId;
-        }
+        // console.log()
+        // if (!storedId) {
+        //     const newId = `user-${Math.random().toString(36).substring(2, 15)}`;
+        //     storedConfig.userId = newId;
+        //     localStorage.setItem('configuracoes-usuario', JSON.stringify(storedConfig));
+        //     storedId = newId;
+        // }
         
-        setUserId(storedId);
+         setUserId(storedId);
     }, []);
 
     // useEffect 2: Verificação do status premium usando o proxy
     useEffect(() => {
         if (userId) {
-            const proxyUrl = 'https://script.google.com/macros/s/AKfycbwLwHbG41s1g6u35tlHOzaEmuGwD0nuJskkV_ypJDdrwy1CXd_f9YHlw63EbmUwKj7e/exec';
+            const proxyUrl = 'https://script.google.com/macros/s/AKfycbzlQiSCBtvQFfvPU5_aXchhTvSGPONo7Q_ZAmdT8FXEkg-bl0FTjzKtDyWtTv3oKxM1/exec';
             
             fetch(`${proxyUrl}?id=${userId}`)
-                .then(response => response.json())
-                .then(data => {
-                    setIsPremium(data.is_premium);
-                    setDateExpiration(data.expiration_date)
-                    setPremiumLoading(false);
-                    console.log(data)
-                })
-                .catch(error => {
-                    console.error('Erro ao verificar status premium:', error);
-                    setIsPremium(false);
-                    setPremiumLoading(false);
-                });
+  .then(response => response.json())
+  .then(data => {
+    console.log('Dados da planilha:', data);
+
+    if (data.found && data.data) {
+      // extrair premium e data expiração do objeto data.data
+      const isPremium = data.data.Premium === 'Sim';
+      // Pode precisar tratar se data.data["Data Expiração"] é 'undefined', 'null' ou string vazia:
+      let expiration_date = data.data["Data Expiração"];
+      if (
+        !expiration_date ||
+        expiration_date === 'undefined' ||
+        expiration_date === 'null' ||
+        expiration_date.trim() === ''
+      ) {
+        expiration_date = null;
+      }
+      setIsPremium(isPremium);
+      setDateExpiration(expiration_date);
+    } else {
+      setIsPremium(false);
+      setDateExpiration(null);
+    }
+
+    setPremiumLoading(false);
+  })
+  .catch(error => {
+    console.error('Erro ao verificar status premium:', error);
+    setIsPremium(false);
+    setDateExpiration(null);
+    setPremiumLoading(false);
+  });
+
         } else {
             // Se o userId ainda não foi gerado, consideramos em loading
             setPremiumLoading(true);
@@ -788,7 +810,7 @@ const Index = () => {
                                 <div></div>
                                 <h1 className="text-4xl font-extrabold flex items-center justify-center gap-3 text-gray-900">
                                     <Bike className="h-10 w-10 text-primary" />
-                                    Moto-Táxi de Itambé
+                                    RapMoto
                                 </h1>
                                 <Button
                                     variant="ghost"
