@@ -94,7 +94,7 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: Con
         }
       } catch {}
     }
-    return `user-${Math.random().toString(36).slice(2)}`;
+    return `${Math.random().toString(36).slice(2)}`;
   };
 
   const handleSalvar = () => {
