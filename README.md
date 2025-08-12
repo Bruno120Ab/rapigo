@@ -71,3 +71,90 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+
+
+function doGet(e) {
+  const motoboyId = e.parameter.id;
+  
+  if (!motoboyId) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ error: "Parâmetro 'id' é obrigatório." }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  return handleAvaliacoes(motoboyId);
+}
+
+function handleAvaliacoes(motoboyId) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName("Avaliacoes de Motoboy");
+  if (!sheet) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ error: "A aba 'Avaliacoes de Motoboy' não foi encontrada." }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  const dados = sheet.getDataRange().getValues();
+  if (dados.length < 2) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ error: "Nenhuma avaliação encontrada na planilha." }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  const headers = dados[0];
+
+  let totalAvaliacoes = 0;
+  let somaAvaliacoes = 0;
+  let corridasAceitas = 0;
+  const comentarios = [];
+  const avaliacoes = [];
+
+  for (let i = 1; i < dados.length; i++) {
+    const linha = dados[i];
+    const idNaLinha = linha[7];       // IdMotoBoy (coluna 8)
+    const avaliacao = linha[1];       // Avaliacao (coluna 2)
+    const feita = linha[2];           // Feita (coluna 3)
+    const comentario = linha[3];      // Comentario (coluna 4)
+
+    if (idNaLinha && idNaLinha.toString().trim() === motoboyId.trim()) {
+      // Monta objeto da linha completa com cabeçalho
+      let obj = {};
+      for (let j = 0; j < headers.length; j++) {
+        obj[headers[j]] = linha[j];
+      }
+      avaliacoes.push(obj);
+
+      // Somar avaliações válidas
+      if (!isNaN(avaliacao) && avaliacao !== "") {
+        somaAvaliacoes += Number(avaliacao);
+        totalAvaliacoes++;
+      }
+
+      // Contabilizar corridas feitas (aceitas)
+      if (feita && feita.toString().trim().toLowerCase() === "sim") {
+        corridasAceitas++;
+      }
+
+      // Guardar comentários não vazios
+      if (comentario && comentario.toString().trim() !== "") {
+        comentarios.push(comentario.toString().trim());
+      }
+    }
+  }
+
+  const taxaAceite = totalAvaliacoes > 0 ? (corridasAceitas / totalAvaliacoes) : 0;
+  const mediaAvaliacoes = totalAvaliacoes > 0 ? (somaAvaliacoes / totalAvaliacoes).toFixed(2) : "N/A";
+
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      idMotoBoy: motoboyId,
+      totalAvaliacoes,
+      mediaAvaliacoes,
+      corridasAceitas,
+      taxaAceite: taxaAceite.toFixed(2),
+      comentarios,
+      avaliacoes
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}

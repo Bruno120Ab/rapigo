@@ -47,7 +47,6 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: Con
   useEffect(() => {
     if (isOpen) {
       const dadosStr = localStorage.getItem(STORAGE_KEY);
-      console.log("useEffect - modal aberto, localStorage:", dadosStr);
       if (dadosStr) {
         try {
           const dados = JSON.parse(dadosStr);
@@ -67,7 +66,6 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: Con
             setHasConfigSaved(false);
           }
         } catch (e) {
-          console.error("Erro ao parsear localStorage:", e);
           setHasConfigSaved(false);
           setConfigLocal({
             nomeClientePadrao: "",
@@ -174,7 +172,7 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: Con
 
   const data = new Date(dateExpira + "T00:00:00");
   const handleCancel = () => onClose();
-  const nomeMotoboy = 'Allysson';
+  const nomeMotoboy = 't57c73ywswi';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -294,7 +292,7 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: Con
           )}
 
           <div className="border rounded-md p-3 max-h-80 overflow-auto">
-            <HistoricoCorridas isPremium={Premium} nomeDoMotoboy={nomeMotoboy} />
+            <HistoricoCorridas isPremium={Premium} idMoto={nomeMotoboy} />
           </div>
         </div>
 

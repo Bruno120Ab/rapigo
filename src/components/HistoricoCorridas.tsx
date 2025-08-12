@@ -7,19 +7,23 @@ type Corrida = {
   id: string;
   dataHora: string;
   endereco: string;
+  comentario: string;
+  avaliacao: number;
+  tipo: string;
 };
 
 type Dados = {
   motoboy: string;
   corridas: Corrida[];
   totalCorridas: number;
+  avaliacaoMedia: number;
 };
 
 export default function HistoricoCorridas({
-  nomeDoMotoboy,
+  idMoto,
   isPremium,
 }: {
-  nomeDoMotoboy: string;
+  idMoto: string;
   isPremium: boolean;
 }) {
   const [dados, setDados] = useState<Dados | null>(null);
@@ -49,13 +53,13 @@ export default function HistoricoCorridas({
   };
 
   useEffect(() => {
-    if (!nomeDoMotoboy) return;
+    if (!idMoto) return;
 
     setLoading(true);
     setError(null);
-
-    let url = `https://script.google.com/macros/s/AKfycbw2b6Cb7Xl76IKbe4iJZtBcE23QUPnWIzqrBAkRoaqT2jOK8cHkZAsrX1XSOP96vZZE/exec?nome=${encodeURIComponent(
-      nomeDoMotoboy
+    console.log(idMoto)
+    let url = `https://script.google.com/macros/s/AKfycbxpEon3JO4NQsarGkkjwxF3SPwfkWe81t_tSbYPTwHUgMoztvqA0fobx9RTiW5Z1KaF/exec?type=avalies&id=${encodeURIComponent(
+      idMoto
     )}`;
 
     // Adiciona filtro de datas só para premium
@@ -114,7 +118,7 @@ export default function HistoricoCorridas({
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [nomeDoMotoboy, isPremium, dataInicio, dataFim]);
+  }, [idMoto, isPremium, dataInicio, dataFim]);
 
   if (loading)
     return <p className="text-center p-4 text-gray-600">Carregando corridas...</p>;
@@ -123,6 +127,8 @@ export default function HistoricoCorridas({
       <p className="text-center p-4 text-red-600 font-semibold">Erro: {error}</p>
     );
   if (!dados) return null;
+
+  console.log(dados)
 
   // Contagem dos endereços e bairros
   const contagemEnderecos: Record<string, number> = {};
@@ -196,7 +202,6 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
     <div className="max-w-xl mx-auto p-6 bg-white rounded-lg ">
       <h2 className="mb-3 text-gray-800">
        <strong>Corridas do Motoboy - </strong> 
-       {dados.motoboy} 
         {!isPremium ? "(Hoje)" : ""}
       </h2>
         {!isPremium && (
@@ -248,6 +253,17 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
             <div>
               <p className="font-medium">
+                  Avaliação
+              </p>
+              <p className="text-xs text-muted-foreground">
+                   <strong>Avaliação Média {isPremium ? "disponíveis" : "hoje"}:</strong>{" "}
+                   {dados.avaliacaoMedia}        
+              </p>
+            </div>
+          </div>
+           <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            <div>
+              <p className="font-medium">
                   Quantidade de Corridas
               </p>
               <p className="text-xs text-muted-foreground">
@@ -283,7 +299,7 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+          {/* <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
             <div>
               <p className="font-medium">
                Locais que mais pede
@@ -296,7 +312,7 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
             : "N/D"}
               </p>
             </div>
-          </div>
+          </div> */}
            <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
             <div>
             <p className="font-medium">
@@ -322,30 +338,36 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
         </p>
       ) : (
         <ul className="space-y-3">
-          {dados.corridas.map(({ id, dataHora, endereco }) => {
-            const qtd = contagemEnderecos[endereco] || 0;
-            const precoSalvo = precos[id] || "";
-            return (
-              <li
-                key={id}
-                onClick={() => abrirModalPreco(id)}
-                className={`cursor-pointer p-3 rounded-md flex justify-between items-center shadow-sm ${corFundo(
-                  qtd
-                )}`}
-                title={`Clique para informar preço. Este local teve ${qtd} corrida(s) ${
-                  isPremium ? "" : "hoje"
-                }`}
-              >
-                <div>
-                  <div className="font-medium text-gray-900">{endereco}</div>
-                  <div className="text-sm text-gray-700">{dataHora}</div>
-                </div>
-                <div className="text-sm font-semibold text-gray-800">
-                  {precoSalvo ? `R$ ${precoSalvo}` : "Sem preço"}
-                </div>
-              </li>
-            );
-          })}
+         {dados.corridas.map(({ id, dataHora, endereco, comentario, avaliacao, tipo }) => {
+  const qtd = contagemEnderecos[endereco] || 0;
+  const precoSalvo = precos[id] || "";
+  return (
+    <li
+      key={id}
+      onClick={() => abrirModalPreco(id)}
+      className={`cursor-pointer p-3 rounded-md flex justify-between items-center shadow-md ${corFundo(qtd)}`}
+      title={`Clique para informar preço. Este local teve ${qtd} corrida(s) ${isPremium ? "" : "hoje"}`}
+    >
+      <div>
+        <div className="font-small text-black-500">
+          {Array(avaliacao).fill(undefined).map((_, i) => (
+            <span key={i}>⭐</span>
+          ))} 
+        </div>
+        <div className="font-medium text-gray-900">{comentario || "Sem comentário"}</div> {/* Exibe o comentário */}
+        {/* <div className="text-sm text-black-300">{dataHora}</div> */}
+      </div>
+      <div className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+        {tipo}
+      </div>
+
+      
+      <div className="text-sm font-semibold text-gray-800">
+        {precoSalvo ? `R$ ${precoSalvo}` : "Sem preço"}
+      </div>
+    </li>
+  );
+})}
         </ul>
       )}
     
@@ -383,8 +405,7 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
       )}
 
       <p className="mt-6 text-sm text-gray-600 italic text-center">
-        Locais com mais corridas {isPremium ? "" : "hoje"} são destacados em
-        cores quentes.
+        Essa avaliações foram dadas pelos nossos usuarios {isPremium ? "" : "hoje"} 
       </p>
     </div>
   );

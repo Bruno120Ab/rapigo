@@ -541,31 +541,31 @@ const Index = () => {
             const proxyUrl = 'https://script.google.com/macros/s/AKfycbzlQiSCBtvQFfvPU5_aXchhTvSGPONo7Q_ZAmdT8FXEkg-bl0FTjzKtDyWtTv3oKxM1/exec';
             
             fetch(`${proxyUrl}?id=${userId}`)
-  .then(response => response.json())
-  .then(data => {
-    console.log('Dados da planilha:', data);
+            .then(response => response.json())
+            .then(data => {
+                console.log('Dados da planilha:', data);
 
-    if (data.found && data.data) {
-      // extrair premium e data expiração do objeto data.data
-      const isPremium = data.data.Premium === 'Sim';
-      // Pode precisar tratar se data.data["Data Expiração"] é 'undefined', 'null' ou string vazia:
-      let expiration_date = data.data["Data Expiração"];
-      if (
-        !expiration_date ||
-        expiration_date === 'undefined' ||
-        expiration_date === 'null' ||
-        expiration_date.trim() === ''
-      ) {
-        expiration_date = null;
-      }
-      setIsPremium(isPremium);
-      setDateExpiration(expiration_date);
-    } else {
-      setIsPremium(false);
-      setDateExpiration(null);
-    }
+                if (data.found && data.data) {
+                // extrair premium e data expiração do objeto data.data
+                const isPremium = data.data.Premium === 'Sim';
+                // Pode precisar tratar se data.data["Data Expiração"] é 'undefined', 'null' ou string vazia:
+                let expiration_date = data.data["Data Expiração"];
+                if (
+                    !expiration_date ||
+                    expiration_date === 'undefined' ||
+                    expiration_date === 'null' ||
+                    expiration_date.trim() === ''
+                ) {
+                    expiration_date = null;
+                }
+                setIsPremium(isPremium);
+                setDateExpiration(expiration_date);
+                } else {
+                setIsPremium(false);
+                setDateExpiration(null);
+                }
 
-    setPremiumLoading(false);
+                setPremiumLoading(false);
   })
   .catch(error => {
     console.error('Erro ao verificar status premium:', error);
