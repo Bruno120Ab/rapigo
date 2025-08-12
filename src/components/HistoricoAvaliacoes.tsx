@@ -10,8 +10,6 @@ type Corrida = {
   comentario: string;
   avaliacao: number;
   tipo: string;
-  corrida: string;
-  nome:string;
 };
 
 type Dados = {
@@ -21,7 +19,7 @@ type Dados = {
   avaliacaoMedia: number;
 };
 
-export default function HistoricoCorridas({
+export function HistoricoAvaliacao({
   idMoto,
   isPremium,
 }: {
@@ -59,7 +57,7 @@ export default function HistoricoCorridas({
 
     setLoading(true);
     setError(null);
-     let url = `https://script.google.com/macros/s/AKfycbwNFDyGr0UUAmP1-d_bGai0ZXCJtcai59MGAtrHowT83051OAgrvCeDNYU7H_I7eA/exec?type=run&id=${encodeURIComponent(
+    let url = `https://script.google.com/macros/s/AKfycbxXtLljIgQaTuQeugYwkqkHv-7K_CGEvSdVlqx0ksYg0cXA-dHGaocUeG4Ty9mOixwr/exec?type=avalies&id=${encodeURIComponent(
       idMoto
     )}`;
 
@@ -77,7 +75,6 @@ export default function HistoricoCorridas({
         if (json.error) throw new Error(json.error);
 
         let corridasFiltradas = json.corridas;
-        console.log(dados)
 
         // Filtra corridas do dia para não-premium
         if (!isPremium) {
@@ -202,7 +199,7 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-lg ">
       <h2 className="mb-3 text-gray-800">
-       <strong>Corridas do Motoboy - </strong> 
+       <strong>Avaliações do Motoboy - </strong> 
         {!isPremium ? "(Hoje)" : ""}
       </h2>
         {!isPremium && (
@@ -339,39 +336,34 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
         </p>
       ) : (
         <ul className="space-y-3">
-         {dados.corridas.map(({ id, dataHora, endereco, comentario,corrida, nome, avaliacao, tipo }) => {
+         {dados.corridas.map(({ id, dataHora, endereco, comentario, avaliacao, tipo }) => {
   const qtd = contagemEnderecos[endereco] || 0;
   const precoSalvo = precos[id] || "";
   return (
-  <li
-  key={id}
-  onClick={() => abrirModalPreco(id)}
-  title={`Clique para informar preço. Este local teve ${qtd} corrida(s) ${isPremium ? "" : "hoje"}`}
-  className={`
-    cursor-pointer p-4 rounded-lg flex justify-between items-center shadow-sm
-    hover:shadow-md transition-shadow bg-white border border-gray-200
-    ${corFundo(qtd)}
-    flex-wrap
-  `}
->
-  <div className="flex flex-col max-w-[60%] min-w-0">
-    <div className="font-semibold text-gray-900 truncate">
-      {nome || "Sem comentário"}
-    </div>
-    <div className="text-xs text-gray-500 mt-1 truncate">
-      {dataHora}
-    </div>
-  </div>
+    <li
+      key={id}
+      onClick={() => abrirModalPreco(id)}
+      className={`cursor-pointer p-3 rounded-md flex justify-between items-center shadow-md ${corFundo(qtd)}`}
+      title={`Clique para informar preço. Este local teve ${qtd} corrida(s) ${isPremium ? "" : "hoje"}`}
+    >
+      <div>
+        <div className="font-small text-black-500">
+          {Array(avaliacao).fill(undefined).map((_, i) => (
+            <span key={i}>⭐</span>
+          ))} 
+        </div>
+        <div className="font-medium text-gray-900">{comentario || "Sem comentário"}</div> {/* Exibe o comentário */}
+        {/* <div className="text-sm text-black-300">{dataHora}</div> */}
+      </div>
+      <div className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+        {tipo}
+      </div>
 
-  <div className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full select-none mx-4 whitespace-nowrap">
-    {corrida}
-  </div>
-
-  <div className="text-sm font-semibold text-gray-800 whitespace-nowrap select-none">
-    {precoSalvo ? `R$ ${precoSalvo}` : "Sem preço"}
-  </div>
-</li>
-
+      
+      <div className="text-sm font-semibold text-gray-800">
+        {precoSalvo ? `R$ ${precoSalvo}` : "Sem preço"}
+      </div>
+    </li>
   );
 })}
         </ul>

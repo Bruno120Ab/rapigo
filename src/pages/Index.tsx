@@ -538,12 +538,12 @@ const Index = () => {
     // useEffect 2: Verificação do status premium usando o proxy
     useEffect(() => {
         if (userId) {
-            const proxyUrl = 'https://script.google.com/macros/s/AKfycbzlQiSCBtvQFfvPU5_aXchhTvSGPONo7Q_ZAmdT8FXEkg-bl0FTjzKtDyWtTv3oKxM1/exec';
             
-            fetch(`${proxyUrl}?id=${userId}`)
+            const proxyUrl = 'https://script.google.com/macros/s/AKfycbwNFDyGr0UUAmP1-d_bGai0ZXCJtcai59MGAtrHowT83051OAgrvCeDNYU7H_I7eA/exec?type=users';
+            
+            fetch(`${proxyUrl}&id=${userId}`)
             .then(response => response.json())
             .then(data => {
-                console.log('Dados da planilha:', data);
 
                 if (data.found && data.data) {
                 // extrair premium e data expiração do objeto data.data
@@ -926,6 +926,8 @@ const Index = () => {
             <DetalhesMotoboyModal
                 loading={premiumLoading}
                 premium={isPremium}
+                idUser={userId}
+
                 mototaxista={motoboyDetalhes}
                 isOpen={mostrarDetalhesModal}
                 onClose={() => {
@@ -937,6 +939,7 @@ const Index = () => {
             />
 
             <ConfiguracoesModal
+                idUser={userId}
                 Premium={isPremium}
                 dateExpira={dateExpiration}
                 isOpen={mostrarConfiguracoesModal}

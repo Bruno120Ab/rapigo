@@ -7,8 +7,9 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import HistoricoCorridas from "./HistoricoCorridas";
 import { enviarUserParaGoogleForms } from "@/hooks/use-login";
+import { HistoricoAvaliacao } from "./HistoricoAvaliacoes";
+import HistoricoCorridas from "./HistoricoCorridas";
 
 interface Configuracao {
   nomeClientePadrao: string;
@@ -23,12 +24,13 @@ interface ConfiguracoesModalProps {
   Premium: boolean;
   isOpen: boolean;
   dateExpira: string;
+  idUser:string;
   onClose: () => void;
 }
 
 const STORAGE_KEY = "configuracoes-usuario";
 
-export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: ConfiguracoesModalProps) => {
+export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, idUser, onClose }: ConfiguracoesModalProps) => {
   const { toast } = useToast();
   const inputNomeRef = useRef<HTMLInputElement>(null);
 
@@ -291,8 +293,11 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, onClose }: Con
             </div>
           )}
 
+          {/* <div className="border rounded-md p-3 max-h-80 overflow-auto">
+            <HistoricoAvaliacao isPremium={Premium} idMoto={idUser} />
+          </div> */}
           <div className="border rounded-md p-3 max-h-80 overflow-auto">
-            <HistoricoCorridas isPremium={Premium} idMoto={nomeMotoboy} />
+            <HistoricoCorridas isPremium={Premium} idMoto={idUser}/>
           </div>
         </div>
 

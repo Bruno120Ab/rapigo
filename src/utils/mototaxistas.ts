@@ -14,8 +14,8 @@ export const mototaxistasIniciais: Mototaxista[] = [
     detalhes_foto: "/Mt01-Mto.png"
   },
   {
-    id: "2",
-    nome: "Renan",
+    id: "9i6mus2ne0b",
+    nome: "Bruno prop",
     telefone: "7798861-9707",
     foto: "/assets/file.enc",
     ativo: true,
@@ -50,5 +50,4 @@ export const buscarMototaxistaPorNome = (nome: string): Mototaxista | null => {
  */
 export const salvarMototaxistaNoLocalStorage = (mototaxista: Mototaxista): void => {
   localStorage.setItem("mototaxista", JSON.stringify(mototaxista));
-  console.log("Mototaxista salvo no localStorage:", mototaxista.nome);
 };

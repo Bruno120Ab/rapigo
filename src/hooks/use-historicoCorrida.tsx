@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-export function useHistoricoCorridas(nomeDoMotoboy) {
+export function useAvaCorridas(nomeDoMotoboy) {
   const [resumo, setResumo] = useState(null);
   const [loadingHistorico, setLoadingHistorico] = useState(true);
   const [error, setError] = useState(null);
@@ -13,14 +13,15 @@ export function useHistoricoCorridas(nomeDoMotoboy) {
     }
 
     setLoadingHistorico(true);
-      console.log(`${nomeDoMotoboy} Aqui`)
+    console.log(nomeDoMotoboy)
 
-    const proxyUrl = 'https://script.google.com/macros/s/AKfycbxSN5Y25wszm8Z5pfx4z6wxbh87U_C5nxH2E4Qj6wOGDIywtl7saATBMCiWMojgJ6r5/exec';
+    const proxyUrl = `https://script.google.com/macros/s/AKfycbwNFDyGr0UUAmP1-d_bGai0ZXCJtcai59MGAtrHowT83051OAgrvCeDNYU7H_I7eA/exec?type=avalies&id=${encodeURIComponent(
+      nomeDoMotoboy
+    )}`;
 
-    fetch(`${proxyUrl}?id=${encodeURIComponent(nomeDoMotoboy)}`)
+    fetch(proxyUrl)
       .then(response => response.json())
       .then(data => {
-        console.log(data)
         setResumo(data);
         setLoadingHistorico(false);
       })
