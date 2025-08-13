@@ -14,10 +14,10 @@ export function useAvaCorridas(nomeDoMotoboy) {
 
     setLoadingHistorico(true);
     console.log(nomeDoMotoboy)
-
-    const proxyUrl = `https://script.google.com/macros/s/AKfycbwNFDyGr0UUAmP1-d_bGai0ZXCJtcai59MGAtrHowT83051OAgrvCeDNYU7H_I7eA/exec?type=avalies&id=${encodeURIComponent(
+    const proxyUrl = `https://script.google.com/macros/s/AKfycbxqbks7rjDU0olOVjZ3hvifM4nr-wfGx8e1F2UHLB7YFAiOjSvfRArRrrANhJ11EJgz/exec?type=avalies&id=${encodeURIComponent(
       nomeDoMotoboy
     )}`;
+    console.log(resumo)
 
     fetch(proxyUrl)
       .then(response => response.json())

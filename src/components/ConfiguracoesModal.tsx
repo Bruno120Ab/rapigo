@@ -46,43 +46,77 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, idUser, onClos
   const [hasConfigSaved, setHasConfigSaved] = useState(false);
 
   // Carregar dados do localStorage ao abrir modal
-  useEffect(() => {
-    if (isOpen) {
-      const dadosStr = localStorage.getItem(STORAGE_KEY);
-      if (dadosStr) {
-        try {
-          const dados = JSON.parse(dadosStr);
-          setConfigLocal({
-            nomeClientePadrao: dados.nomeClientePadrao || "",
-            email: dados.email || "",
-            ehMotoboy: dados.ehMotoboy || false,
-            modoEscuro: dados.modoEscuro || false,
-            tamanhoFonte: dados.tamanhoFonte || "medio",
-            usuarioPadrao: dados.usuarioPadrao || false,
-          });
+useEffect(() => {
+  if (!isOpen) return;
 
-          // Define se já existe configuração válida para bloquear salvar
-          if (dados.nomeClientePadrao && dados.email) {
-            setHasConfigSaved(true);
-          } else {
-            setHasConfigSaved(false);
+  const dadosStr = localStorage.getItem(STORAGE_KEY);
+  if (!dadosStr) {
+    setHasConfigSaved(false);
+    return;
+  }
+
+  try {
+    const dados = JSON.parse(dadosStr);
+
+    // Carrega estado inicial
+    setConfigLocal({
+      nomeClientePadrao: dados.nomeClientePadrao || "",
+      email: dados.email || "",
+      ehMotoboy: dados.ehMotoboy || false,
+      modoEscuro: dados.modoEscuro || false,
+      tamanhoFonte: dados.tamanhoFonte || "medio",
+      usuarioPadrao: dados.usuarioPadrao || false,
+    });
+
+    if (dados.nomeClientePadrao && dados.email) {
+      setHasConfigSaved(true);
+
+      // Busca do servidor
+      const proxyUrl =
+        "https://script.google.com/macros/s/AKfycbwNFDyGr0UUAmP1-d_bGai0ZXCJtcai59MGAtrHowT83051OAgrvCeDNYU7H_I7eA/exec?type=users";
+
+      fetch(`${proxyUrl}&id=${dados.userId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log(data)
+          
+          if (data.found && data.data) {
+            const novoEhMotoboy = data.data.Motoboy;
+
+            // Atualiza estado
+            setConfigLocal((prev) => ({
+              ...prev,
+              ehMotoboy: novoEhMotoboy,
+            }));
+
+            // Atualiza localStorage para persistência
+            const dadosAtualizados = {
+              ...dados,
+              ehMotoboy: novoEhMotoboy,
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dadosAtualizados));
           }
-        } catch (e) {
-          setHasConfigSaved(false);
-          setConfigLocal({
-            nomeClientePadrao: "",
-            email: "",
-            ehMotoboy: false,
-            modoEscuro: false,
-            tamanhoFonte: "medio",
-            usuarioPadrao: false,
-          });
-        }
-      } else {
-        setHasConfigSaved(false);
-      }
+        })
+        .catch((err) => {
+          console.error("Erro ao buscar dados do usuário:", err);
+        });
+    } else {
+      setHasConfigSaved(false);
     }
-  }, [isOpen]);
+  } catch (e) {
+    console.error("Erro ao ler config local:", e);
+    setHasConfigSaved(false);
+    setConfigLocal({
+      nomeClientePadrao: "",
+      email: "",
+      ehMotoboy: false,
+      modoEscuro: false,
+      tamanhoFonte: "medio",
+      usuarioPadrao: false,
+    });
+  }
+}, [isOpen]);
+
 
   const getUserId = () => {
     const dadosStr = localStorage.getItem(STORAGE_KEY);
@@ -275,30 +309,39 @@ export const ConfiguracoesModal = ({ Premium, isOpen, dateExpira, idUser, onClos
             />
           </div>
 
-          {Premium ? (
-            <div className="flex items-center justify-between">
-              <Label className="flex items-center gap-2">
-                <ShieldCheck className="h-4 w-4 text-green-500" />
-                Usuário Premium
-                <ShieldCheck className="h-4 w-4 text-green-500" />
-                Data de expiração - {data.toLocaleDateString("pt-BR")}
-              </Label>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between">
-              <Label className="flex items-center gap-2">
-                <ShieldX className="h-4 w-4 text-red-500 " />
-                Assine o Premium
-              </Label>
-            </div>
+          {configLocal.ehMotoboy && (
+            <>
+              {Premium ? (
+                <div className="flex items-center justify-between">
+                        <Label className="flex items-center gap-2">
+                          <ShieldCheck className="h-4 w-4 text-green-500" />
+                          Usuário Premium
+                          <ShieldCheck className="h-4 w-4 text-green-500" />
+                          Data de expiração 
+                        </Label>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <Label className="flex items-center gap-2">
+                          <ShieldX className="h-4 w-4 text-red-500 " />
+                          Assine o Premium
+                        </Label>
+                      </div>
+                    )}
+
+              <div className="border rounded-md p-3 max-h-80 overflow-auto">
+                <HistoricoCorridas isPremium={Premium} idMoto={idUser} />
+              </div>
+            </>
           )}
+
+          {/* {Premium  && configLocal.ehMotoboy ? ( */}
+           
 
           {/* <div className="border rounded-md p-3 max-h-80 overflow-auto">
             <HistoricoAvaliacao isPremium={Premium} idMoto={idUser} />
           </div> */}
-          <div className="border rounded-md p-3 max-h-80 overflow-auto">
-            <HistoricoCorridas isPremium={Premium} idMoto={idUser}/>
-          </div>
+        
         </div>
 
         <div className="flex gap-2 pt-4 px-4 pb-4 border-t bg-white sticky bottom-0">

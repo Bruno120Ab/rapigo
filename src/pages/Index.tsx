@@ -860,7 +860,7 @@ const Index = () => {
                                                 isFavorito={isFavorito(mototaxista.id)}
                                                 onToggleFavorito={handleToggleFavorito}
                                                 showFavoriteButton={true}
-                                                metricas={metricas}
+                                                // metricas={metricas}
                                                 // className="rounded-lg hover:shadow-md transition-shadow"
                                             />
                                         );

@@ -325,10 +325,10 @@ export const SolicitarForm = ({
           <Button
             onClick={handleSubmit}
             disabled={!nome.trim() || !endereco.trim() || loading || (isAgendamento && (!dataAgendamento || !horaAgendamento))}
-            className="flex-1"
+            className="flex-1 gap-0"
           >
-            <Send className="h-4 w-4 mr-2" />
-            {loading ? "Enviando..." : isAgendamento ? "Agendar Corrida" : "Confirmar Solicitação"}
+            <Send className="h-1 w-1 mr-1" />
+            {loading ? "Enviando..." : isAgendamento ? "Agendar Corrida" : "Revisar Solicitação"}
           </Button>
         </div>
       </CardContent>

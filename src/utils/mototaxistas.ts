@@ -14,25 +14,26 @@ export const mototaxistasIniciais: Mototaxista[] = [
     detalhes_foto: "/Mt01-Mto.png"
   },
   {
-    id: "9i6mus2ne0b",
-    nome: "Bruno prop",
+    id: "6ic8h8xqn3m",
+    nome: "Tulio",
     telefone: "7798861-9707",
     foto: "/assets/file.enc",
     ativo: true,
     tipoVeiculo: "moto",
-    detalhes: "Twister 160",
+    detalhes: "Fan 160",
     detalhes_foto: "/Mt01-Mto.png"
   },
   {
-    id: "3",
-    nome: "Patrick",
+    id: "1vjfwf5v9te",
+    nome: "Helio",
     telefone: "7798861-9707",
     foto: "/assets/file.enc",
     ativo: true,
     tipoVeiculo: "moto",
-    detalhes: "Twister 160",
+    detalhes: "Fan 160",
     detalhes_foto: "/Mt01-Mto.png"
-  }
+  },
+
 ];
 
 /**
