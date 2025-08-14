@@ -229,7 +229,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, Car, Bike, Star, Shield, Phone, ShieldCheck, Clock } from "lucide-react";
+import { User, Car, Bike, Star, Shield, Phone, ShieldCheck, Clock, Info } from "lucide-react";
 import { Mototaxista } from "@/types/mototaxi";
 import { useAvaCorridas } from "@/hooks/use-historicoCorrida";
  import _ from "lodash";
@@ -263,10 +263,10 @@ export const DetalhesMotoboyModal = ({
     onClose();
   };
 
-  // Horário com mais corridas
-
-// Horário com mais corridas
 const corridas = resumo?.corridas || [];
+
+console.log(resumo)
+console.log('Print de resumo')
 
 // Horário com mais corridas
 const horarioMaisCorridas = (() => {
@@ -306,9 +306,9 @@ const tipoMaisFrequente = (() => {
           <DialogTitle>Detalhes do Motorista</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Avatar e info básica */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Avatar className="h-16 w-16">
               <AvatarImage src={mototaxista.foto} alt={mototaxista.nome} />
               <AvatarFallback>
@@ -317,7 +317,7 @@ const tipoMaisFrequente = (() => {
             </Avatar>
 
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-1 mb-1">
                 <h3 className="text-xl font-semibold">{mototaxista.nome}</h3>
                 <Badge
                   variant={mototaxista.ativo ? "default" : "secondary"}
@@ -354,6 +354,12 @@ const tipoMaisFrequente = (() => {
               </>
             )}
           </div>
+          
+         
+        <p className="mt-1 flex items-center text-sm text-gray-500 italic">
+          <Info className="w-4 h-4 mr-1 text-gray-400" />
+          Baseado no feedback de usuários
+        </p>
 
           {/* Métricas */}
           {loadingHistorico ? (

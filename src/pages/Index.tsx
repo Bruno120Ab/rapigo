@@ -475,7 +475,7 @@
 
 
 import { useEffect, useState } from "react";
-import { Bike, Car, Settings, User, Users } from "lucide-react";
+import { Bike, Car, Mail, MessageCircle, Settings, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -502,6 +502,7 @@ import InstallPWAButton from "@/components/InstallPWAButton";
 import { BannerSection } from "@/components/Banners";
 import EnviarEmail from "@/components/EnviarEmail";
 import { PoliticaSeguranca } from "@/components/PoliticaSeguranca";
+import { CardsSection } from "@/components/Beneficiso";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
@@ -878,6 +879,9 @@ const Index = () => {
                             </CardContent>
                         </Card>
 
+                        <div className="max-w-lg mx-auto">
+                            <CardsSection />
+                        </div>
                         <div className="max-w-lg mx-auto space-y-3 mt-6">
                             <Button
                                 onClick={() => setTelaAtual('selecionar-mototaxista')}
@@ -889,19 +893,28 @@ const Index = () => {
                                 Solicitar Moto-Táxi
                             </Button>
                         </div>
-
-                        <div className="max-w-lg mx-auto">
+                         <div className="max-w-lg mx-auto">
                             <PoliticaSeguranca />
                         </div>
+                        {/* <BannerSection/> */}
+                        <footer className="max-w-lg mx-auto flex flex-col items-center space-y-3 mt-12 mb-8 bg-white rounded-xl shadow-md border border-gray-100 p-4">
+                            
+                            {/* Desenvolvedor */}
+                            <p className="text-xs text-gray-500">
+                                Desenvolvedor: <span className="font-medium text-gray-700">Bruno Abreu</span>
+                            </p>
 
-                        <BannerSection/>
-
-                        <footer className="max-w-lg mx-auto flex flex-col items-center space-y-2 mt-10 mb-8 text-gray-500 text-sm">
-                            {/* <img src="/caminho/para/logo.png" alt="Logo" className="w-10 h-10 object-contain" /> */}
-                            <p>Desenvolvedor: Bruno Abreu</p>
-                            <p>Contato: brunoabreudevs@gmail.com</p>
+                            {/* Contato */}
+                            <p className="flex items-center space-x-1 text-xs text-gray-500">
+                                <Mail className="w-4 h-4 text-gray-400" />
+                                <a href="mailto:brunoabreudevs@gmail.com" className="hover:underline text-gray-700">
+                                brunoabreudevs@gmail.com
+                                </a>
+                            </p>                          
                             <EnviarEmail />
-                        </footer>
+                            {/* Observação / direitos */}
+                            <p className="text-[9px] text-gray-400 mt-2">&copy; 2025 Todos os direitos reservados.</p>
+                            </footer>
                     </div>
                 );
         }

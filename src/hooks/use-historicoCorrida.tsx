@@ -17,7 +17,7 @@ export function useAvaCorridas(nomeDoMotoboy) {
     const proxyUrl = `https://script.google.com/macros/s/AKfycbxqbks7rjDU0olOVjZ3hvifM4nr-wfGx8e1F2UHLB7YFAiOjSvfRArRrrANhJ11EJgz/exec?type=avalies&id=${encodeURIComponent(
       nomeDoMotoboy
     )}`;
-    console.log(resumo)
+
 
     fetch(proxyUrl)
       .then(response => response.json())

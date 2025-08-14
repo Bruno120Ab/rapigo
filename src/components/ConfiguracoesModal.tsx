@@ -78,7 +78,6 @@ useEffect(() => {
       fetch(`${proxyUrl}&id=${dados.userId}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log(data)
           
           if (data.found && data.data) {
             const novoEhMotoboy = data.data.Motoboy;

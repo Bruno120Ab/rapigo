@@ -486,7 +486,7 @@ export default function HistoricoCorridas({
     setLoading(true);
     setError(null);
 
-    let url = `https://script.google.com/macros/s/AKfycbxqbks7rjDU0olOVjZ3hvifM4nr-wfGx8e1F2UHLB7YFAiOjSvfRArRrrANhJ11EJgz/exec?type=run&id=${encodeURIComponent(
+    let url = `https://script.google.com/macros/s/AKfycbyHt5vEhwJTw8fYS9h97BlPOv1nsb21MKWotqQYKWEs9-vrFviUN7xi-ZTzQkziZY-5/exec?type=run&id=${encodeURIComponent(
       idMoto
     )}`;
 
@@ -539,6 +539,7 @@ export default function HistoricoCorridas({
           totalCorridas: corridasComId.length,
           avaliacoes: corridasComId.filter((c: Corrida) => c.avaliacao > 0),
         });
+
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
@@ -551,6 +552,9 @@ export default function HistoricoCorridas({
   // -----------------------------
   // Cálculos de métricas
   // -----------------------------
+
+
+  console.log(dados)
   const contagemEnderecos: Record<string, number> = {};
   const contagemBairros: Record<string, number> = {};
   const contagemFaixaHoraria: Record<string, number> = {};
@@ -632,8 +636,8 @@ export default function HistoricoCorridas({
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-lg">
       <h2 className="mb-3 text-gray-800">
-        <strong>Corridas do Motoboy - </strong>
-        {!isPremium ? "(Hoje)" : ""}
+        <strong>Corridas do Motoboy  </strong>
+        {/* {!isPremium ? "(Hoje)" : ""} */}
       </h2>
 
       {!isPremium && (
@@ -670,7 +674,7 @@ export default function HistoricoCorridas({
       {/* Grid de métricas */}
       <div className="grid grid-cols-2 gap-2 mb-5">
         {/* Avaliação média */}
-        <Card titulo="Avaliação Média" valor={dados.avaliacaoMedia.toFixed(2)} />
+        <Card titulo="Avaliação Média" valor={dados.avaliacaoMedia} />
         {/* Total corridas */}
         <Card titulo="Total de Corridas" valor={dados.totalCorridas} />
         {/* Ticket médio */}
@@ -799,11 +803,21 @@ export default function HistoricoCorridas({
 // ----------------------
 // Card simples
 // ----------------------
-function Card({ titulo, valor }: { titulo: string; valor: string | number }) {
+function Card({ titulo, valor, icon }: { titulo: string; valor: string | number; icon?: JSX.Element }) {
   return (
-    <div className="flex flex-col items-start p-3 bg-muted rounded-lg">
-      <p className="font-medium">{titulo}</p>
-      <p className="text-xs text-muted-foreground">{valor}</p>
+     <div className="flex items-center p-4 bg-white rounded-xl shadow-md border border-gray-100 w-full sm:w-60 md:w-52 hover:shadow-lg transition-shadow duration-200">
+      {icon && (
+        <div className="flex items-center justify-center p-2 rounded-full mr-3 bg-gray-100">
+          {icon}
+        </div>
+      )}
+      <div className="flex flex-col">
+        <span className="text-[10px] text-gray-500 uppercase">{titulo}</span>
+        <span className="mt-1 text-sm font-semibold" style={{ color: "hsl(25, 100%, 50%)" }}>
+          {valor}
+        </span>
+      </div>
     </div>
+
   );
 }
