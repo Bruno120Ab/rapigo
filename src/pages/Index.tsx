@@ -472,8 +472,6 @@
 // export default Index;
 
 
-
-
 import { useEffect, useState } from "react";
 import { Bike, Car, Mail, MessageCircle, Settings, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -503,14 +501,16 @@ import { BannerSection } from "@/components/Banners";
 import EnviarEmail from "@/components/EnviarEmail";
 import { PoliticaSeguranca } from "@/components/PoliticaSeguranca";
 import { CardsSection } from "@/components/Beneficiso";
+import { FeedbackModal } from "@/components/Feedback";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
 const Index = () => {
     const [userId, setUserId] = useState(null);
     const [isPremium, setIsPremium] = useState(false);
-    const [ dateExpiration, setDateExpiration ] = useState();
+    const [dateExpiration, setDateExpiration ] = useState();
     const [premiumLoading, setPremiumLoading] = useState(true);
+const [mostrarFeedback, setMostrarFeedback] = useState(false);
 
     // useEffect 1: Geração e recuperação do ID do usuário, agora dentro de 'configuracoes-usuario'
     useEffect(() => {
@@ -711,13 +711,7 @@ const Index = () => {
     const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, "_blank");
   };
-    // Estados e hooks mantidos, removi só para foco no JSX
-
-    // ... seu código de estados e hooks omitido para foco no JSX
-
-    // Exemplo: handleSolicitar, handleSelecionarMototaxista, etc.
-
-    // Função renderTela estilizada
+ 
     const renderTela = () => {
         switch (telaAtual) {
             case 'solicitar':
@@ -811,7 +805,7 @@ const Index = () => {
                                 <div></div>
                                 <h1 className="text-4xl font-extrabold flex items-center justify-center gap-3 text-gray-900">
                                     <Bike className="h-10 w-10 text-primary" />
-                                    RapMoto
+                                    RapiMoto
                                 </h1>
                                 <Button
                                     variant="ghost"
@@ -845,7 +839,7 @@ const Index = () => {
                             <CardHeader className="bg-gray-50 rounded-t-xl p-4">
                                 <CardTitle className="flex items-center gap-2 text-gray-900 font-extrabold text-xl">
                                     <Users className="h-6 w-6" />
-                                    Mototaxistas Disponíveis 
+                                    Mototaxistas Cadastrados 
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-4">
@@ -897,24 +891,39 @@ const Index = () => {
                             <PoliticaSeguranca />
                         </div>
                         {/* <BannerSection/> */}
+
                         <footer className="max-w-lg mx-auto flex flex-col items-center space-y-3 mt-12 mb-8 bg-white rounded-xl shadow-md border border-gray-100 p-4">
                             
                             {/* Desenvolvedor */}
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500" >
                                 Desenvolvedor: <span className="font-medium text-gray-700">Bruno Abreu</span>
                             </p>
 
+                            
                             {/* Contato */}
                             <p className="flex items-center space-x-1 text-xs text-gray-500">
                                 <Mail className="w-4 h-4 text-gray-400" />
                                 <a href="mailto:brunoabreudevs@gmail.com" className="hover:underline text-gray-700">
                                 brunoabreudevs@gmail.com
                                 </a>
-                            </p>                          
-                            <EnviarEmail />
+                            </p>              
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
+                                  {/* Botão de contato */}
+                                  <Button
+                                    onClick={() => setMostrarFeedback(true) }   
+                                    variant="outline"
+                                    className="flex items-center gap-2 px-4 py-2 rounded-full border-gray-300 hover:bg-gray-100 transition-colors"
+                                  >
+                                    <Mail className="w-4 h-4 text-orange-500" />
+                                    Enviar feeback
+                                  </Button>
+                            
+                                
+                                </div>            
+                            {/* <EnviarEmail  /> */}
                             {/* Observação / direitos */}
                             <p className="text-[9px] text-gray-400 mt-2">&copy; 2025 Todos os direitos reservados.</p>
-                            </footer>
+                        </footer>
                     </div>
                 );
         }
@@ -958,6 +967,8 @@ const Index = () => {
                 isOpen={mostrarConfiguracoesModal}
                 onClose={() => setMostrarConfiguracoesModal(false)}
             />
+            <FeedbackModal  isOpen={mostrarFeedback}
+            onClose={() => setMostrarFeedback(false)} />
         </main>
     );
 };

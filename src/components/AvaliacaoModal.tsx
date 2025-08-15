@@ -7,7 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Solicitacao } from "@/types/mototaxi";
 import { enviarAvaParaGoogleForms } from "@/hooks/use-enviarAva";
-import { useHistoricoCorridas } from "@/hooks/use-historicoCorrida";
+// import { useHistoricoCorridas } from "@/hooks/use-historicoCorrida";
 
 interface AvaliacaoModalProps {
   viagem: Solicitacao | null;

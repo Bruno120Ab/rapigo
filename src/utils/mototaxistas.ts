@@ -11,7 +11,9 @@ export const mototaxistasIniciais: Mototaxista[] = [
     ativo: true,
     tipoVeiculo: "moto",
     detalhes: "Twister 160",
-    detalhes_foto: "/Mt01-Mto.png"
+    detalhes_foto: "/Mt01-Mto.png",
+    ponto: '-15.243889, -40.619893',
+    Grupo: 'SOS'
   },
   {
     id: "6ic8h8xqn3m",
@@ -21,7 +23,9 @@ export const mototaxistasIniciais: Mototaxista[] = [
     ativo: true,
     tipoVeiculo: "moto",
     detalhes: "Fan 160",
-    detalhes_foto: "/Mt01-Mto.png"
+    detalhes_foto: "/Mt01-Mto.png",
+    ponto: '-15.243889, -40.619893',
+    Grupo: 'Aguia'
   },
   {
     id: "1vjfwf5v9te",
@@ -31,7 +35,9 @@ export const mototaxistasIniciais: Mototaxista[] = [
     ativo: true,
     tipoVeiculo: "moto",
     detalhes: "Fan 160",
-    detalhes_foto: "/Mt01-Mto.png"
+    detalhes_foto: "/Mt01-Mto.png",
+    ponto: '-15.243889, -40.619893',
+    Grupo: 'Aguia'
   },
 
 ];

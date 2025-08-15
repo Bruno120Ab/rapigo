@@ -265,9 +265,6 @@ export const DetalhesMotoboyModal = ({
 
 const corridas = resumo?.corridas || [];
 
-console.log(resumo)
-console.log('Print de resumo')
-
 // Horário com mais corridas
 const horarioMaisCorridas = (() => {
   if (!corridas.length) return null;
@@ -299,6 +296,7 @@ const tipoMaisFrequente = (() => {
     ? `Trabalha mais com ${tipoMaisFrequente || "corridas"} e horário de pico às ${horarioMaisCorridas}h`
     : "Sem histórico de corridas";
 
+ const configString = localStorage.getItem('configuracoes-usuario');
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -323,7 +321,8 @@ const tipoMaisFrequente = (() => {
                   variant={mototaxista.ativo ? "default" : "secondary"}
                   className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
                 >
-                  {metricas?.mediaEstrelas && metricas.mediaEstrelas > 4 ? "Bem avaliado" : "Pontual"}
+                  {/* {metricas?.mediaEstrelas && metricas.mediaEstrelas > 4 ? "Bem avaliado" : "Pontual"} */}
+                  {mototaxista.Grupo}
                 </Badge>
               </div>
 
@@ -358,7 +357,8 @@ const tipoMaisFrequente = (() => {
          
         <p className="mt-1 flex items-center text-sm text-gray-500 italic">
           <Info className="w-4 h-4 mr-1 text-gray-400" />
-          Baseado no feedback de usuários
+          { configString ? "Baseado no feedback de usuários" : "Informe seu nome e numero para desbloquear as informações dos usuários."}
+       
         </p>
 
           {/* Métricas */}
@@ -394,6 +394,8 @@ const tipoMaisFrequente = (() => {
                     </div>
                   </div>
 
+                  
+
                   {/* Horário mais ativo */}
                   <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                     <Clock className="h-5 w-5 text-blue-600" />
@@ -413,8 +415,7 @@ const tipoMaisFrequente = (() => {
                   </div>
                 </div>
               )}
-            </div>
-          )}
+           
 
           {/* Histórico de corridas detalhado */}
           {resumo && resumo.corridas && resumo.corridas.length === 0 ? (
@@ -452,7 +453,8 @@ const tipoMaisFrequente = (() => {
               </ul>
             )
           )}
-
+          </div>
+        )}
           {/* Botão de seleção */}
           {mototaxista.ativo && (
             <Button onClick={handleSelecionar} className="w-full">

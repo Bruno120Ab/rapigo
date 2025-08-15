@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { enviarUserParaGoogleForms } from "@/hooks/use-login";
 import { HistoricoAvaliacao } from "./HistoricoAvaliacoes";
 import HistoricoCorridas from "./HistoricoCorridas";
+import { nanoid } from "nanoid";
 
 interface Configuracao {
   nomeClientePadrao: string;
@@ -115,20 +116,65 @@ useEffect(() => {
     });
   }
 }, [isOpen]);
+// useEffect(() => {
+//   if (!isOpen) return;
 
+//   const dadosStr = localStorage.getItem(STORAGE_KEY);
+//   if (!dadosStr) {
+//     setHasConfigSaved(false);
+//     return;
+//   }
 
-  const getUserId = () => {
-    const dadosStr = localStorage.getItem(STORAGE_KEY);
-    if (dadosStr) {
-      try {
-        const dados = JSON.parse(dadosStr);
-        if (dados.userId) {
-          return dados.userId;
-        }
-      } catch {}
-    }
-    return `${Math.random().toString(36).slice(2)}`;
-  };
+//   try {
+//     const dados = JSON.parse(dadosStr);
+
+//     setConfigLocal({
+//       nomeClientePadrao: dados.nomeClientePadrao || "",
+//       email: dados.email || "",
+//       ehMotoboy: dados.ehMotoboy ?? false, // Mantém o que o usuário escolheu
+//       modoEscuro: dados.modoEscuro || false,
+//       tamanhoFonte: dados.tamanhoFonte || "medio",
+//       usuarioPadrao: dados.usuarioPadrao || false,
+//     });
+
+//     setHasConfigSaved(!!(dados.nomeClientePadrao && dados.email));
+
+//     // Somente atualizar do servidor se quiser sincronizar, mas não sobrescrever "ehMotoboy" se já tiver
+//     const proxyUrl =
+//       "https://script.google.com/macros/s/AKfycbwNFDyGr0UUAmP1-d_bGai0ZXCJtcai59MGAtrHowT83051OAgrvCeDNYU7H_I7eA/exec?type=users";
+
+//     fetch(`${proxyUrl}&id=${dados.userId}`)
+//       .then((res) => res.json())
+//       .then((data) => {
+//         if (data.found && data.data) {
+//           // Apenas sincronizar, não sobrescrever escolha do usuário
+//           console.log("Dados do servidor:", data.data);
+//         }
+//       });
+//   } catch (e) {
+//     console.error("Erro ao ler config local:", e);
+//     setHasConfigSaved(false);
+//   }
+// }, [isOpen]);
+
+function generateUUID() {
+  // Gera UUID v4
+   return nanoid();
+
+}
+
+const getUserId = () => {
+  const dadosStr = localStorage.getItem(STORAGE_KEY);
+  if (dadosStr) {
+    try {
+      const dados = JSON.parse(dadosStr);
+      if (dados.userId) {
+        return dados.userId;
+      }
+    } catch {}
+  }
+  return generateUUID();
+};
 
   const handleSalvar = () => {
     if (hasConfigSaved) {
@@ -150,28 +196,28 @@ useEffect(() => {
       return;
     }
 
-    if (!configLocal.email.trim() || !/\S+@\S+\.\S+/.test(configLocal.email)) {
-      toast({
-        title: "Email inválido",
-        description: "Informe um email válido para continuar.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // if (!configLocal.email.trim() || !/\S+@\S+\.\S+/.test(configLocal.email)) {
+    //   toast({
+    //     title: "Email inválido",
+    //     description: "Informe um email válido para continuar.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
     const userId = getUserId();
-
+    
     const dadosParaSalvar = { userId, ...configLocal };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(dadosParaSalvar));
 
     const dataCadastro = new Date().toISOString().slice(0, 10);
 
     enviarUserParaGoogleForms({
-      ehMotoboy: configLocal.ehMotoboy ? "Sim" : "Não",
+      ehMotoboy: configLocal.ehMotoboy ? "True" : "False",
       email: configLocal.email,
       nomeClientePadrao: configLocal.nomeClientePadrao,
       userId,
-      Premium: Premium ? "Sim" : "Não",
+      Premium: "Sim",
       DateExpir: dateExpira,
       DateCAd: dataCadastro,
     });
@@ -182,32 +228,33 @@ useEffect(() => {
       title: "Configurações salvas",
       variant: "default",
     });
-
-    onClose();
+    onClose()
+    // window.location.reload()
   };
 
-  // Limpa dados para poder cadastrar novo usuário
   const handleLimpar = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    setConfigLocal({
-      nomeClientePadrao: "",
-      email: "",
-      ehMotoboy: false,
-      modoEscuro: false,
-      tamanhoFonte: "medio",
-      usuarioPadrao: false,
-    });
-    setHasConfigSaved(false);
-    toast({
-      title: "Configurações removidas",
-      description: "Você pode cadastrar um novo usuário agora.",
-      variant: "default",
-    });
-  };
+  onClose(); // fecha o modal primeiro
+  localStorage.removeItem(STORAGE_KEY);
 
-  const data = new Date(dateExpira + "T00:00:00");
+  setConfigLocal({
+    nomeClientePadrao: "",
+    email: "",
+    ehMotoboy: false,
+    modoEscuro: false,
+    tamanhoFonte: "medio",
+    usuarioPadrao: false,
+  });
+  setHasConfigSaved(false);
+
+  toast({
+    title: "Configurações removidas",
+    description: "Você pode cadastrar um novo usuário agora.",
+    variant: "default",
+  });
+};
+
+
   const handleCancel = () => onClose();
-  const nomeMotoboy = 't57c73ywswi';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -237,12 +284,12 @@ useEffect(() => {
 
           <div className="space-y-2">
             <Label htmlFor="email-cliente" className="flex items-center gap-2">
-              Email
+              Numero
             </Label>
             <Input
               id="email-cliente"
               type="email"
-              placeholder="Digite seu email"
+              placeholder="(77) 9 xxxxxxxx"
               value={configLocal.email}
               onChange={(e) => setConfigLocal({ ...configLocal, email: e.target.value })}
               disabled={hasConfigSaved}
@@ -310,7 +357,7 @@ useEffect(() => {
 
           {configLocal.ehMotoboy && (
             <>
-              {Premium ? (
+              {/* {Premium ? (
                 <div className="flex items-center justify-between">
                         <Label className="flex items-center gap-2">
                           <ShieldCheck className="h-4 w-4 text-green-500" />
@@ -326,7 +373,7 @@ useEffect(() => {
                           Assine o Premium
                         </Label>
                       </div>
-                    )}
+                    )} */}
 
               <div className="border rounded-md p-3 max-h-80 overflow-auto">
                 <HistoricoCorridas isPremium={Premium} idMoto={idUser} />
@@ -359,7 +406,7 @@ useEffect(() => {
               Limpar usuário
             </Button>
           )}
-
+{/* 
           {!Premium && (
             <Button
               onClick={() => {
@@ -370,7 +417,7 @@ useEffect(() => {
             >
               Torne-se Membro
             </Button>
-          )}
+          )} */}
         </div>
       </DialogContent>
     </Dialog>

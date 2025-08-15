@@ -75,6 +75,8 @@ export const MototaxistaCard = ({
               {/* Métricas do motorista */}
               {renderMetricas()}
             </div>
+
+            
           </div>
           
           <div className="flex flex-col items-end gap-1">

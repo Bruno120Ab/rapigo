@@ -7,6 +7,9 @@ export interface Mototaxista {
   tipoVeiculo: 'moto' | 'carro';
   detalhes: string;
   detalhes_foto:string;
+  ponto: string;
+  Grupo: string
+
 }
 
 export interface Solicitacao {
