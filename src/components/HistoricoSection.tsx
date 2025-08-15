@@ -24,7 +24,7 @@ export const HistoricoSection = ({
 
   if (historico.length === 0) return null;
 
-  const viagensExibidas = expandido ? historico : historico.slice(0, 5);
+  const viagensExibidas = expandido ? historico : historico.slice(0, 3);
 
   const handleAbrirDetalhes = (viagem: Solicitacao, event: React.MouseEvent) => {
     event.stopPropagation();
@@ -97,7 +97,7 @@ export const HistoricoSection = ({
               );
             })}
             
-            {historico.length > 5 && (
+            {historico.length > 3 && (
               <Button
                 variant="ghost"
                 onClick={() => setExpandido(!expandido)}
@@ -111,7 +111,7 @@ export const HistoricoSection = ({
                 ) : (
                   <>
                     <ChevronDown className="h-4 w-4 mr-2" />
-                    Expandir ({historico.length - 5} mais)
+                    Expandir ({historico.length - 3} mais)
                   </>
                 )}
               </Button>

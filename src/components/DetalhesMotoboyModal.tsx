@@ -375,7 +375,7 @@ const tipoMaisFrequente = (() => {
               className={`transition-all duration-300 ${!premium ? "blur-sm pointer-events-none" : ""}`}
             >
               {resumo && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 mb-10">
                   {/* Avaliação */}
                   <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                     <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />

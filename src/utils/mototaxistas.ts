@@ -39,8 +39,33 @@ export const mototaxistasIniciais: Mototaxista[] = [
     ponto: '-15.243889, -40.619893',
     Grupo: 'Aguia'
   },
+    {
+    id: "1vjfwf5o9te",
+    nome: "Cassio",
+    telefone: "7798861-9707",
+    foto: "/assets/file.enc",
+    ativo: true,
+    tipoVeiculo: "carro",
+    detalhes: "Fan 160",
+    detalhes_foto: "/Mt01-Mto.png",
+    ponto: '-15.243889, -40.619893',
+    Grupo: 'Aguia'
+  },
+   {
+    id: "1vjfwf5o9te",
+    nome: "Cassio",
+    telefone: "7798861-9707",
+    foto: "/assets/file.enc",
+    ativo: true,
+    tipoVeiculo: "carro",
+    detalhes: "Fan 160",
+    detalhes_foto: "/Mt01-Mto.png",
+    ponto: '-15.243889, -40.619893',
+    Grupo: 'Aguia'
+  },
 
 ];
+
 
 /**
  * Busca um mototaxista pelo nome

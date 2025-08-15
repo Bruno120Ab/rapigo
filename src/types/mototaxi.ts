@@ -4,7 +4,7 @@ export interface Mototaxista {
   telefone: string;
   foto: string;
   ativo: boolean;
-  tipoVeiculo: 'moto' | 'carro';
+  tipoVeiculo: 'moto' | 'carro' ;
   detalhes: string;
   detalhes_foto:string;
   ponto: string;

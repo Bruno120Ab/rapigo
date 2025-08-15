@@ -12,7 +12,7 @@ export const useFavoritos = () => {
   }, []);
 
   const adicionarFavorito = (mototaxista: Mototaxista) => {
-    if (favoritos.length >= 3) return false;
+    if (favoritos.length >= 5) return false;
     if (favoritos.find(f => f.id === mototaxista.id)) return false;
     
     const novosFavoritos = [...favoritos, mototaxista];

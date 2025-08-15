@@ -502,6 +502,9 @@ import EnviarEmail from "@/components/EnviarEmail";
 import { PoliticaSeguranca } from "@/components/PoliticaSeguranca";
 import { CardsSection } from "@/components/Beneficiso";
 import { FeedbackModal } from "@/components/Feedback";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { enviarFeedbackParaGoogleForms } from "@/hooks/use-feedback";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
@@ -598,6 +601,10 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
     const { toast } = useToast();
     const { calcularMetricasMotorista, adicionarAvaliacao: adicionarAvaliacaoReativa } = useAvaliacoes();
     const { configuracao } = useConfiguracoes();
+    const [nomeFeedback, setNomeFeedback] = useState("");
+    const [mensagemFeedback, setMensagemFeedback] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [totalVotosVan, setTotalVotosVan] = useState(0);
 
     const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
         const solicitacao = adicionarSolicitacao(dadosSolicitacao);
@@ -660,7 +667,7 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
             } else {
                 toast({
                     title: "Limite atingido",
-                    description: "Você pode ter no máximo 3 motoboys favoritos.",
+                    description: "Você pode ter no máximo 5 motoboys favoritos.",
                     variant: "destructive"
                 });
             }
@@ -687,7 +694,7 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
       }
     }
   
-    let mensagem = `🚕 *NOVA SOLICITAÇÃO DE MOTO-TÁXI*\n\n`;
+    let mensagem = `*RapiGo* - Nova Solicitação!  \n \n`;
     mensagem += `👤 *Cliente:* ${ultimaSolicitacao.nome}\n`;
     mensagem += `🧭 *Serviço:* ${ultimaSolicitacao.serviceType ?? 'corrida'}\n`;
     mensagem += `📍 *Origem:* ${ultimaSolicitacao.endereco}\n`;
@@ -706,7 +713,8 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
     }
   
     mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
-    mensagem += `\n*Favor confirmar se pode atender! 🙏*`;
+    mensagem += `\n*Favor confirmar se pode atender! 🙏*\n\n`;
+
   
     const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
     window.open(url, "_blank");
@@ -798,30 +806,35 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
                 );
             default:
                 return (
-                    <div className="space-y-8">
+                    <div className="space-y-5">
                         {/* Header */}
-                        <header className="text-center space-y-3 max-w-md mx-auto">
-                            <div className="flex items-center justify-between px-2">
-                                <div></div>
-                                <h1 className="text-4xl font-extrabold flex items-center justify-center gap-3 text-gray-900">
-                                    <Bike className="h-10 w-10 text-primary" />
-                                    RapiMoto
-                                </h1>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => setMostrarConfiguracoesModal(true)}
-                                    className="text-gray-500 hover:text-gray-900 transition"
-                                    aria-label="Configurações"
-                                >
-                                    <User className="h-6 w-6" />
-                                </Button>
-                            </div>
-                            <p className="text-gray-600 text-lg font-medium">
-                                Seu táxi na palma da mão, você no controle da corrida.
-                            </p>
-                            <InstallPWAButton />
-                        </header>
+                   <header className="text-center max-w-md mx-auto relative">
+    {/* Botão no canto direito */}
+    
+
+    {/* Conteúdo centralizado */}
+    <div className="flex flex-col items-center gap-0 justify-center">
+        <img 
+        src="/assets/logodef.png" 
+    alt="Logo" 
+    className="h-30 w-[200px]"
+        />
+        <p className="text-gray-600 text-lg font-medium mt-1">
+            Seu transporte na palma da mão.
+        </p>
+        <Button
+        variant="ghost"
+        size="default"
+        onClick={() => setMostrarConfiguracoesModal(true)}
+        className="absolute top-0 right-0 text-gray-500 hover:text-gray-900 transition"
+        aria-label="Configurações"
+            >
+        <User className="h-12 w-12" />
+            </Button>
+        <InstallPWAButton  />
+    </div>
+</header>
+
 
                         <FavoritosSection 
                             favoritos={favoritos} 
@@ -872,6 +885,116 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
                                 </div>
                             </CardContent>
                         </Card>
+                        <Card className="max-w-lg mx-auto rounded-xl shadow-lg border border-gray-200">
+                            <CardHeader className="bg-gray-50 rounded-t-xl p-4">
+                                <CardTitle className="flex items-center gap-2 text-gray-900 font-extrabold text-xl">
+                                    <Users className="h-6 w-6" />
+                                    Taxista cadastrado 
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-4">
+                                <div className="space-y-4">
+                                {mototaxistasAtivos
+                                    .filter((mototaxista) => mototaxista.tipoVeiculo === 'carro')
+                                    .slice(0, 3)
+                                    .map((mototaxista) => {
+                                    const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
+                                    return (
+                                        <MototaxistaCard
+                                        key={mototaxista.id}
+                                        mototaxista={mototaxista}
+                                        onToggleStatus={toggleStatus}
+                                        onSelecionar={handleMostrarDetalhes}
+                                        isFavorito={isFavorito(mototaxista.id)}
+                                        onToggleFavorito={handleToggleFavorito}
+                                        showFavoriteButton={true}
+                                        />
+                                    );
+                                    })}
+                                
+                                {mototaxistasAtivos.filter((m) => m.tipoVeiculo === 'carro').length > 3 && (
+                                    <Button
+                                    variant="outline"
+                                    className="w-full mt-2 rounded-lg border-gray-300 hover:bg-gray-100 hover:text-gray-900 transition"
+                                    onClick={() => setTelaAtual('selecionar-mototaxista')}
+                                    >
+                                    Ver todos motoboys de carro ({mototaxistasAtivos.filter((m) => m.tipoVeiculo === 'carro').length} disponíveis)
+                                    </Button>
+                                )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card className="max-w-lg mx-auto rounded-xl shadow-lg border border-gray-200">
+                            <CardHeader className="bg-gray-50 rounded-t-xl p-4">
+                                <CardTitle className="flex items-center gap-2 text-gray-900 font-extrabold text-xl">
+                                <Users className="h-6 w-6" />
+                                Vans no App
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-4 space-y-4">
+                                <p className="text-gray-700">
+                                Estamos pensando em disponibilizar um ponto de vans no app, para que você possa:
+                                </p>
+                                <ul className="list-disc list-inside text-gray-700 space-y-1">
+                                    <li>Solicitar uma van para ir até Vitória da Conquista.</li>
+                                    <li>Ver horários disponíveis e planejar sua viagem.</li>
+                                    <li>Buscar e mandar objetos para Conquista.</li>
+
+                                </ul>
+
+                                <p className="text-gray-700 font-semibold mt-2">
+                                Quer vans disponíveis? 
+                                </p>
+                                <p className="text-gray-500 font-semibold mt-2">
+                                Envie um feedback com 'Adicione Vans' e ajude a liberar o serviço para todos!
+                                </p>
+
+
+                                <div className="flex flex-col gap-2">
+                                <Input
+                                    placeholder="Seu nome (opcional)"
+                                    value={nomeFeedback}
+                                    onChange={(e) => setNomeFeedback(e.target.value)}
+                                />
+                                <Textarea
+                                    placeholder="Escreva seu feedback aqui..."
+                                    value={mensagemFeedback}
+                                    onChange={(e) => setMensagemFeedback(e.target.value)}
+                                    rows={3}
+                                />
+                                <Button
+                                    variant="secondary"
+                                    onClick={async () => {
+                                    if (!mensagemFeedback.trim()) return;
+                                    setLoading(true);
+                                    try {
+                                        await enviarFeedbackParaGoogleForms({
+                                        nome: nomeFeedback,
+                                        feedback: mensagemFeedback,
+                                        });
+                                        setMensagemFeedback("");
+                                        setNomeFeedback("");
+                                        setTotalVotosVan(totalVotosVan + 1);
+                                    } catch (err) {
+                                        console.error(err);
+                                    } finally {
+                                        setLoading(false);
+                                    }
+                                    }}
+                                    disabled={loading}
+                                >
+                                    {loading ? "Enviando..." : "Enviar Feedback"}
+                                </Button>
+                                
+                                </div>
+
+                                <p className="text-gray-500 text-sm mt-2">
+                                {totalVotosVan} pessoas já mostraram interesse nessa ideia.
+                                </p>
+                            </CardContent>
+                        </Card>
+
+
 
                         <div className="max-w-lg mx-auto">
                             <CardsSection />
@@ -893,9 +1016,18 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
                         {/* <BannerSection/> */}
 
                         <footer className="max-w-lg mx-auto flex flex-col items-center space-y-3 mt-12 mb-8 bg-white rounded-xl shadow-md border border-gray-100 p-4">
-                            
+                             <img 
+                            src="/assets/IconRapi.jpeg" 
+                        alt="Logo" 
+                        className="h-30 w-[200px]"
+                            />
+
                             {/* Desenvolvedor */}
+                          
                             <p className="text-xs text-gray-500" >
+                                Design: <span className="font-medium text-gray-700">Yasmin Abreu</span>
+                            </p>
+                              <p className="text-xs text-gray-500" >
                                 Desenvolvedor: <span className="font-medium text-gray-700">Bruno Abreu</span>
                             </p>
 
@@ -906,7 +1038,8 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
                                 <a href="mailto:brunoabreudevs@gmail.com" className="hover:underline text-gray-700">
                                 brunoabreudevs@gmail.com
                                 </a>
-                            </p>              
+                            </p>      
+
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
                                   {/* Botão de contato */}
                                   <Button
@@ -930,7 +1063,7 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
     };
 
     return (
-        <main className="min-h-screen bg-gray-50 p-6 flex justify-center">
+        <main className="min-h-screen bg-gray-50 py-3 px-5 flex justify-center">
             <div className="w-full max-w-md">
                 {renderTela()}
             </div>

@@ -45,7 +45,7 @@ export const PoliticaSeguranca = () => {
 
         {/* Compromisso */}
         <div>
-          <h3 className="font-semibold text-gray-800">Compromisso RapMoto</h3>
+          <h3 className="font-semibold text-gray-800">Compromisso RapiGo</h3>
           <p className="text-sm">
             Uma das nossas principais missões é <span className="text-orange-500">apoiar e valorizar os motoboys</span> de Itambé, respeitando as organizações e garantindo confiança e segurança para passageiros e profissionais.
           </p>
