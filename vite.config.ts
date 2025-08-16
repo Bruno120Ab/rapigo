@@ -42,8 +42,8 @@ export default defineConfig({
       },
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'MotoTáxi App',
-        short_name: 'MotoTáxi',
+        name: 'RapiGo',
+        short_name: 'RapiGo',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',

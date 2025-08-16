@@ -513,7 +513,8 @@ const Index = () => {
     const [isPremium, setIsPremium] = useState(false);
     const [dateExpiration, setDateExpiration ] = useState();
     const [premiumLoading, setPremiumLoading] = useState(true);
-const [mostrarFeedback, setMostrarFeedback] = useState(false);
+    const [mostrarFeedback, setMostrarFeedback] = useState(false);
+    const [totalVotosVan, setTotalVotosVan] = useState<number | undefined>(undefined);
 
     // useEffect 1: Geração e recuperação do ID do usuário, agora dentro de 'configuracoes-usuario'
     useEffect(() => {
@@ -584,6 +585,22 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
         }
     }, [userId]);
 
+   useEffect(() => {
+  async function carregarVotos() {
+    try {
+      const res = await fetch(
+        "https://script.google.com/macros/s/AKfycbyHVnFNVIScJ7Z74Q-PUKMfwtWp4lKVKaebhdDYW68Uole21Qp_3vAMKV6CT-lyPdVP/exec?type=vans"
+      );
+      const numero = await res.json(); // aqui numero = 6
+      setTotalVotosVan(Number(numero)); // converte pra número
+    } catch (err) {
+      console.error("Erro ao buscar dados de vans:", err);
+    }
+  }
+
+  carregarVotos();
+}, []);
+
     // Seus estados e hooks existentes
     const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
     const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
@@ -604,7 +621,6 @@ const [mostrarFeedback, setMostrarFeedback] = useState(false);
     const [nomeFeedback, setNomeFeedback] = useState("");
     const [mensagemFeedback, setMensagemFeedback] = useState("");
     const [loading, setLoading] = useState(false);
-    const [totalVotosVan, setTotalVotosVan] = useState(0);
 
     const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
         const solicitacao = adicionarSolicitacao(dadosSolicitacao);
