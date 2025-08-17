@@ -506,6 +506,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { enviarFeedbackParaGoogleForms } from "@/hooks/use-feedback";
 import MapaRapiCidade from "@/components/MapaRapi";
+import { buscarPedidosDoGoogleSheets } from "@/hooks/useBuscarTaxis";
+import { MototaxistaCardLoading } from "@/components/MotoCardLoad";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
@@ -587,19 +589,25 @@ const Index = () => {
     }, [userId]);
 
    useEffect(() => {
-  async function carregarVotos() {
-    try {
-      const res = await fetch(
-        "https://script.google.com/macros/s/AKfycbyHVnFNVIScJ7Z74Q-PUKMfwtWp4lKVKaebhdDYW68Uole21Qp_3vAMKV6CT-lyPdVP/exec?type=vans"
-      );
-      const numero = await res.json(); // aqui numero = 6
-      setTotalVotosVan(Number(numero)); // converte pra número
-    } catch (err) {
-      console.error("Erro ao buscar dados de vans:", err);
+    async function carregarVotos() {
+        try {
+        const res = await fetch(
+            "https://script.google.com/macros/s/AKfycbyHVnFNVIScJ7Z74Q-PUKMfwtWp4lKVKaebhdDYW68Uole21Qp_3vAMKV6CT-lyPdVP/exec?type=vans"
+        );
+        const numero = await res.json(); // aqui numero = 6
+        setTotalVotosVan(Number(numero)); // converte pra número
+        } catch (err) {
+        console.error("Erro ao buscar dados de vans:", err);
+        }
     }
-  }
 
-  carregarVotos();
+    carregarVotos();
+}, []);
+useEffect(() => {
+  (async () => {
+    const pedidos = await buscarPedidosDoGoogleSheets();
+    console.log("Pedidos:", pedidos);
+  })();
 }, []);
 
     // Seus estados e hooks existentes
@@ -622,6 +630,7 @@ const Index = () => {
     const [nomeFeedback, setNomeFeedback] = useState("");
     const [mensagemFeedback, setMensagemFeedback] = useState("");
     const [loading, setLoading] = useState(false);
+    const [tipoSelecionado, setTipoSelecionado] = useState<'moto' | 'carro'>('moto');
 
     const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
         const solicitacao = adicionarSolicitacao(dadosSolicitacao);
@@ -754,7 +763,9 @@ const Index = () => {
                 return (
                     <div className="max-w-lg mx-auto p-4 space-y-6">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-3xl font-extrabold text-gray-900">Selecionar Mototaxista</h2>
+                            <h2 className="text-3xl font-extrabold text-gray-900">
+                                {tipoSelecionado == 'carro' ? 'Selecione seu motorista' : 'Selecione seu motoboy'}
+                            </h2>
                             <Button 
                                 variant="outline" 
                                 onClick={() => setTelaAtual('inicial')}
@@ -765,22 +776,41 @@ const Index = () => {
                         </div>
                         
                         <div className="space-y-4">
-                            {mototaxistasAtivos.map((mototaxista) => {
-                                const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
-                                return (
-                                    <MototaxistaCard
-                                        key={mototaxista.id}
-                                        mototaxista={mototaxista}
-                                        onToggleStatus={toggleStatus}
-                                        onSelecionar={handleMostrarDetalhes}
-                                        isFavorito={isFavorito(mototaxista.id)}
-                                        onToggleFavorito={handleToggleFavorito}
-                                        showFavoriteButton={true}
-                                        metricas={metricas}
-                                        // className="hover:shadow-lg transition-shadow rounded-lg"
-                                    />
-                                );
+                          {mototaxistasAtivos
+                            .filter(m => m.tipoVeiculo === tipoSelecionado) // tipoSelecionado = 'moto' ou 'carro'
+                            .map((mototaxista) => {
+                            // const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
+                            return (
+                                <MototaxistaCard
+                                key={mototaxista.id}
+                                mototaxista={mototaxista}
+                                onToggleStatus={toggleStatus}
+                                onSelecionar={handleMostrarDetalhes}
+                                isFavorito={isFavorito(mototaxista.id)}
+                                onToggleFavorito={handleToggleFavorito}
+                                showFavoriteButton={true}
+                                // metricas={metricas}
+                                />
+                            );
                             })}
+                        </div>
+
+                        <div className="flex flex-col items-center justify-center mb-6 p-4 bg-blue-50 rounded-lg space-y-3">
+                        {/* Mascote */}
+                        <img 
+                            src="/public/icon-def.png" 
+                            alt="Mascote RapiGo" 
+                            className="w-36 h-36 object-contain" 
+                        />
+
+                        {/* Mensagem de incentivo */}
+                        <div className="text-center">
+                            <h3 className="text-xl font-bold text-gray-900">Peça seu transporte com o RapiGo!</h3>
+                            <p className="text-gray-700">
+                            Motoboys e taxistas disponíveis para corridas rápidas, entregas e buscas.  
+                            Atendimento seguro e confiável na sua cidade!
+                            </p>
+                        </div>
                         </div>
                     </div>
                 );
@@ -872,7 +902,7 @@ const Index = () => {
                                     Mototaxistas Cadastrados 
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent className="p-4">
+                            {/* <CardContent className="p-4">
                                 <div className="space-y-4">
                                     {mototaxistasAtivos.slice(0, 3).map((mototaxista) => {
                                         const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
@@ -900,6 +930,48 @@ const Index = () => {
                                         </Button>
                                     )}
                                 </div>
+                            </CardContent> */}
+                                <CardContent className="p-4">
+                                <div className="space-y-4">
+                                    {mototaxistasAtivos.length === 0 ? (
+                                            <>
+                                            < MototaxistaCardLoading />
+                                            < MototaxistaCardLoading />
+                                            < MototaxistaCardLoading />
+                                            </>
+                                    ) : (
+                                            <>
+                                           {mototaxistasAtivos
+                                                .filter(mototaxista => mototaxista.tipoVeiculo === 'moto') // filtra apenas motos
+                                                .slice(0, 3) // pega os 3 primeiros
+                                                .map((mototaxista) => {
+                                                    const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
+                                                    return (
+                                                    <MototaxistaCard
+                                                        key={mototaxista.id}
+                                                        mototaxista={mototaxista}
+                                                        onToggleStatus={toggleStatus}
+                                                        onSelecionar={handleMostrarDetalhes}
+                                                        isFavorito={isFavorito(mototaxista.id)}
+                                                        onToggleFavorito={handleToggleFavorito}
+                                                        showFavoriteButton={true}
+                                                        // metricas={metricas}
+                                                    />
+                                                    );
+                                                })
+}
+                                            {quantidadeAtivos > 3 && (
+                                                <Button
+                                                variant="outline"
+                                                className="w-full mt-2 rounded-lg border-gray-300 hover:bg-gray-100 hover:text-gray-900 transition"
+                                                onClick={() => {setTelaAtual('selecionar-mototaxista'); setTipoSelecionado('moto')}}
+                                                >
+                                                Ver todos motoboys do app ({quantidadeAtivos} disponíveis)
+                                                </Button>
+                                            )}
+                                            </>
+                                            )}
+                                </div>
                             </CardContent>
                         </Card>
                         <Card className="max-w-lg mx-auto rounded-xl shadow-lg border border-gray-200">
@@ -911,7 +983,7 @@ const Index = () => {
                             </CardHeader>
                             <CardContent className="p-4">
                                 <div className="space-y-4">
-                                {mototaxistasAtivos
+                                {/* {mototaxistasAtivos
                                     .filter((mototaxista) => mototaxista.tipoVeiculo === 'carro')
                                     .slice(0, 3)
                                     .map((mototaxista) => {
@@ -927,13 +999,45 @@ const Index = () => {
                                         showFavoriteButton={true}
                                         />
                                     );
-                                    })}
+                                    })} */
+                                    mototaxistasAtivos.length === 0 ? (
+                                            <>
+                                            < MototaxistaCardLoading />
+                                            < MototaxistaCardLoading />
+                                            < MototaxistaCardLoading />
+                                            </>
+                                    ) : (
+                                            <>
+                                           {mototaxistasAtivos
+                                                .filter(mototaxista => mototaxista.tipoVeiculo === 'carro') // filtra apenas motos
+                                                .slice(0, 3) // pega os 3 primeiros
+                                                .map((mototaxista) => {
+                                                    const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
+                                                    return (
+                                                    <MototaxistaCard
+                                                        key={mototaxista.id}
+                                                        mototaxista={mototaxista}
+                                                        onToggleStatus={toggleStatus}
+                                                        onSelecionar={handleMostrarDetalhes}
+                                                        isFavorito={isFavorito(mototaxista.id)}
+                                                        onToggleFavorito={handleToggleFavorito}
+                                                        showFavoriteButton={true}
+                                                        // metricas={metricas}
+                                                    />
+                                                    );
+                                                })
+}
+            
+                                            </>
+                                            )
+                                    }
                                 
                                 {mototaxistasAtivos.filter((m) => m.tipoVeiculo === 'carro').length > 3 && (
                                     <Button
                                     variant="outline"
                                     className="w-full mt-2 rounded-lg border-gray-300 hover:bg-gray-100 hover:text-gray-900 transition"
-                                    onClick={() => setTelaAtual('selecionar-mototaxista')}
+                                    onClick={() => { setTelaAtual('selecionar-mototaxista'); setTipoSelecionado('carro')}}
+                                                
                                     >
                                     Ver todos motoboys de carro ({mototaxistasAtivos.filter((m) => m.tipoVeiculo === 'carro').length} disponíveis)
                                     </Button>

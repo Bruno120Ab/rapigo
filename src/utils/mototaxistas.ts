@@ -1,3 +1,4 @@
+import { useMototaxistas } from "@/hooks/useMototaxistas";
 import { Mototaxista } from "@/types/mototaxi";
 
 // Dados centralizados dos mototaxistas - fonte única da verdade
@@ -54,7 +55,7 @@ export const mototaxistasIniciais: Mototaxista[] = [
 
 ];
 
-
+// export const mototaxistasIniciais: Mototaxista[] = ativos
 /**
  * Busca um mototaxista pelo nome
  * @param nome Nome do mototaxista
