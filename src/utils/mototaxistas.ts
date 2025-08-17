@@ -23,7 +23,7 @@ export const mototaxistasIniciais: Mototaxista[] = [
     ativo: true,
     tipoVeiculo: "moto",
     detalhes: "Fan 160",
-    detalhes_foto: "/Mt01-Mto.png",
+    detalhes_foto: "",
     ponto: '-15.243889, -40.619893',
     Grupo: 'Aguia'
   },
@@ -47,21 +47,9 @@ export const mototaxistasIniciais: Mototaxista[] = [
     ativo: true,
     tipoVeiculo: "carro",
     detalhes: "Fan 160",
-    detalhes_foto: "/Mt01-Mto.png",
+    detalhes_foto: "",
     ponto: '-15.243889, -40.619893',
-    Grupo: 'Aguia'
-  },
-   {
-    id: "1vjfwf5o9te",
-    nome: "Cassio",
-    telefone: "7798861-9707",
-    foto: "/assets/file.enc",
-    ativo: true,
-    tipoVeiculo: "carro",
-    detalhes: "Fan 160",
-    detalhes_foto: "/Mt01-Mto.png",
-    ponto: '-15.243889, -40.619893',
-    Grupo: 'Aguia'
+    Grupo: ''
   },
 
 ];

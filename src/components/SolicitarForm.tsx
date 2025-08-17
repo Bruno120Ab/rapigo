@@ -380,13 +380,7 @@ export const SolicitarForm = ({
   const { configuracao } = useConfiguracoes();
   const [serviceType, setServiceType] = useState<'corrida' | 'entrega' | 'coleta' | 'buscar_pessoa'>('corrida');
 
-  useEffect(() => {
-    if (configuracao.nomeClientePadrao && !nome) {
-      setNome(configuracao.nomeClientePadrao);
-    }
-  }, [configuracao.nomeClientePadrao]);
-
-  const obterLocalizacaoAtual = async () => {
+ const obterLocalizacaoAtual = async () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -411,6 +405,16 @@ export const SolicitarForm = ({
       );
     }
   };
+  
+  useEffect(() => {
+     obterLocalizacaoAtual()
+
+    if (configuracao.nomeClientePadrao && !nome) {
+      setNome(configuracao.nomeClientePadrao);
+    }
+  }, [configuracao.nomeClientePadrao]);
+
+ 
 
   const handleSubmit = async () => {
     if (!nome.trim() || !endereco.trim()) return;
@@ -490,7 +494,6 @@ export const SolicitarForm = ({
 
             <div className="space-y-2 relative">
               <Label htmlFor="endereco">Endereço de coleta</Label>
-
               {enderecosPadrao.length > 0 && (
                 <Select onValueChange={setEndereco}>
                   <SelectTrigger className="mb-2">

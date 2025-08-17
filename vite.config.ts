@@ -40,7 +40,7 @@ export default defineConfig({
       devOptions: {
         enabled: true // <- isso permite rodar PWA mesmo em modo dev
       },
-      includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png'],
+      includeAssets: ['icon.jpeg', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'RapiGo',
         short_name: 'RapiGo',

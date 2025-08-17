@@ -6,6 +6,7 @@ import { Mototaxista, Solicitacao } from "@/types/mototaxi";
 import { useMototaxistas } from "@/hooks/useMototaxistas";
 import { enviarPedidoParaGoogleForms } from "@/hooks/use-enviarPedido";
 import { buscarMototaxistaPorNome } from "@/utils/mototaxistas";
+import { customAlphabet } from "nanoid";
 
 
 interface ConfirmacaoSolicitacaoProps {
@@ -14,6 +15,19 @@ interface ConfirmacaoSolicitacaoProps {
   onEnviarWhatsApp: () => void;
 }
 
+// Alfabeto com letras e números, 6 caracteres
+const nanoid = customAlphabet("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 6);
+
+function gerarIdCorrida() {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+  const dia = String(hoje.getDate()).padStart(2, "0");
+
+  return `RAPI-${ano}${mes}${dia}-${nanoid()}`;
+}
+
+const idNew = gerarIdCorrida()
 export const ConfirmacaoSolicitacao = ({ 
   solicitacao, 
   onVoltarInicio, 
@@ -134,6 +148,7 @@ export const ConfirmacaoSolicitacao = ({
        <Button
           onClick={async () => {
             await enviarPedidoParaGoogleForms({
+              idCorrida: idNew,
               nome: solicitacao.nome,
               corrida: solicitacao.endereco,
               idMoto: solicitacao.idmotoBoy,

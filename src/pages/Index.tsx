@@ -505,6 +505,7 @@ import { FeedbackModal } from "@/components/Feedback";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { enviarFeedbackParaGoogleForms } from "@/hooks/use-feedback";
+import MapaRapiCidade from "@/components/MapaRapi";
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
