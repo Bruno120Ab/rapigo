@@ -508,6 +508,9 @@ import { enviarFeedbackParaGoogleForms } from "@/hooks/use-feedback";
 import MapaRapiCidade from "@/components/MapaRapi";
 import { buscarPedidosDoGoogleSheets } from "@/hooks/useBuscarTaxis";
 import { MototaxistaCardLoading } from "@/components/MotoCardLoad";
+// import { IconDefRapGo } from "/home/bruno-abreu/Codes/mototaxi-local/public/assets/icon-def.png"
+import icon from "@/assets/icon-def.png"
+
 
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
@@ -798,7 +801,7 @@ useEffect(() => {
                         <div className="flex flex-col items-center justify-center mb-6 p-4 bg-blue-50 rounded-lg space-y-3">
                         {/* Mascote */}
                         <img 
-                            src="/public/icon-def.png" 
+                            src={icon}
                             alt="Mascote RapiGo" 
                             className="w-36 h-36 object-contain" 
                         />

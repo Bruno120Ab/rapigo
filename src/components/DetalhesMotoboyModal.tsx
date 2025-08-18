@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, Car, Bike, Star, Shield, Phone, ShieldCheck, Clock, Info } from "lucide-react";
+import { User, Car, Bike, Star, Shield, Phone, ShieldCheck, Clock, Info, MapPinPlus } from "lucide-react";
 import { Mototaxista } from "@/types/mototaxi";
 import { useAvaCorridas } from "@/hooks/use-historicoCorrida";
  import _ from "lodash";
@@ -188,7 +188,7 @@ const tipoMaisFrequente = (() => {
 
                   {/* Tipo mais frequente */}
                   <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                    <Car className="h-5 w-5 text-purple-600" />
+                    <MapPinPlus  className="h-5 w-5 text-purple-600" />
                     <div>
                       <p className="font-medium">{tipoMaisFrequente || "N/A"}</p>
                       <p className="text-xs text-muted-foreground">Tipo mais frequente</p>

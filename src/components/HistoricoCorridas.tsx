@@ -165,8 +165,6 @@ export default function HistoricoCorridas({
     );
   if (!dados) return null;
 
-  console.log(dados)
-
 
   // Contagem dos endereços e bairros
   const contagemEnderecos: Record<string, number> = {};
@@ -511,9 +509,9 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
         </div>
       )}
 
-      <p className="mt-6 text-sm text-gray-600 italic text-center">
-        Essa avaliações foram dadas pelos nossos usuarios {isPremium ? "" : "hoje"} 
-      </p>
+      {/* <p className="mt-6 text-sm text-gray-600 italic text-center">
+        Corridas com usuarios {isPremium ? "" : "hoje"} 
+      </p> */}
     </div>
   );
 }
