@@ -1072,7 +1072,9 @@ useEffect(() => {
                                 <p className="text-gray-500 font-semibold mt-2">
                                 Envie um feedback com 'Adicione Vans' e ajude a liberar o serviço para todos!
                                 </p>
-
+                                <p className="text-gray-700">
+                                Fique avontade para pedir melhorias para o app, este app segue em constante mudanças e melhorias.
+                                </p>
 
                                 <div className="flex flex-col gap-2">
                                 <Input
@@ -1119,7 +1121,6 @@ useEffect(() => {
                         </Card>
 
 
-
                         <div className="max-w-lg mx-auto">
                             <CardsSection />
                         </div>
@@ -1159,8 +1160,8 @@ useEffect(() => {
                             {/* Contato */}
                             <p className="flex items-center space-x-1 text-xs text-gray-500">
                                 <Mail className="w-4 h-4 text-gray-400" />
-                                <a href="mailto:brunoabreudevs@gmail.com" className="hover:underline text-gray-700">
-                                brunoabreudevs@gmail.com
+                                <a href="mailto:contatorapigo@gmail.com" className="hover:underline text-gray-700">
+                                contatorapigo@gmail.com
                                 </a>
                             </p>      
 
