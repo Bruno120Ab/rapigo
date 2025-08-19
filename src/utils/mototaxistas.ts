@@ -9,50 +9,15 @@ export const mototaxistasIniciais: Mototaxista[] = [
     nome: "Allysson",
     telefone: "7798861-9707",
     foto: "/assets/file.enc",
-    ativo: true,
+    status: true,
     tipoVeiculo: "moto",
     detalhes: "Twister 160",
     detalhes_foto: "/Mt01-Mto.png",
     ponto: '-15.243889, -40.619893',
-    Grupo: 'SOS'
-  },
-  {
-    id: "6ic8h8xqn3m",
-    nome: "Tulio",
-    telefone: "7798861-9707",
-    foto: "/assets/file.enc",
-    ativo: true,
-    tipoVeiculo: "moto",
-    detalhes: "Fan 160",
-    detalhes_foto: "",
-    ponto: '-15.243889, -40.619893',
-    Grupo: 'Aguia'
-  },
-  {
-    id: "1vjfwf5v9te",
-    nome: "Helio",
-    telefone: "7798861-9707",
-    foto: "/assets/file.enc",
-    ativo: true,
-    tipoVeiculo: "moto",
-    detalhes: "Fan 160",
-    detalhes_foto: "/Mt01-Mto.png",
-    ponto: '-15.243889, -40.619893',
-    Grupo: 'Aguia'
-  },
-    {
-    id: "1vjfwf5o9te",
-    nome: "Cassio",
-    telefone: "7798861-9707",
-    foto: "/assets/file.enc",
-    ativo: true,
-    tipoVeiculo: "carro",
-    detalhes: "Fan 160",
-    detalhes_foto: "",
-    ponto: '-15.243889, -40.619893',
-    Grupo: ''
-  },
-
+    Grupo: 'SOS',
+    ativo: true
+    
+  }
 ];
 
 // export const mototaxistasIniciais: Mototaxista[] = ativos

@@ -473,7 +473,7 @@
 
 
 import { useEffect, useState } from "react";
-import { Bike, Car, Mail, MessageCircle, Settings, User, Users } from "lucide-react";
+import { Bike, Car, Mail, MessageCircle, RefreshCcw, Settings, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -508,7 +508,6 @@ import { enviarFeedbackParaGoogleForms } from "@/hooks/use-feedback";
 import MapaRapiCidade from "@/components/MapaRapi";
 import { buscarPedidosDoGoogleSheets } from "@/hooks/useBuscarTaxis";
 import { MototaxistaCardLoading } from "@/components/MotoCardLoad";
-// import { IconDefRapGo } from "/home/bruno-abreu/Codes/mototaxi-local/public/assets/icon-def.png"
 import icon from "@/assets/icon-def.png"
 
 
@@ -622,7 +621,7 @@ useEffect(() => {
     const [motoboyDetalhes, setMotoboyDetalhes] = useState<Mototaxista | null>(null);
     const [mostrarDetalhesModal, setMostrarDetalhesModal] = useState(false);
     const [mostrarConfiguracoesModal, setMostrarConfiguracoesModal] = useState(false);
-    const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus } = useMototaxistas();
+    const { mototaxistasAtivos, quantidadeAtivos, mototaxistas, toggleStatus, atualizarMototaxistas, loadingMoto } = useMototaxistas();
     const { adicionarSolicitacao } = useSolicitacoes();
     const { favoritos, adicionarFavorito, removerFavorito, isFavorito } = useFavoritos();
     const { historico, adicionarViagem, adicionarAvaliacao, obterAvaliacao } = useHistorico();
@@ -866,8 +865,8 @@ useEffect(() => {
     <div className="flex flex-col items-center gap-0 justify-center">
         <img 
         src="/assets/logodef.png" 
-    alt="Logo" 
-    className="h-30 w-[200px]"
+        alt="Logo" 
+        className="h-30 w-[200px]"
         />
         <p className="text-gray-600 text-lg font-medium mt-1">
             Seu transporte na palma da mão.
@@ -899,11 +898,24 @@ useEffect(() => {
                         />
 
                         <Card className="max-w-lg mx-auto rounded-xl shadow-lg border border-gray-200">
-                            <CardHeader className="bg-gray-50 rounded-t-xl p-4">
-                                <CardTitle className="flex items-center gap-2 text-gray-900 font-extrabold text-xl">
+                           <CardHeader className="bg-gray-50 rounded-t-xl p-4">
+                                <div className="flex items-center justify-center gap-4 w-full">
                                     <Users className="h-6 w-6" />
-                                    Mototaxistas Cadastrados 
-                                </CardTitle>
+                                    <span className="text-gray-900 font-extrabold text-xl">
+                                    {mototaxistas.some(m => m.ativo && m.tipoVeiculo === "moto")
+                                        ? `Motoboys Disponíveis (${mototaxistas.filter(m => m.ativo && m.tipoVeiculo === "moto").length})`
+                                        : `Motoboys Cadastrados (${mototaxistas.filter(m => m.tipoVeiculo === "moto").length})`}
+                                    </span>
+                                    <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={atualizarMototaxistas}
+                                    disabled={loadingMoto}
+                                    className="flex items-center gap-1"
+                                    >
+                                    <RefreshCcw className={`h-4 w-4 ${loadingMoto ? "animate-spin" : ""}`} />
+                                    </Button>
+                                </div>
                             </CardHeader>
                             {/* <CardContent className="p-4">
                                 <div className="space-y-4">
@@ -978,11 +990,39 @@ useEffect(() => {
                             </CardContent>
                         </Card>
                         <Card className="max-w-lg mx-auto rounded-xl shadow-lg border border-gray-200">
-                            <CardHeader className="bg-gray-50 rounded-t-xl p-4">
-                                <CardTitle className="flex items-center gap-2 text-gray-900 font-extrabold text-xl">
+                            <CardHeader className="bg-gray-50 rounded-t-xl p-4 flex justify-between items-center">
+                                <div className="flex items-center gap-2">
                                     <Users className="h-6 w-6" />
-                                    Taxista cadastrado 
-                                </CardTitle>
+                                    <span className="text-gray-900 font-extrabold text-xl">
+                                    {mototaxistas.some(m => m.ativo && m.tipoVeiculo === "carro")
+                                        ? `Taxi Disponíveis (${mototaxistas.filter(m => m.ativo && m.tipoVeiculo === "carro").length})`
+                                        : `Taxi Cadastrados (${mototaxistas.filter(m => m.tipoVeiculo === "carro").length})`}
+                                    </span>
+                                    {/* Ícone de carregamento ao lado do texto */}
+                                    {/* {loadingMoto && <RefreshCcw className="h-4 w-4 animate-spin ml-2" />} */}
+                                      <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={atualizarMototaxistas}
+                                    disabled={loadingMoto}
+                                    className="flex items-center gap-1"
+                                >
+                                    <RefreshCcw className={`h-4 w-4 ${loadingMoto ? "animate-spin" : ""}`} />
+                                    
+                                </Button>
+                                </div>
+
+                                {/* Botão de atualizar */}
+                                {/* <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={atualizarMototaxistas}
+                                    disabled={loadingMoto}
+                                    className="flex items-center gap-1"
+                                >
+                                    <RefreshCcw className={`h-4 w-4 ${loadingMoto ? "animate-spin" : ""}`} />
+                                    Atualizar
+                                </Button> */}
                             </CardHeader>
                             <CardContent className="p-4">
                                 <div className="space-y-4">
@@ -1067,18 +1107,17 @@ useEffect(() => {
                                 </ul>
 
                                 <p className="text-gray-700 font-semibold mt-2">
-                                Quer vans disponíveis? 
+                                    Quer vans disponíveis? 
                                 </p>
                                 <p className="text-gray-500 font-semibold mt-2">
-                                Envie um feedback com 'Adicione Vans' e ajude a liberar o serviço para todos!
+                                    Envie um feedback com 'Adicione Vans' e ajude a liberar o serviço para todos!
                                 </p>
                                 <p className="text-gray-700">
-                                Fique avontade para pedir melhorias para o app, este app segue em constante mudanças e melhorias.
+                                    Fique à vontade para sugerir melhorias para o app! Ele está em constante evolução para melhor atender você.
                                 </p>
-
                                 <div className="flex flex-col gap-2">
                                 <Input
-                                    placeholder="Seu nome (opcional)"
+                                    placeholder="Seu nome"
                                     value={nomeFeedback}
                                     onChange={(e) => setNomeFeedback(e.target.value)}
                                 />
@@ -1142,9 +1181,9 @@ useEffect(() => {
 
                         <footer className="max-w-lg mx-auto flex flex-col items-center space-y-3 mt-12 mb-8 bg-white rounded-xl shadow-md border border-gray-100 p-4">
                              <img 
-                            src="/assets/IconRapi.jpeg" 
+                            src="/assets/IconRapi.png" 
                         alt="Logo" 
-                        className="h-30 w-[200px]"
+                        className="h-30 w-[230px]"
                             />
 
                             {/* Desenvolvedor */}
@@ -1219,6 +1258,7 @@ useEffect(() => {
             />
 
             <ConfiguracoesModal
+                onUpdatePremium={setIsPremium}
                 idUser={userId}
                 Premium={isPremium}
                 dateExpira={dateExpiration}

@@ -5,7 +5,8 @@ export const enviarUserParaGoogleForms = ({
   email,
   Premium,
   DateExpir,
-  DateCAd
+  DateCAd,
+  ativo
 }: {
   ehMotoboy: string;
   userId: string;
@@ -14,6 +15,7 @@ export const enviarUserParaGoogleForms = ({
   Premium: string;
   DateExpir: string;
   DateCAd: string;
+  ativo;
 }) => {
   console.log("Enviando para Google Forms:", {
     ehMotoboy,
@@ -23,6 +25,7 @@ export const enviarUserParaGoogleForms = ({
     DateExpir,
     Premium,
     DateCAd,
+    ativo
   });
 
   fetch("https://docs.google.com/forms/d/e/1FAIpQLSf3vlDRyJA9IjlirDlT2cHjXUi4raNqdSmhKz8fYqS39ftxhw/formResponse", {
@@ -39,6 +42,8 @@ export const enviarUserParaGoogleForms = ({
       "entry.1905294411": Premium,
       "entry.1486339636": DateExpir,
       "entry.1587630965": DateCAd,
+      "entry.1241088726": ativo,
+
     }).toString()
   }).then(() => {
     console.log("Requisição enviada ao Google Forms");
