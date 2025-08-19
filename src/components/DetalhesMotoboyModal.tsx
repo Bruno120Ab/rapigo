@@ -117,7 +117,7 @@ const tipoMaisFrequente = (() => {
       alt="Veículo"
     />
     <div>
-      <p className="font-medium">Modelo do carro: {mototaxista.detalhes}</p>
+      <p className="font-medium">Modelo do carro: {mototaxista.modelo}</p>
       <p className="text-sm text-muted-foreground">{infoVeiculo}</p>
     </div>
   </>
@@ -129,8 +129,8 @@ const tipoMaisFrequente = (() => {
       alt="Veículo"
     />
    <div className="space-y-1">
-  <p className="font-semibold text-gray-800">
-    Modelo da moto: <span className="font-medium">{mototaxista.detalhes}</span>
+  <p className="font-medium text-gray-400">
+    Modelo da moto: <span className="font-bold text-gray-800">{mototaxista.modelo}</span>
   </p>
   {infoVeiculo && (
     <p className="text-sm text-gray-500">

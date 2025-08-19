@@ -5,6 +5,7 @@ export interface Mototaxista {
   foto: string;
   status: boolean;
   tipoVeiculo: 'moto' | 'carro' ;
+  modelo: string;
   detalhes: string;
   detalhes_foto:string;
   ponto: string;
