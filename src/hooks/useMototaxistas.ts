@@ -29,17 +29,16 @@ import { useState, useEffect } from "react";
 import { buscarPedidosDoGoogleSheets } from "./useBuscarTaxis";
 import { Mototaxista } from "@/types/mototaxi";
 
-
 export const useMototaxistas = () => {
   const [mototaxistas, setMototaxistas] = useState<Mototaxista[]>([]);
+  const [loadingMoto, setLoading] = useState(false); // estado de loading
 
-  // Busca os mototaxistas do Google Sheets ao carregar
-  useEffect(() => {
-    (async () => {
+  const buscarMototaxistas = async () => {
+    setLoading(true); // inicia loading
+    try {
       const dados = await buscarPedidosDoGoogleSheets();
-      // transforma os dados para o formato do Mototaxista e marca como ativo
       const lista = dados.map((item: any) => ({
-        id: item.ID || item.idCorrida || "", // ajusta conforme sua coluna
+        id: item.ID || item.idCorrida || "",
         nome: item.Nome || "",
         foto: item.foto || "",
         tipoVeiculo: item.tipoVeiculo || "",
@@ -48,29 +47,33 @@ export const useMototaxistas = () => {
         Grupo: item.Grupo || "",
         telefone: item.Telefone || "",
         ponto: item.Ponto || "",
-        ativo: item.Status === "Ativo", // só ativa se Status = Ativo
+        status: item.Status,
+        ativo: item.ativo,
       }));
       setMototaxistas(lista);
-    })();
+    } catch (err) {
+      console.error("Erro ao atualizar mototaxistas:", err);
+    } finally {
+      setLoading(false); // termina loading
+    }
+  };
+
+  useEffect(() => {
+    buscarMototaxistas();
   }, []);
 
   const toggleStatus = (id: string) => {
-    setMototaxistas(prev => 
-      prev.map(mototaxista => 
-        mototaxista.id === id 
-          ? { ...mototaxista, ativo: !mototaxista.ativo }
-          : mototaxista
-      )
+    setMototaxistas(prev =>
+      prev.map(m => (m.id === id ? { ...m, ativo: !m.ativo } : m))
     );
   };
 
-  const mototaxistasAtivos = mototaxistas.filter(m => m.ativo);
-  const quantidadeAtivos = mototaxistas.filter(m => m.tipoVeiculo == 'moto').length;
-
   return {
     mototaxistas,
-    mototaxistasAtivos,
-    quantidadeAtivos,
-    toggleStatus
+    mototaxistasAtivos: mototaxistas.filter(m => m.status),
+    quantidadeAtivos: mototaxistas.filter(m => m.tipoVeiculo === "moto").length,
+    toggleStatus,
+    atualizarMototaxistas: buscarMototaxistas,
+    loadingMoto, // ✅ exposto
   };
 };

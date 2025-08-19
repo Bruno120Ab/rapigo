@@ -3,12 +3,13 @@ export interface Mototaxista {
   nome: string;
   telefone: string;
   foto: string;
-  ativo: boolean;
+  status: boolean;
   tipoVeiculo: 'moto' | 'carro' ;
   detalhes: string;
   detalhes_foto:string;
   ponto: string;
-  Grupo: string
+  Grupo: string;
+  ativo?: boolean
 
 }
 
@@ -28,4 +29,4 @@ export interface Solicitacao {
   serviceType?: 'corrida' | 'entrega' | 'coleta' | 'buscar_pessoa';
 }
 
-export type StatusMototaxista = 'ativo' | 'inativo';
+export type StatusMototaxista = 'ativo' | 'Indisponível';

@@ -107,7 +107,7 @@ export const MototaxistaCard = ({
                   variant={mototaxista.ativo ? "default" : "secondary"}
                   className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
                 >
-                  {mototaxista.ativo ? "Disponível" : "Inativo"}
+                  {mototaxista.ativo ? "Disponível" : "Indisponível"}
                 </Badge>
               )}
             </div>

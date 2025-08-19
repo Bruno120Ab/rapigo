@@ -7,6 +7,7 @@ import { Mototaxista } from "@/types/mototaxi";
 import { useAvaCorridas } from "@/hooks/use-historicoCorrida";
  import _ from "lodash";
 
+
 interface DetalhesMotoboyModalProps {
   mototaxista: Mototaxista | null;
   isOpen: boolean;
@@ -92,10 +93,10 @@ const tipoMaisFrequente = (() => {
                 <h3 className="text-xl font-semibold">{mototaxista.nome}</h3>
                 <Badge
                   variant={mototaxista.ativo ? "default" : "secondary"}
-                  className={mototaxista.ativo ? "bg-success text-success-foreground" : ""}
+                  className={mototaxista.ativo ? "bg-success text-success-foreground" : "bg-destructive text-destructive-foreground"}
                 >
-                  {/* {metricas?.mediaEstrelas && metricas.mediaEstrelas > 4 ? "Bem avaliado" : "Pontual"} */}
-                  {mototaxista.Grupo}
+                  {mototaxista.ativo ? "Disponível" : "Fora de serviço"}
+                  
                 </Badge>
               </div>
 
@@ -112,7 +113,7 @@ const tipoMaisFrequente = (() => {
   <>
     <img
       className="w-16 h-16 rounded-md object-cover"
-      src={mototaxista.detalhes_foto || "/public/assets/RapiGoCar.png"}
+      src={mototaxista.detalhes_foto || "/assets/RapiGoCar.png"}
       alt="Veículo"
     />
     <div>
@@ -124,13 +125,19 @@ const tipoMaisFrequente = (() => {
   <>
     <img
       className="w-16 h-16 rounded-md object-cover"
-      src={mototaxista.detalhes_foto || "/public/assets/RapiGoBike.png"}
+      src={mototaxista.detalhes_foto || "/assets/RapiGoBike.png"}
       alt="Veículo"
     />
-    <div>
-      <p className="font-medium">Modelo da moto: {mototaxista.detalhes}</p>
-      <p className="text-sm text-muted-foreground">{infoVeiculo}</p>
-    </div>
+   <div className="space-y-1">
+  <p className="font-semibold text-gray-800">
+    Modelo da moto: <span className="font-medium">{mototaxista.detalhes}</span>
+  </p>
+  {infoVeiculo && (
+    <p className="text-sm text-gray-500">
+      {infoVeiculo}
+    </p>
+  )}
+</div>
   </>
 )}
           </div>
@@ -144,16 +151,41 @@ const tipoMaisFrequente = (() => {
 
           {/* Métricas */}
           {loadingHistorico ? (
-            <div className="flex items-center justify-center p-8">
-              <p>Carregando avaliações dos usuários do app...</p>
-            </div>
+            <div className="flex flex-col items-center justify-center p-8 text-center space-y-3">
+                <svg
+                  className="animate-spin h-8 w-8 text-blue-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  ></path>
+                </svg>
+                <p className="text-gray-600 font-medium">
+                  Carregando avaliações de corridas da RapiGo...
+                </p>
+                <span className="text-xs text-gray-400">
+                  Táxi e Mototáxi com segurança e rapidez
+                </span>
+              </div>
           ) : error ? (
             <div className="flex items-center justify-center p-8 text-red-600">
               <p>Erro ao carregar dados: {error.message}</p>
             </div>
           ) : (
             <div
-              className={`transition-all duration-300 ${!premium ? "blur-sm pointer-events-none" : ""}`}
+              className={`transition-all duration-300 ${!configString ? "blur-sm pointer-events-none" : ""}`}
             >
               {resumo && (
                 <div className="grid grid-cols-2 gap-4 mb-10">
