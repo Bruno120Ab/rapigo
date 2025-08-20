@@ -740,7 +740,7 @@ useEffect(() => {
     }
   
     mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
-    mensagem += `\n*Favor confirmar se pode atender! E revisar os endereços.*\n\n`;
+    mensagem += `\n*Favor confirmar se pode atender!\n E revisar os endereços.*\n\n`;
 
 
   
