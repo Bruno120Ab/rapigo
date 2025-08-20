@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Shield, Building2, Lock } from "lucide-react";
 
-const empresasMock = ["Itambé Transportes", "Motoboys União", "Rapid Delivery"];
+const empresasMock = ["Itambé", "Aguia", "SOS"];
 
 export const PoliticaSeguranca = () => {
   return (
