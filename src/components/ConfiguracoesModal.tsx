@@ -534,6 +534,9 @@ export const ConfiguracoesModal = ({ onUpdatePremium, Premium, isOpen, dateExpir
 
   const handleLimpar = () => {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('historico-viagens')
+    localStorage.removeItem('motoboys-favoritos')
+
     setConfigLocal({
       nomeClientePadrao: "",
       email: "",
@@ -550,6 +553,7 @@ export const ConfiguracoesModal = ({ onUpdatePremium, Premium, isOpen, dateExpir
       variant: "default",
     });
     onClose();
+    window.location.reload(); 
   };
 
   const handleToggleAtivo = async (checked: boolean) => {
