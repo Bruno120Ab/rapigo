@@ -701,16 +701,14 @@ useEffect(() => {
         }
     };
 
-    const enviarWhatsApp = () => {
+    const enviarWhatsApp = (telefone:string) => {
     if (!ultimaSolicitacao) return;
   
     const dadosMototaxista = localStorage.getItem("mototaxista");
-    let telefone = "71999099688";
-  
     if (dadosMototaxista) {
       try {
         const mototaxista = JSON.parse(dadosMototaxista);
-        if (mototaxista.telefone) {
+        if (telefone) {
           telefone = mototaxista.telefone.replace(/\D/g, "");
           if (!telefone.startsWith("55")) {
             telefone = "55" + telefone;

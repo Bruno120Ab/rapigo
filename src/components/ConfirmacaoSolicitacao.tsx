@@ -12,7 +12,7 @@ import { customAlphabet } from "nanoid";
 interface ConfirmacaoSolicitacaoProps {
   solicitacao: Solicitacao;
   onVoltarInicio: () => void;
-  onEnviarWhatsApp: () => void;
+  onEnviarWhatsApp: (telefone: string) => void; // ← aqui
 }
 
 // Alfabeto com letras e números, 6 caracteres
@@ -154,7 +154,7 @@ export const ConfirmacaoSolicitacao = ({
               idMoto: solicitacao.idmotoBoy,
               motoboy: solicitacao.motoBoy,
             });
-            onEnviarWhatsApp();
+            onEnviarWhatsApp(motoboySelecionado.telefone);
           }}
           className="w-full bg-success hover:bg-success/90"
         >
