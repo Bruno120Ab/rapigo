@@ -17,16 +17,7 @@ export const enviarUserParaGoogleForms = ({
   DateCAd: string;
   ativo;
 }) => {
-  console.log("Enviando para Google Forms:", {
-    ehMotoboy,
-    email,
-    nomeClientePadrao,
-    userId,
-    DateExpir,
-    Premium,
-    DateCAd,
-    ativo
-  });
+  
 
   fetch("https://docs.google.com/forms/d/e/1FAIpQLSf3vlDRyJA9IjlirDlT2cHjXUi4raNqdSmhKz8fYqS39ftxhw/formResponse", {
     method: "POST",
@@ -46,7 +37,6 @@ export const enviarUserParaGoogleForms = ({
 
     }).toString()
   }).then(() => {
-    console.log("Requisição enviada ao Google Forms");
   }).catch((error) => {
     console.error("Erro ao enviar para Google Forms:", error);
   });

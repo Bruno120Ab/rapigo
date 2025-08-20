@@ -608,7 +608,6 @@ const Index = () => {
 useEffect(() => {
   (async () => {
     const pedidos = await buscarPedidosDoGoogleSheets();
-    console.log("Pedidos:", pedidos);
   })();
 }, []);
 
@@ -737,11 +736,12 @@ useEffect(() => {
     }
   
     if (ultimaSolicitacao.isAgendamento) {
-      mensagem += `*Tipo de viagem: Agendadada*`;
+      mensagem += `📌 *Tipo de viagem: Agendadada*`;
     }
   
     mensagem += `\n⏰ *Horário:* ${ultimaSolicitacao.dataHora.toLocaleString('pt-BR')}\n`;
-    mensagem += `\n*Favor confirmar se pode atender! 🙏*\n\n`;
+    mensagem += `\n*Favor confirmar se pode atender! E revisar os endereços.*\n\n`;
+
 
   
     const url = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
@@ -1006,10 +1006,10 @@ useEffect(() => {
                                     onClick={atualizarMototaxistas}
                                     disabled={loadingMoto}
                                     className="flex items-center gap-1"
-                                >
-                                    <RefreshCcw className={`h-4 w-4 ${loadingMoto ? "animate-spin" : ""}`} />
+                                    >
+                                        <RefreshCcw className={`h-4 w-4 ${loadingMoto ? "animate-spin" : ""}`} />
                                     
-                                </Button>
+                                    </Button>
                                 </div>
 
                                 {/* Botão de atualizar */}
@@ -1163,7 +1163,7 @@ useEffect(() => {
                         <div className="max-w-lg mx-auto">
                             <CardsSection />
                         </div>
-                        <div className="max-w-lg mx-auto space-y-3 mt-6">
+                        {/* <div className="max-w-lg mx-auto space-y-3 mt-6">
                             <Button
                                 onClick={() => setTelaAtual('selecionar-mototaxista')}
                                 disabled={quantidadeAtivos === 0}
@@ -1173,7 +1173,7 @@ useEffect(() => {
                                 <Car className="h-5 w-5 mr-2 inline-block align-middle" />
                                 Solicitar Moto-Táxi
                             </Button>
-                        </div>
+                        </div> */}
                          <div className="max-w-lg mx-auto">
                             <PoliticaSeguranca />
                         </div>

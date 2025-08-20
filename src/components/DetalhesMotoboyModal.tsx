@@ -118,6 +118,7 @@ const tipoMaisFrequente = (() => {
     />
     <div>
       <p className="font-medium">Modelo do carro: {mototaxista.modelo}</p>
+      <p className="text-sm text-muted-foreground">📍 {mototaxista.Grupo}</p>
       <p className="text-sm text-muted-foreground">{infoVeiculo}</p>
     </div>
   </>
@@ -129,15 +130,20 @@ const tipoMaisFrequente = (() => {
       alt="Veículo"
     />
    <div className="space-y-1">
-  <p className="font-medium text-gray-400">
-    Modelo da moto: <span className="font-bold text-gray-800">{mototaxista.modelo}</span>
-  </p>
-  {infoVeiculo && (
-    <p className="text-sm text-gray-500">
-      {infoVeiculo}
+    <p className="font-medium text-gray-400">
+      Modelo da moto: <span className="font-bold text-gray-800">{mototaxista.modelo}</span>
     </p>
-  )}
-</div>
+    {mototaxista.Grupo && (
+      <p className="text-sm text-green-800">
+        📍 {mototaxista.Grupo}
+      </p>
+    )}
+    {infoVeiculo && (
+      <p className="text-sm text-gray-500">
+        {infoVeiculo}
+      </p>
+    )}
+  </div>
   </>
 )}
           </div>
@@ -242,7 +248,7 @@ const tipoMaisFrequente = (() => {
                     className="cursor-pointer p-4 rounded-lg shadow-md bg-white border border-gray-200 hover:shadow-lg transition-shadow"
                   >
                     <div className="flex justify-between items-center mb-1">
-                      <h4 className="font-semibold text-lg text-gray-900">{nomeMotoboy}</h4>
+                      {/* <h4 className="font-semibold text-lg text-gray-900">{nomeMotoboy}</h4> */}
                       <span className="text-sm text-gray-500">{tipo.charAt(0).toUpperCase() + tipo.slice(1)}</span>
                     </div>
 

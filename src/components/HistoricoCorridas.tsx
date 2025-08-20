@@ -91,7 +91,6 @@ export default function HistoricoCorridas({
 
   useEffect(() => {
     if (!idMoto) return;
-    console.log(idMoto)
 
     setLoading(true);
     setError(null);
@@ -237,12 +236,6 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-lg ">
       <h2 className="text-lg font-bold mb-4">Painel do Motoboy</h2>
-        {!isPremium && (
-        <p className="mb-4 text-center text-sm text-yellow-700 bg-yellow-100 p-2 rounded">
-          Você está no plano básico e visualiza apenas as corridas feitas no dia.
-          Para acessar todas as corridas do mês, assine o plano Premium mensal.
-        </p>
-      )}
 
       {/* Inputs para filtro de datas só para premium */}
       {isPremium && (

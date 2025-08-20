@@ -29,7 +29,6 @@ export const AvaliacaoModal = ({
   const [feedback, setFeedback] = useState("");
 
 
-  console.log(viagem)
   // Resetar estado quando uma nova viagem é selecionada ou modal é aberto
   useEffect(() => {
     if (viagem && isOpen) {

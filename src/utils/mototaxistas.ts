@@ -15,7 +15,8 @@ export const mototaxistasIniciais: Mototaxista[] = [
     detalhes_foto: "/Mt01-Mto.png",
     ponto: '-15.243889, -40.619893',
     Grupo: 'SOS',
-    ativo: true
+    ativo: true,
+    modelo: 's'
     
   }
 ];

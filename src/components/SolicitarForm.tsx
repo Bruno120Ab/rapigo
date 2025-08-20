@@ -603,7 +603,7 @@ export const SolicitarForm = ({
 
             {/* Destino */}
             <div className="space-y-2">
-              <Label htmlFor="destino">Destino (opcional)</Label>
+              <Label htmlFor="destino">Destino</Label>
               {enderecosPadrao.length > 0 && (
                 <Select onValueChange={setDestino}>
                   <SelectTrigger className="mb-2">
@@ -658,7 +658,7 @@ export const SolicitarForm = ({
             className="flex-1 gap-0"
           >
             <Send className="h-1 w-1 mr-1" />
-            {loading ? "Enviando..." : isAgendamento ? "Agendar Corrida" : "Revisar Solicitação"}
+            {loading ? "Processando..." : isAgendamento ? "Agendar Corrida" : "Revisar Solicitação"}
           </Button>
         </div>
       </CardContent>

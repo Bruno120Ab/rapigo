@@ -202,13 +202,7 @@ const totalFinanceiro = dados.corridas.reduce((acc, corrida) => {
        <strong>Avaliações do Motoboy - </strong> 
         {!isPremium ? "(Hoje)" : ""}
       </h2>
-        {!isPremium && (
-        <p className="mb-4 text-center text-sm text-yellow-700 bg-yellow-100 p-2 rounded">
-          Você está no plano básico e visualiza apenas as corridas feitas no dia.
-          Para acessar todas as corridas do mês, assine o plano Premium mensal.
-        </p>
-      )}
-
+     
       {/* Inputs para filtro de datas só para premium */}
       {isPremium && (
         <div className="mb-4 flex gap-4 justify-center flex-col">

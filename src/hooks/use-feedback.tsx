@@ -24,7 +24,6 @@ export const enviarFeedbackParaGoogleForms = async ({
       },
       body,
     });
-    console.log("Feedback enviado ao Google Forms");
   } catch (error) {
     console.error("Erro ao enviar feedback:", error);
   }
