@@ -895,7 +895,7 @@ useEffect(() => {
                             obterAvaliacao={obterAvaliacao}
                         />
 
-                        <Card className="max-w-lg mx-auto rounded-xl shadow-lg border border-gray-200">
+                        {/* <Card className="max-w-lg mx-auto rounded-xl shadow-lg border border-gray-200">
                            <CardHeader className="bg-gray-50 rounded-t-xl p-4">
                                 <div className="flex items-center justify-center gap-4 w-full">
                                     <Users className="h-6 w-6" />
@@ -914,8 +914,8 @@ useEffect(() => {
                                     <RefreshCcw className={`h-4 w-4 ${loadingMoto ? "animate-spin" : ""}`} />
                                     </Button>
                                 </div>
-                            </CardHeader>
-                            {/* <CardContent className="p-4">
+                           </CardHeader>
+                             <CardContent className="p-4">
                                 <div className="space-y-4">
                                     {mototaxistasAtivos.slice(0, 3).map((mototaxista) => {
                                         const metricas = calcularMetricasMotorista(mototaxista.nome, historico);
@@ -943,7 +943,7 @@ useEffect(() => {
                                         </Button>
                                     )}
                                 </div>
-                            </CardContent> */}
+                            </CardContent> 
                                 <CardContent className="p-4">
                                 <div className="space-y-4">
                                     {mototaxistasAtivos.length === 0 ? (
@@ -987,6 +987,7 @@ useEffect(() => {
                                 </div>
                             </CardContent>
                         </Card>
+                         */}
                         <Card className="max-w-lg mx-auto rounded-xl shadow-lg border border-gray-200">
                             <CardHeader className="bg-gray-50 rounded-t-xl p-4 flex justify-between items-center">
                                 <div className="flex items-center gap-2">

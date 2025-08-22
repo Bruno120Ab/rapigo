@@ -117,7 +117,9 @@ const tipoMaisFrequente = (() => {
       alt="Veículo"
     />
     <div>
-      <p className="font-medium">Modelo do carro: {mototaxista.modelo}</p>
+      <p className="font-medium text-gray-400">
+      Modelo do carro: <span className="font-bold text-gray-800">{mototaxista.modelo}</span>
+      </p>
       <p className="text-sm text-muted-foreground">📍 {mototaxista.Grupo}</p>
       <p className="text-sm text-muted-foreground">{infoVeiculo}</p>
     </div>
