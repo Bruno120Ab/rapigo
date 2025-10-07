@@ -473,7 +473,9 @@
 
 
 import { useEffect, useState } from "react";
-import { Bike, Car, Mail, MessageCircle, RefreshCcw, Settings, User, Users } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Bike, Car, Mail, MessageCircle, RefreshCcw, Settings, User, Users, LogIn, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -514,6 +516,8 @@ import icon from "@/assets/icon-def.png"
 type TelaTipo = 'inicial' | 'solicitar' | 'confirmacao' | 'gerenciar' | 'selecionar-mototaxista';
 
 const Index = () => {
+    const navigate = useNavigate();
+    const { user, userRole, loading: authLoading, signOut } = useAuth();
     const [userId, setUserId] = useState(null);
     const [isPremium, setIsPremium] = useState(false);
     const [dateExpiration, setDateExpiration ] = useState();
@@ -611,6 +615,13 @@ useEffect(() => {
   })();
 }, []);
 
+    // Redirecionar entregadores para o dashboard deles
+    useEffect(() => {
+        if (!authLoading && userRole === 'entregador') {
+            navigate('/dashboard-entregador');
+        }
+    }, [userRole, authLoading, navigate]);
+
     // Seus estados e hooks existentes
     const [telaAtual, setTelaAtual] = useState<TelaTipo>('inicial');
     const [ultimaSolicitacao, setUltimaSolicitacao] = useState<Solicitacao | null>(null);
@@ -633,8 +644,8 @@ useEffect(() => {
     const [loading, setLoading] = useState(false);
     const [tipoSelecionado, setTipoSelecionado] = useState<'moto' | 'carro'>('moto');
 
-    const handleSolicitar = (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
-        const solicitacao = adicionarSolicitacao(dadosSolicitacao);
+    const handleSolicitar = async (dadosSolicitacao: Omit<Solicitacao, 'id'>) => {
+        const solicitacao = await adicionarSolicitacao(dadosSolicitacao);
         setUltimaSolicitacao(solicitacao);
         adicionarViagem(solicitacao);
         setTelaAtual('confirmacao');
@@ -665,8 +676,8 @@ useEffect(() => {
         setMostrarConfirmacaoRepeticao(true);
     };
 
-    const handleConfirmarRepeticaoViagem = (novaViagem: Solicitacao) => {
-        const solicitacao = adicionarSolicitacao(novaViagem);
+    const handleConfirmarRepeticaoViagem = async (novaViagem: Solicitacao) => {
+        const solicitacao = await adicionarSolicitacao(novaViagem);
         setUltimaSolicitacao(solicitacao);
         adicionarViagem(solicitacao);
         setTelaAtual('confirmacao');
@@ -747,6 +758,15 @@ useEffect(() => {
   };
  
     const renderTela = () => {
+        // Mostrar loading enquanto verifica autenticação
+        if (authLoading) {
+            return (
+                <div className="min-h-screen flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                </div>
+            );
+        }
+
         switch (telaAtual) {
             case 'solicitar':
                 return (
@@ -856,8 +876,41 @@ useEffect(() => {
                     <div className="space-y-5">
                         {/* Header */}
                    <header className="text-center max-w-md mx-auto relative">
-    {/* Botão no canto direito */}
-    
+    {/* Botões no canto direito */}
+    <div className="absolute top-0 right-0 flex gap-2">
+        {user ? (
+            <>
+                <Button
+                    variant="ghost"
+                    size="default"
+                    onClick={() => setMostrarConfiguracoesModal(true)}
+                    className="text-gray-500 hover:text-gray-900 transition"
+                    aria-label="Configurações"
+                >
+                    <User className="h-12 w-12" />
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="default"
+                    onClick={() => signOut()}
+                    className="text-gray-500 hover:text-gray-900 transition"
+                    aria-label="Sair"
+                >
+                    <LogOut className="h-6 w-6" />
+                </Button>
+            </>
+        ) : (
+            <Button
+                variant="ghost"
+                size="default"
+                onClick={() => navigate('/auth')}
+                className="text-gray-500 hover:text-gray-900 transition"
+                aria-label="Entrar"
+            >
+                <LogIn className="h-6 w-6" />
+            </Button>
+        )}
+    </div>
 
     {/* Conteúdo centralizado */}
     <div className="flex flex-col items-center gap-0 justify-center">
@@ -869,15 +922,6 @@ useEffect(() => {
         <p className="text-gray-600 text-lg font-medium mt-1">
             Seu transporte na palma da mão.
         </p>
-        <Button
-        variant="ghost"
-        size="default"
-        onClick={() => setMostrarConfiguracoesModal(true)}
-        className="absolute top-0 right-0 text-gray-500 hover:text-gray-900 transition"
-        aria-label="Configurações"
-            >
-        <User className="h-12 w-12" />
-            </Button>
         <InstallPWAButton  />
     </div>
 </header>
